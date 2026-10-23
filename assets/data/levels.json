@@ -18,7 +18,8 @@
         "name": "Чоно",
         "emoji": "🐺",
         "maxHp": 22,
-        "attack": 4
+        "attack": 4,
+        "specialEvery": 4
       }
     ],
     "name": "Тал нутаг",
@@ -37,19 +38,22 @@
         "name": "Баавгай",
         "emoji": "🐻",
         "maxHp": 30,
-        "attack": 5
+        "attack": 5,
+        "specialEvery": 4
       },
       {
         "name": "Бар",
         "emoji": "🐯",
         "maxHp": 32,
-        "attack": 5
+        "attack": 5,
+        "specialEvery": 3
       },
       {
         "name": "Хар шувуу",
         "emoji": "🦅",
         "maxHp": 28,
-        "attack": 6
+        "attack": 6,
+        "specialEvery": 3
       }
     ],
     "name": "Ойн зах",
@@ -62,19 +66,22 @@
         "name": "Луу",
         "emoji": "🐉",
         "maxHp": 40,
-        "attack": 6
+        "attack": 6,
+        "specialEvery": 3
       },
       {
         "name": "Шулам",
         "emoji": "🧟",
         "maxHp": 45,
-        "attack": 7
+        "attack": 7,
+        "specialEvery": 3
       },
       {
         "name": "Мангас",
         "emoji": "👹",
         "maxHp": 65,
-        "attack": 8
+        "attack": 8,
+        "specialEvery": 2
       }
     ],
     "name": "Мангасын агуй",

@@ -91,6 +91,29 @@ class LetterGenerator {
     return false;
   }
 
+  /// Санамжид: самбараас бүтэх, ашиглагдаагүй санамсаргүй нэг үг.
+  /// Богино-дунд урттай (3..[maxLength]) үгийг сонгоно.
+  String? findWord(
+    List<LetterTile> board,
+    Set<String> dictionary, {
+    Set<String> exclude = const {},
+    int minLength = GameConfig.minWordLength,
+    int maxLength = 6,
+  }) {
+    final available = <String, int>{};
+    for (final t in board) {
+      available[t.letter] = (available[t.letter] ?? 0) + 1;
+    }
+    final candidates = <String>[];
+    for (final word in dictionary) {
+      if (word.length < minLength || word.length > maxLength) continue;
+      if (exclude.contains(word)) continue;
+      if (_canBuild(word, available)) candidates.add(word);
+    }
+    if (candidates.isEmpty) return null;
+    return candidates[_random.nextInt(candidates.length)];
+  }
+
   bool _canBuild(String word, Map<String, int> available) {
     final need = <String, int>{};
     for (final ch in word.split('')) {

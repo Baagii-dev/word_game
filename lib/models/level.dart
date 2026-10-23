@@ -29,6 +29,7 @@ class Level {
           emoji: e['emoji'] as String,
           maxHp: (e['maxHp'] as num).toInt(),
           attack: (e['attack'] as num).toInt(),
+          specialEvery: (e['specialEvery'] as num?)?.toInt() ?? 0,
         ),
     ],
   );
@@ -66,7 +67,7 @@ final List<Level> kLevels = [
     enemies: [
       Enemy(name: 'Хулгана', emoji: '🐭', maxHp: 12, attack: 2),
       Enemy(name: 'Могой', emoji: '🐍', maxHp: 16, attack: 3),
-      Enemy(name: 'Чоно', emoji: '🐺', maxHp: 22, attack: 4),
+      Enemy(name: 'Чоно', emoji: '🐺', maxHp: 22, attack: 4, specialEvery: 4),
     ],
   ),
   Level(
@@ -75,9 +76,21 @@ final List<Level> kLevels = [
     description: 'Дайснууд хүчирхэгжинэ',
     enemies: [
       Enemy(name: 'Үнэг', emoji: '🦊', maxHp: 20, attack: 4),
-      Enemy(name: 'Баавгай', emoji: '🐻', maxHp: 30, attack: 5),
-      Enemy(name: 'Бар', emoji: '🐯', maxHp: 32, attack: 5),
-      Enemy(name: 'Хар шувуу', emoji: '🦅', maxHp: 28, attack: 6),
+      Enemy(
+        name: 'Баавгай',
+        emoji: '🐻',
+        maxHp: 30,
+        attack: 5,
+        specialEvery: 4,
+      ),
+      Enemy(name: 'Бар', emoji: '🐯', maxHp: 32, attack: 5, specialEvery: 3),
+      Enemy(
+        name: 'Хар шувуу',
+        emoji: '🦅',
+        maxHp: 28,
+        attack: 6,
+        specialEvery: 3,
+      ),
     ],
   ),
   Level(
@@ -85,9 +98,9 @@ final List<Level> kLevels = [
     name: 'Мангасын агуй',
     description: 'Эцсийн тулаан',
     enemies: [
-      Enemy(name: 'Луу', emoji: '🐉', maxHp: 40, attack: 6),
-      Enemy(name: 'Шулам', emoji: '🧟', maxHp: 45, attack: 7),
-      Enemy(name: 'Мангас', emoji: '👹', maxHp: 65, attack: 8),
+      Enemy(name: 'Луу', emoji: '🐉', maxHp: 40, attack: 6, specialEvery: 3),
+      Enemy(name: 'Шулам', emoji: '🧟', maxHp: 45, attack: 7, specialEvery: 3),
+      Enemy(name: 'Мангас', emoji: '👹', maxHp: 65, attack: 8, specialEvery: 2),
     ],
   ),
 ];

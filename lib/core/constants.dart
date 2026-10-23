@@ -8,6 +8,7 @@ class GameConfig {
   static const double minVowelRatio = 0.35; // эгшиг багадаа 35%
   static const double maxVowelRatio = 0.50; // эгшиг ихдээ 50%
   static const int playerMaxHp = 30;
+  static const int hintsPerBattle = 3; // тулаан бүрт санамжийн тоо
 }
 
 /// Монгол кирилл цагаан толгой (35 үсэг)

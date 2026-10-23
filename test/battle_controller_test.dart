@@ -136,4 +136,55 @@ void main() {
       c.dispose();
     });
   });
+
+  test('Санамж ээлж алдуулахгүй, тоолууртай, самбараас бүтэх үг өгнө', () {
+    fakeAsync((async) {
+      final c = makeController();
+      spell(c, 'морь');
+      c.clearSelection();
+      c.hint();
+
+      expect(c.hintsLeft, GameConfig.hintsPerBattle - 1);
+      expect(c.message, startsWith('Санамж:'));
+      expect(c.status, BattleStatus.playerTurn);
+
+      c.hint();
+      c.hint();
+      c.hint(); // хязгаарлагдсан
+      expect(c.hintsLeft, 0);
+      c.dispose();
+    });
+  });
+
+  test('Дайсны тусгай цохилт N ээлж тутамд 2× хохирол өгнө', () {
+    fakeAsync((async) {
+      final level = Level(
+        id: 98,
+        name: 'тест',
+        description: '',
+        enemies: [
+          Enemy(
+            name: 'Мангас',
+            emoji: '👹',
+            maxHp: 100,
+            attack: 2,
+            specialEvery: 2,
+          ),
+        ],
+      );
+      final c = BattleController(level: level, dictionary: dict)..start();
+      expect(c.specialIncoming, isFalse);
+      expect(c.turnsUntilSpecial, 2);
+
+      async.elapse(Duration(seconds: GameConfig.turnSeconds));
+      async.elapse(const Duration(milliseconds: 1000));
+      expect(c.player.hp, GameConfig.playerMaxHp - 2); // энгийн
+      expect(c.specialIncoming, isTrue);
+
+      async.elapse(Duration(seconds: GameConfig.turnSeconds));
+      async.elapse(const Duration(milliseconds: 1000));
+      expect(c.player.hp, GameConfig.playerMaxHp - 2 - 4); // 2× тусгай
+      c.dispose();
+    });
+  });
 }

@@ -48,6 +48,8 @@ class BattleController extends ChangeNotifier {
   int? lastDamage;
 
   // ---------- Статистик (оноо тооцоход) ----------
+  int hintsLeft = GameConfig.hintsPerBattle;
+  int enemyTurns = 0; // одоогийн дайсны хийсэн ээлж
   int combo = 0; // дараалан бүтээсэн зөв үгийн тоо
   int damageTotal = 0;
   int wordsCount = 0;
@@ -66,6 +68,15 @@ class BattleController extends ChangeNotifier {
   int get previewDamage =>
       currentWord.isEmpty ? 0 : _damage.calculate(currentWord, combo: combo);
   bool get canAct => status == BattleStatus.playerTurn;
+
+  /// Дараагийн ээлжинд дайсан тусгай (2×) цохилт хийх эсэх.
+  bool get specialIncoming =>
+      enemy.specialEvery > 0 && (enemyTurns + 1) % enemy.specialEvery == 0;
+
+  /// Тусгай цохилт хүртэл үлдсэн ээлж (байхгүй бол null).
+  int? get turnsUntilSpecial => enemy.specialEvery == 0
+      ? null
+      : enemy.specialEvery - (enemyTurns % enemy.specialEvery);
 
   // =====================================================
   // ЭХЛЭХ
@@ -156,6 +167,26 @@ class BattleController extends ChangeNotifier {
     }
   }
 
+  /// "Санамж" товч — самбараас бүтэх нэг үгийн эхний үсэг, уртыг харуулна.
+  /// Ээлж алдахгүй, гэхдээ тулаан бүрт хязгаартай.
+  void hint() {
+    if (!canAct || hintsLeft <= 0) return;
+    final word = _generator.findWord(
+      board,
+      _dictionaryWords,
+      exclude: _validator.usedWords,
+    );
+    if (word == null) {
+      message = 'Санамж олдсонгүй — "Холих" дарж үзээрэй';
+    } else {
+      hintsLeft--;
+      message =
+          'Санамж: ${word[0].toUpperCase()}${'·' * (word.length - 1)} '
+          '(${word.length} үсэг)';
+    }
+    _notify();
+  }
+
   /// "Холих" товч — бүх үсэг шинэчлэгдэнэ, ээлж алдана.
   void shuffle() {
     if (!canAct) return;
@@ -210,7 +241,10 @@ class BattleController extends ChangeNotifier {
 
     Future.delayed(const Duration(milliseconds: 900), () {
       if (_disposed) return;
-      player.takeDamage(enemy.attack);
+      final special = specialIncoming;
+      enemyTurns++;
+      player.takeDamage(special ? enemy.attack * 2 : enemy.attack);
+      if (special) message = '${enemy.name} хүчтэй цохилт хийлээ!';
       onEvent?.call(BattleEvent.enemyAttack);
       lastDamage = null;
       if (player.isDead) {
@@ -233,6 +267,7 @@ class BattleController extends ChangeNotifier {
       if (_disposed) return;
       if (waveIndex < enemies.length - 1) {
         waveIndex++; // дараагийн дайсан
+        enemyTurns = 0;
         _validator.reset();
         lastDamage = null;
         message = '${enemy.name} гарч ирлээ!';

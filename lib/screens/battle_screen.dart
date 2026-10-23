@@ -210,6 +210,20 @@ class _BattleScreenState extends State<BattleScreen>
               color: hurry ? Colors.red : AppColors.text,
             ),
           ),
+          if (c.turnsUntilSpecial != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                c.specialIncoming
+                    ? '⚠ Дайсан дараагийн ээлжинд хүчтэй цохино!'
+                    : '⚡ Хүчтэй цохилт: ${c.turnsUntilSpecial} ээлжийн дараа',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: c.specialIncoming ? FontWeight.bold : null,
+                  color: c.specialIncoming ? Colors.red : AppColors.text,
+                ),
+              ),
+            ),
           if (c.message != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
@@ -292,6 +306,16 @@ class _BattleScreenState extends State<BattleScreen>
           const SizedBox(height: 10),
           Row(
             children: [
+              OutlinedButton.icon(
+                onPressed: c.canAct && c.hintsLeft > 0 ? c.hint : null,
+                icon: const Icon(Icons.lightbulb),
+                label: Text('${c.hintsLeft}'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.white70),
+                ),
+              ),
+              const SizedBox(width: 8),
               OutlinedButton.icon(
                 onPressed: c.canAct ? c.shuffle : null,
                 icon: const Icon(Icons.shuffle),
