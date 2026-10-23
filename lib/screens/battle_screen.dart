@@ -10,6 +10,8 @@ import '../widgets/damage_popup.dart';
 import '../widgets/shake_widget.dart';
 import '../widgets/hp_bar.dart';
 import '../widgets/letter_grid.dart';
+import '../widgets/ornament_strip.dart';
+import '../widgets/steppe_background.dart';
 import '../widgets/wave_indicator.dart';
 import '../widgets/word_bar.dart';
 import 'result_screen.dart';
@@ -125,7 +127,9 @@ class _BattleScreenState extends State<BattleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.skyTop,
       body: SafeArea(
+        bottom: false,
         child: ListenableBuilder(
           listenable: controller,
           builder: (context, _) => Column(
@@ -187,52 +191,70 @@ class _BattleScreenState extends State<BattleScreen>
     final isPlayerTurn = c.status == BattleStatus.playerTurn;
     final hurry = isPlayerTurn && c.timeLeft <= 5;
 
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.sky, AppColors.sky, AppColors.grass],
-          stops: [0, 0.6, 0.6],
-        ),
-      ),
+    return SteppeBackground(
+      horizon: 0.62,
+      showGer: false,
+      showClouds: false,
       child: Column(
         children: [
           const SizedBox(height: 8),
-          Text(
-            isPlayerTurn
-                ? 'Таны ээлж · ${c.timeLeft} сек'
-                : _statusText(c.status),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: hurry ? Colors.red : AppColors.text,
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.woodDark.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  isPlayerTurn
+                      ? 'Таны ээлж · ${c.timeLeft} сек'
+                      : _statusText(c.status),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: hurry ? const Color(0xFFFFEB3B) : Colors.white,
+                    shadows: const [
+                      Shadow(color: AppColors.woodDark, blurRadius: 6),
+                    ],
+                  ),
+                ),
+                if (c.turnsUntilSpecial != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      c.specialIncoming
+                          ? '⚠ Дайсан дараагийн ээлжинд хүчтэй цохино!'
+                          : '⚡ Хүчтэй цохилт: ${c.turnsUntilSpecial} ээлжийн дараа',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: c.specialIncoming ? FontWeight.bold : null,
+                        color: c.specialIncoming
+                            ? const Color(0xFFFF8A80)
+                            : Colors.white70,
+                      ),
+                    ),
+                  ),
+                if (c.message != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                    child: Text(
+                      c.message!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(color: AppColors.woodDark, blurRadius: 6),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-          if (c.turnsUntilSpecial != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                c.specialIncoming
-                    ? '⚠ Дайсан дараагийн ээлжинд хүчтэй цохино!'
-                    : '⚡ Хүчтэй цохилт: ${c.turnsUntilSpecial} ээлжийн дараа',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: c.specialIncoming ? FontWeight.bold : null,
-                  color: c.specialIncoming ? Colors.red : AppColors.text,
-                ),
-              ),
-            ),
-          if (c.message != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-              child: Text(
-                c.message!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: AppColors.text),
-              ),
-            ),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -281,82 +303,98 @@ class _BattleScreenState extends State<BattleScreen>
     final canAttack = c.canAct && c.selected.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.all(10),
-      color: AppColors.wood,
+      color: AppColors.woodDark,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: ShakeWidget(
-                  trigger: c.invalidCount,
-                  child: WordBar(tiles: c.selected, onTapTile: c.deselectTile),
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton.filled(
-                onPressed: canAttack ? c.clearSelection : null,
-                icon: const Icon(Icons.backspace),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          LetterGrid(tiles: c.board, onTap: c.selectTile),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              OutlinedButton.icon(
-                onPressed: c.canAct && c.hintsLeft > 0 ? c.hint : null,
-                icon: const Icon(Icons.lightbulb),
-                label: Text('${c.hintsLeft}'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.white70),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ),
-              const SizedBox(width: 6),
-              OutlinedButton.icon(
-                onPressed: c.canAct ? c.shuffle : null,
-                icon: const Icon(Icons.shuffle),
-                label: const Text('Холих'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.white70),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    c.combo > 0
-                        ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
-                        : '⚔ ${c.previewDamage}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+          const OrnamentStrip(height: 18, background: AppColors.wood),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              10,
+              10,
+              10,
+              10 + MediaQuery.paddingOf(context).bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ShakeWidget(
+                        trigger: c.invalidCount,
+                        child: WordBar(
+                          tiles: c.selected,
+                          onTapTile: c.deselectTile,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    IconButton.filled(
+                      onPressed: canAttack ? c.clearSelection : null,
+                      icon: const Icon(Icons.backspace),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 6),
-              FilledButton.icon(
-                onPressed: canAttack ? c.attack : null,
-                icon: const Icon(Icons.flash_on),
-                label: const Text('Довтлох'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: AppColors.text,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  visualDensity: VisualDensity.compact,
+                const SizedBox(height: 10),
+                LetterGrid(tiles: c.board, onTap: c.selectTile),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: c.canAct && c.hintsLeft > 0 ? c.hint : null,
+                      icon: const Icon(Icons.lightbulb),
+                      label: Text('${c.hintsLeft}'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.white70),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    OutlinedButton.icon(
+                      onPressed: c.canAct ? c.shuffle : null,
+                      icon: const Icon(Icons.shuffle),
+                      label: const Text('Холих'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.white70),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          c.combo > 0
+                              ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
+                              : '⚔ ${c.previewDamage}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    FilledButton.icon(
+                      onPressed: canAttack ? c.attack : null,
+                      icon: const Icon(Icons.flash_on),
+                      label: const Text('Довтлох'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: AppColors.text,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

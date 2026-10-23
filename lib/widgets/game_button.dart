@@ -49,9 +49,16 @@ class _GameButtonState extends State<GameButton> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             decoration: BoxDecoration(
-              color: widget.color,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.woodDark, width: 2),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.lerp(widget.color, Colors.white, 0.18)!,
+                  widget.color,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.accent, width: 2),
               boxShadow: _down
                   ? null
                   : const [

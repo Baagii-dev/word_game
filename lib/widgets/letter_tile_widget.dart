@@ -29,8 +29,12 @@ class LetterTileWidget extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: AppColors.tile,
-            borderRadius: BorderRadius.circular(8),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, AppColors.tile],
+            ),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.tileBorder, width: 2),
             boxShadow: const [
               BoxShadow(color: Colors.black38, offset: Offset(0, 3)),
