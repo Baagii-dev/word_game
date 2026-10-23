@@ -313,9 +313,11 @@ class _BattleScreenState extends State<BattleScreen>
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.white70),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  visualDensity: VisualDensity.compact,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               OutlinedButton.icon(
                 onPressed: c.canAct ? c.shuffle : null,
                 icon: const Icon(Icons.shuffle),
@@ -323,20 +325,26 @@ class _BattleScreenState extends State<BattleScreen>
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.white70),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  visualDensity: VisualDensity.compact,
                 ),
               ),
-              const Spacer(),
-              Text(
-                c.combo > 0
-                    ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
-                    : '⚔ ${c.previewDamage}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    c.combo > 0
+                        ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
+                        : '⚔ ${c.previewDamage}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 6),
               FilledButton.icon(
                 onPressed: canAttack ? c.attack : null,
                 icon: const Icon(Icons.flash_on),
@@ -344,6 +352,8 @@ class _BattleScreenState extends State<BattleScreen>
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   foregroundColor: AppColors.text,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  visualDensity: VisualDensity.compact,
                 ),
               ),
             ],
