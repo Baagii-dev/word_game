@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "enemies": [
+      {
+        "name": "Хулгана",
+        "emoji": "🐭",
+        "maxHp": 12,
+        "attack": 2
+      },
+      {
+        "name": "Могой",
+        "emoji": "🐍",
+        "maxHp": 16,
+        "attack": 3
+      },
+      {
+        "name": "Чоно",
+        "emoji": "🐺",
+        "maxHp": 22,
+        "attack": 4
+      }
+    ],
+    "name": "Тал нутаг",
+    "description": "Эхлэлийн түвшин"
+  },
+  {
+    "id": 2,
+    "enemies": [
+      {
+        "name": "Үнэг",
+        "emoji": "🦊",
+        "maxHp": 20,
+        "attack": 4
+      },
+      {
+        "name": "Баавгай",
+        "emoji": "🐻",
+        "maxHp": 30,
+        "attack": 5
+      },
+      {
+        "name": "Бар",
+        "emoji": "🐯",
+        "maxHp": 32,
+        "attack": 5
+      },
+      {
+        "name": "Хар шувуу",
+        "emoji": "🦅",
+        "maxHp": 28,
+        "attack": 6
+      }
+    ],
+    "name": "Ойн зах",
+    "description": "Дайснууд хүчирхэгжинэ"
+  },
+  {
+    "id": 3,
+    "enemies": [
+      {
+        "name": "Луу",
+        "emoji": "🐉",
+        "maxHp": 40,
+        "attack": 6
+      },
+      {
+        "name": "Шулам",
+        "emoji": "🧟",
+        "maxHp": 45,
+        "attack": 7
+      },
+      {
+        "name": "Мангас",
+        "emoji": "👹",
+        "maxHp": 65,
+        "attack": 8
+      }
+    ],
+    "name": "Мангасын агуй",
+    "description": "Эцсийн тулаан"
+  }
+]

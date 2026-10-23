@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+
 import 'enemy.dart';
 
 /// Нэг түвшин = хэд хэдэн дайсан (wave).
@@ -14,6 +18,21 @@ class Level {
   final String description;
   final List<Enemy> _enemyTemplates;
 
+  factory Level.fromJson(Map<String, dynamic> json) => Level(
+        id: (json['id'] as num).toInt(),
+        name: json['name'] as String,
+        description: json['description'] as String? ?? '',
+        enemies: [
+          for (final e in json['enemies'] as List)
+            Enemy(
+              name: e['name'] as String,
+              emoji: e['emoji'] as String,
+              maxHp: (e['maxHp'] as num).toInt(),
+              attack: (e['attack'] as num).toInt(),
+            ),
+        ],
+      );
+
   int get waveCount => _enemyTemplates.length;
 
   /// Тулаан эхлэх бүрт дайснуудын шинэ хуулбар авна
@@ -21,7 +40,24 @@ class Level {
   List<Enemy> createEnemies() => _enemyTemplates.map((e) => e.copy()).toList();
 }
 
-/// Тоглоомын түвшнүүд. Монгол домгийн дайснуудыг энд нэмнэ.
+/// assets/data/levels.json-оос түвшнүүдийг ачаална.
+/// Файл уншигдахгүй бол доорх анхдагч түвшнүүд үлдэнэ.
+Future<void> loadLevels() async {
+  try {
+    final raw = await rootBundle.loadString('assets/data/levels.json');
+    final list = (jsonDecode(raw) as List)
+        .map((e) => Level.fromJson(e as Map<String, dynamic>))
+        .toList();
+    if (list.isEmpty) return;
+    kLevels
+      ..clear()
+      ..addAll(list);
+  } catch (_) {
+    // анхдагч түвшнүүдийг ашиглана
+  }
+}
+
+/// Тоглоомын түвшнүүд (анхдагч). Монгол домгийн дайснуудыг levels.json-д нэмнэ.
 final List<Level> kLevels = [
   Level(
     id: 1,

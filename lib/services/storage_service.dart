@@ -1,24 +1,34 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/player_progress.dart';
 
-/// Тоглогчийн ахицыг хадгалах.
+/// Тоглогчийн ахицыг төхөөрөмж дээр хадгалах (shared_preferences, JSON).
 ///
-/// Одоогоор зөвхөн санах ойд (апп хаавал устна).
-/// Hive эсвэл Firestore сонгосны дараа `load()` болон `_persist()`-ийг л
+/// Дараа нь Firestore руу шилжих бол `load()` болон `_persist()`-ийг л
 /// өөрчлөхөд хангалттай — бусад код өөрчлөгдөхгүй.
 class StorageService extends ChangeNotifier {
   StorageService._();
 
   static final StorageService instance = StorageService._();
+  static const String _key = 'progress';
 
   PlayerProgress progress = PlayerProgress();
 
   Future<void> load() async {
-    // TODO: Hive жишээ:
-    //   final box = await Hive.openBox('progress');
-    //   final map = box.get('data');
-    //   if (map != null) progress = PlayerProgress.fromMap(Map<String, dynamic>.from(map));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_key);
+      if (raw != null) {
+        progress =
+            PlayerProgress.fromMap(jsonDecode(raw) as Map<String, dynamic>);
+      }
+    } catch (_) {
+      progress = PlayerProgress(); // эвдэрсэн өгөгдөл → шинээр эхэлнэ
+    }
+    notifyListeners();
   }
 
   Future<void> saveResult({
@@ -41,8 +51,11 @@ class StorageService extends ChangeNotifier {
   }
 
   Future<void> _persist() async {
-    // TODO: Hive:      await Hive.box('progress').put('data', progress.toMap());
-    // TODO: Firestore: await FirebaseFirestore.instance
-    //                    .collection('players').doc(uid).set(progress.toMap());
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_key, jsonEncode(progress.toMap()));
+    } catch (e) {
+      debugPrint('Ахиц хадгалж чадсангүй: $e');
+    }
   }
 }
