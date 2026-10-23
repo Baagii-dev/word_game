@@ -48,6 +48,7 @@ class BattleController extends ChangeNotifier {
   int? lastDamage;
 
   // ---------- Статистик (оноо тооцоход) ----------
+  int combo = 0; // дараалан бүтээсэн зөв үгийн тоо
   int damageTotal = 0;
   int wordsCount = 0;
   String longestWord = '';
@@ -63,7 +64,7 @@ class BattleController extends ChangeNotifier {
   Enemy get enemy => enemies[waveIndex];
   String get currentWord => selected.map((t) => t.letter).join();
   int get previewDamage =>
-      currentWord.isEmpty ? 0 : _damage.calculate(currentWord);
+      currentWord.isEmpty ? 0 : _damage.calculate(currentWord, combo: combo);
   bool get canAct => status == BattleStatus.playerTurn;
 
   // =====================================================
@@ -119,6 +120,7 @@ class BattleController extends ChangeNotifier {
         WordCheck.ok => null,
       };
       clearSelection(notify: false); // ээлж алдахгүй
+      combo = 0;
       invalidCount++;
       onEvent?.call(BattleEvent.invalid);
       _notify();
@@ -126,7 +128,8 @@ class BattleController extends ChangeNotifier {
     }
 
     // 2. Хохирол
-    final dmg = _damage.calculate(word);
+    final dmg = _damage.calculate(word, combo: combo);
+    combo++;
     _validator.markUsed(word);
     enemy.takeDamage(dmg);
     lastDamage = dmg;
@@ -135,7 +138,9 @@ class BattleController extends ChangeNotifier {
     damageTotal += dmg;
     wordsCount++;
     if (word.length > longestWord.length) longestWord = word;
-    message = '${word.toUpperCase()} → $dmg хохирол!';
+    message = combo > 1
+        ? '${word.toUpperCase()} → $dmg хохирол! (combo ×$combo)'
+        : '${word.toUpperCase()} → $dmg хохирол!';
 
     // 3. Ашигласан үсгийг хасаад самбар нөхөх
     board.removeWhere((t) => t.isSelected);
@@ -155,6 +160,7 @@ class BattleController extends ChangeNotifier {
   void shuffle() {
     if (!canAct) return;
     clearSelection(notify: false);
+    combo = 0;
     _newBoard();
     message = 'Үсэг солигдлоо — ээлж алдлаа';
     _enemyTurn();
@@ -166,22 +172,39 @@ class BattleController extends ChangeNotifier {
   void _startPlayerTurn() {
     status = BattleStatus.playerTurn;
     timeLeft = GameConfig.turnSeconds;
+    _startTicker();
+    _notify();
+  }
+
+  void _startTicker() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       timeLeft--;
       if (timeLeft <= 0) {
         message = 'Хугацаа дууслаа!';
+        combo = 0;
         clearSelection(notify: false);
         _enemyTurn();
         return;
       }
       _notify();
     });
-    _notify();
+  }
+
+  /// Апп далд ороход ээлжийн цаг зогсоно.
+  void pause() {
+    if (status == BattleStatus.playerTurn) _timer?.cancel();
+  }
+
+  /// Буцаж ирэхэд үлдсэн цагаас үргэлжилнэ.
+  void resume() {
+    if (status == BattleStatus.playerTurn && !_disposed) _startTicker();
   }
 
   void _enemyTurn() {
     _timer?.cancel();
+    // давхар ээлж гарахаас сэргийлнэ
+    if (status != BattleStatus.playerTurn) return;
     status = BattleStatus.enemyTurn;
     _notify();
 

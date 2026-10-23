@@ -25,7 +25,8 @@ class BattleScreen extends StatefulWidget {
   State<BattleScreen> createState() => _BattleScreenState();
 }
 
-class _BattleScreenState extends State<BattleScreen> {
+class _BattleScreenState extends State<BattleScreen>
+    with WidgetsBindingObserver {
   late final BattleController controller;
   bool _resultShown = false;
 
@@ -40,6 +41,16 @@ class _BattleScreenState extends State<BattleScreen> {
           ..onEvent = _onEvent
           ..start();
     controller.addListener(_checkEnd);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      controller.resume();
+    } else {
+      controller.pause();
+    }
   }
 
   void _onEvent(BattleEvent e) {
@@ -79,12 +90,14 @@ class _BattleScreenState extends State<BattleScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     controller.removeListener(_checkEnd);
     controller.dispose();
     super.dispose();
   }
 
   Future<void> _confirmExit() async {
+    controller.pause();
     final leave = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -102,7 +115,11 @@ class _BattleScreenState extends State<BattleScreen> {
         ],
       ),
     );
-    if (leave == true && mounted) Navigator.pop(context);
+    if (leave == true && mounted) {
+      Navigator.pop(context);
+    } else {
+      controller.resume();
+    }
   }
 
   @override
@@ -286,7 +303,9 @@ class _BattleScreenState extends State<BattleScreen> {
               ),
               const Spacer(),
               Text(
-                '⚔ ${c.previewDamage}',
+                c.combo > 0
+                    ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
+                    : '⚔ ${c.previewDamage}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,

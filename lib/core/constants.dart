@@ -2,7 +2,7 @@
 /// Тоглоомыг хүндрүүлэх/хөнгөвчлөх бол зөвхөн энд өөрчилнө.
 class GameConfig {
   static const int boardSize = 12; // самбар дээрх үсгийн тоо
-  static const int minWordLength = 2; // хамгийн богино зөвшөөрөгдөх үг
+  static const int minWordLength = 3; // хамгийн богино зөвшөөрөгдөх үг
   static const int turnSeconds = 30; // нэг ээлжийн хугацаа
   static const int maxSameLetter = 3; // нэг үсэг самбарт хамгийн ихдээ хэд байх
   static const double minVowelRatio = 0.35; // эгшиг багадаа 35%

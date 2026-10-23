@@ -1,6 +1,6 @@
 /// Алгоритмын 5-р хэсэг: үгийн хохирол тооцох.
 ///
-/// хохирол = (үсгүүдийн онооны нийлбэр) × (уртын үржвэр)
+/// хохирол = (үсгүүдийн онооны нийлбэр) × (уртын үржвэр) × (combo бонус)
 class DamageCalculator {
   DamageCalculator(this.letterPoints);
 
@@ -15,8 +15,12 @@ class DamageCalculator {
     return 1.0;
   }
 
-  int calculate(String word) {
+  /// Дараалсан зөв үгийн бонус: combo бүрт +10%, хамгийн ихдээ +50%.
+  double comboMultiplier(int combo) => 1 + 0.1 * combo.clamp(0, 5);
+
+  /// [combo] — энэ үгийн өмнө дараалан бүтээсэн зөв үгийн тоо.
+  int calculate(String word, {int combo = 0}) {
     final base = word.split('').fold<int>(0, (sum, ch) => sum + pointsOf(ch));
-    return (base * multiplier(word.length)).round();
+    return (base * multiplier(word.length) * comboMultiplier(combo)).round();
   }
 }

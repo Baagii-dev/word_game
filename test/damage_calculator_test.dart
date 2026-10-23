@@ -18,4 +18,12 @@ void main() {
   test('Жагсаалтад байхгүй үсэг 1 оноо', () {
     expect(calc.pointsOf('ф'), 1);
   });
+
+  test('Combo бонус: өмнөх зөв үг бүрт +10%, 5-аас дээш нэмэгдэхгүй', () {
+    expect(calc.comboMultiplier(0), 1.0);
+    expect(calc.comboMultiplier(3), closeTo(1.3, 1e-9));
+    expect(calc.comboMultiplier(9), closeTo(1.5, 1e-9));
+    // морь = 7, combo 5 → 7 × 1.5 = 10.5 → 11
+    expect(calc.calculate('морь', combo: 5), 11);
+  });
 }

@@ -78,7 +78,7 @@ class LetterGenerator {
   bool hasPlayableWord(
     List<LetterTile> board,
     Set<String> dictionary, {
-    int minLength = 3,
+    int minLength = GameConfig.minWordLength,
   }) {
     final available = <String, int>{};
     for (final t in board) {
