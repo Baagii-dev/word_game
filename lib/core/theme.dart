@@ -16,8 +16,8 @@ class AppColors {
 
 class AppTheme {
   static ThemeData get light => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.wood),
-        scaffoldBackgroundColor: AppColors.sky,
-      );
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(seedColor: AppColors.wood),
+    scaffoldBackgroundColor: AppColors.sky,
+  );
 }

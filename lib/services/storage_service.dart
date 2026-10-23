@@ -22,8 +22,9 @@ class StorageService extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_key);
       if (raw != null) {
-        progress =
-            PlayerProgress.fromMap(jsonDecode(raw) as Map<String, dynamic>);
+        progress = PlayerProgress.fromMap(
+          jsonDecode(raw) as Map<String, dynamic>,
+        );
       }
     } catch (_) {
       progress = PlayerProgress(); // эвдэрсэн өгөгдөл → шинээр эхэлнэ

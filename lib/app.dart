@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme.dart';
-import 'screens/home_screen.dart';
+import 'core/routes.dart';
 
 class WordBattleApp extends StatelessWidget {
   const WordBattleApp({super.key});
@@ -12,7 +12,8 @@ class WordBattleApp extends StatelessWidget {
       title: 'Үгийн Тулаан',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const HomeScreen(),
+      initialRoute: Routes.splash,
+      onGenerateRoute: Routes.onGenerate,
     );
   }
 }

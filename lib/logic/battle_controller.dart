@@ -12,6 +12,8 @@ import 'damage_calculator.dart';
 import 'letter_generator.dart';
 import 'word_validator.dart';
 
+enum BattleEvent { hit, invalid, enemyAttack, victory, defeat }
+
 enum BattleStatus { playerTurn, enemyTurn, enemyDefeated, won, lost }
 
 /// Алгоритмын 2-р хэсэг: ТУЛААНЫ ДАВТАЛТ.
@@ -20,13 +22,13 @@ enum BattleStatus { playerTurn, enemyTurn, enemyDefeated, won, lost }
 /// энэ классын төлөвийг харуулж, товч дарахад методыг нь дуудна.
 class BattleController extends ChangeNotifier {
   BattleController({required this.level, required DictionaryService dictionary})
-      : _dictionaryWords = dictionary.words,
-        _validator = WordValidator(dictionary.words),
-        _damage = DamageCalculator(dictionary.letterPoints),
-        _generator = LetterGenerator(
-          frequency: dictionary.letterFrequency,
-          points: dictionary.letterPoints,
-        );
+    : _dictionaryWords = dictionary.words,
+      _validator = WordValidator(dictionary.words),
+      _damage = DamageCalculator(dictionary.letterPoints),
+      _generator = LetterGenerator(
+        frequency: dictionary.letterFrequency,
+        points: dictionary.letterPoints,
+      );
 
   final Level level;
   final Set<String> _dictionaryWords;
@@ -49,6 +51,11 @@ class BattleController extends ChangeNotifier {
   int damageTotal = 0;
   int wordsCount = 0;
   String longestWord = '';
+
+  /// Дуу/анимацийн дэлгэц сонсоно.
+  void Function(BattleEvent event)? onEvent;
+  int hitCount = 0; // цохилт бүрт нэмэгдэнэ (popup анимац)
+  int invalidCount = 0; // буруу үг бүрт нэмэгдэнэ (сэгсрэх анимац)
 
   Timer? _timer;
   bool _disposed = false;
@@ -105,12 +112,15 @@ class BattleController extends ChangeNotifier {
     final result = _validator.check(word);
     if (result != WordCheck.ok) {
       message = switch (result) {
-        WordCheck.tooShort => 'Хамгийн багадаа ${GameConfig.minWordLength} үсэг',
+        WordCheck.tooShort =>
+          'Хамгийн багадаа ${GameConfig.minWordLength} үсэг',
         WordCheck.alreadyUsed => '"$word" үгийг аль хэдийн ашигласан',
         WordCheck.notInDictionary => '"$word" гэсэн үг толь бичигт алга',
         WordCheck.ok => null,
       };
       clearSelection(notify: false); // ээлж алдахгүй
+      invalidCount++;
+      onEvent?.call(BattleEvent.invalid);
       _notify();
       return;
     }
@@ -120,6 +130,8 @@ class BattleController extends ChangeNotifier {
     _validator.markUsed(word);
     enemy.takeDamage(dmg);
     lastDamage = dmg;
+    hitCount++;
+    onEvent?.call(BattleEvent.hit);
     damageTotal += dmg;
     wordsCount++;
     if (word.length > longestWord.length) longestWord = word;
@@ -176,10 +188,12 @@ class BattleController extends ChangeNotifier {
     Future.delayed(const Duration(milliseconds: 900), () {
       if (_disposed) return;
       player.takeDamage(enemy.attack);
+      onEvent?.call(BattleEvent.enemyAttack);
       lastDamage = null;
       if (player.isDead) {
         status = BattleStatus.lost;
         message = 'Та ялагдлаа...';
+        onEvent?.call(BattleEvent.defeat);
         _notify();
       } else {
         _startPlayerTurn();
@@ -204,6 +218,7 @@ class BattleController extends ChangeNotifier {
       } else {
         status = BattleStatus.won;
         message = 'Ялалт!';
+        onEvent?.call(BattleEvent.victory);
         _notify();
       }
     });

@@ -35,8 +35,10 @@ class LevelSelectScreen extends StatelessWidget {
 
               return Card(
                 child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   leading: CircleAvatar(
                     backgroundColor: locked ? Colors.grey : AppColors.accent,
                     child: locked
@@ -48,7 +50,7 @@ class LevelSelectScreen extends StatelessWidget {
                     locked
                         ? 'Өмнөх түвшнийг давж нээнэ'
                         : '${level.description} · ${level.waveCount} дайсан'
-                            '${best != null ? '\nШилдэг оноо: $best' : ''}',
+                              '${best != null ? '\nШилдэг оноо: $best' : ''}',
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -64,11 +66,11 @@ class LevelSelectScreen extends StatelessWidget {
                   onTap: locked
                       ? null
                       : () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => BattleScreen(level: level),
-                            ),
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BattleScreen(level: level),
                           ),
+                        ),
                 ),
               );
             },

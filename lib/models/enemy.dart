@@ -10,7 +10,8 @@ class Enemy {
   }) : hp = maxHp;
 
   final String name;
-  final String emoji; // дараа нь 'assets/images/enemies/chono.png' болгож солино
+  final String
+  emoji; // дараа нь 'assets/images/enemies/chono.png' болгож солино
   final int maxHp;
   final int attack; // нэг ээлжинд тоглогчоос хасах HP
   int hp;

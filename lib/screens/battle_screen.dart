@@ -4,7 +4,10 @@ import '../core/theme.dart';
 import '../logic/battle_controller.dart';
 import '../models/level.dart';
 import '../services/dictionary_service.dart';
+import '../services/audio_service.dart';
 import '../widgets/character_sprite.dart';
+import '../widgets/damage_popup.dart';
+import '../widgets/shake_widget.dart';
 import '../widgets/hp_bar.dart';
 import '../widgets/letter_grid.dart';
 import '../widgets/wave_indicator.dart';
@@ -29,11 +32,24 @@ class _BattleScreenState extends State<BattleScreen> {
   @override
   void initState() {
     super.initState();
-    controller = BattleController(
-      level: widget.level,
-      dictionary: DictionaryService.instance,
-    )..start();
+    controller =
+        BattleController(
+            level: widget.level,
+            dictionary: DictionaryService.instance,
+          )
+          ..onEvent = _onEvent
+          ..start();
     controller.addListener(_checkEnd);
+  }
+
+  void _onEvent(BattleEvent e) {
+    AudioService.instance.play(switch (e) {
+      BattleEvent.hit => Sfx.hit,
+      BattleEvent.invalid => Sfx.invalid,
+      BattleEvent.enemyAttack => Sfx.enemyAttack,
+      BattleEvent.victory => Sfx.victory,
+      BattleEvent.defeat => Sfx.defeat,
+    });
   }
 
   /// Ялсан/ялагдсан бол үр дүнгийн дэлгэц рүү шилжинэ.
@@ -116,8 +132,11 @@ class _BattleScreenState extends State<BattleScreen> {
         children: [
           IconButton(
             onPressed: _confirmExit,
-            icon: const Icon(Icons.pause_circle_filled,
-                size: 34, color: AppColors.woodDark),
+            icon: const Icon(
+              Icons.pause_circle_filled,
+              size: 34,
+              color: AppColors.woodDark,
+            ),
           ),
           Expanded(
             child: HpBar(
@@ -165,7 +184,9 @@ class _BattleScreenState extends State<BattleScreen> {
         children: [
           const SizedBox(height: 8),
           Text(
-            isPlayerTurn ? 'Таны ээлж · ${c.timeLeft} сек' : _statusText(c.status),
+            isPlayerTurn
+                ? 'Таны ээлж · ${c.timeLeft} сек'
+                : _statusText(c.status),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -191,11 +212,21 @@ class _BattleScreenState extends State<BattleScreen> {
                 name: 'Баатар',
                 isHit: c.status == BattleStatus.enemyTurn,
               ),
-              CharacterSprite(
-                emoji: c.enemy.emoji,
-                name: c.enemy.name,
-                isHit: c.lastDamage != null && !isPlayerTurn,
-                isDead: c.enemy.isDead,
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.topCenter,
+                children: [
+                  CharacterSprite(
+                    emoji: c.enemy.emoji,
+                    name: c.enemy.name,
+                    isHit: c.lastDamage != null && !isPlayerTurn,
+                    isDead: c.enemy.isDead,
+                  ),
+                  Positioned(
+                    top: 0,
+                    child: DamagePopup(event: c.hitCount, amount: c.lastDamage),
+                  ),
+                ],
               ),
             ],
           ),
@@ -206,12 +237,12 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   String _statusText(BattleStatus s) => switch (s) {
-        BattleStatus.playerTurn => '',
-        BattleStatus.enemyTurn => 'Дайсны ээлж...',
-        BattleStatus.enemyDefeated => 'Дайсныг ялав!',
-        BattleStatus.won => 'Ялалт!',
-        BattleStatus.lost => 'Ялагдал...',
-      };
+    BattleStatus.playerTurn => '',
+    BattleStatus.enemyTurn => 'Дайсны ээлж...',
+    BattleStatus.enemyDefeated => 'Дайсныг ялав!',
+    BattleStatus.won => 'Ялалт!',
+    BattleStatus.lost => 'Ялагдал...',
+  };
 
   // ---------- Доод хэсэг: үг, самбар, товчнууд ----------
   Widget _buildBottomPanel() {
@@ -227,7 +258,10 @@ class _BattleScreenState extends State<BattleScreen> {
           Row(
             children: [
               Expanded(
-                child: WordBar(tiles: c.selected, onTapTile: c.deselectTile),
+                child: ShakeWidget(
+                  trigger: c.invalidCount,
+                  child: WordBar(tiles: c.selected, onTapTile: c.deselectTile),
+                ),
               ),
               const SizedBox(width: 8),
               IconButton.filled(

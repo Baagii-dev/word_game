@@ -19,19 +19,19 @@ class Level {
   final List<Enemy> _enemyTemplates;
 
   factory Level.fromJson(Map<String, dynamic> json) => Level(
-        id: (json['id'] as num).toInt(),
-        name: json['name'] as String,
-        description: json['description'] as String? ?? '',
-        enemies: [
-          for (final e in json['enemies'] as List)
-            Enemy(
-              name: e['name'] as String,
-              emoji: e['emoji'] as String,
-              maxHp: (e['maxHp'] as num).toInt(),
-              attack: (e['attack'] as num).toInt(),
-            ),
-        ],
-      );
+    id: (json['id'] as num).toInt(),
+    name: json['name'] as String,
+    description: json['description'] as String? ?? '',
+    enemies: [
+      for (final e in json['enemies'] as List)
+        Enemy(
+          name: e['name'] as String,
+          emoji: e['emoji'] as String,
+          maxHp: (e['maxHp'] as num).toInt(),
+          attack: (e['attack'] as num).toInt(),
+        ),
+    ],
+  );
 
   int get waveCount => _enemyTemplates.length;
 

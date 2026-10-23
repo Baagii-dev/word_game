@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme.dart';
-import 'level_select_screen.dart';
+import '../core/routes.dart';
+import '../widgets/game_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -55,34 +56,25 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: AppColors.text),
                 ),
                 const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LevelSelectScreen()),
-                    ),
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Тоглох'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.wood,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
-                  ),
+                GameButton(
+                  label: 'Тоглох',
+                  icon: Icons.play_arrow,
+                  onPressed: () => Navigator.pushNamed(context, Routes.levels),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _showRules(context),
-                    icon: const Icon(Icons.help_outline),
-                    label: const Text('Заавар'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.woodDark,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
+                const SizedBox(height: 14),
+                GameButton(
+                  label: 'Заавар',
+                  icon: Icons.help_outline,
+                  color: AppColors.tileBorder,
+                  onPressed: () => _showRules(context),
+                ),
+                const SizedBox(height: 14),
+                GameButton(
+                  label: 'Тохиргоо',
+                  icon: Icons.settings,
+                  color: AppColors.woodDark,
+                  onPressed: () =>
+                      Navigator.pushNamed(context, Routes.settings),
                 ),
               ],
             ),

@@ -55,11 +55,9 @@ class LetterGenerator {
       final sameCount = result.where((t) => t.letter == letter).length;
       if (sameCount >= GameConfig.maxSameLetter) continue;
 
-      result.add(LetterTile(
-        id: _nextId++,
-        letter: letter,
-        points: points[letter] ?? 1,
-      ));
+      result.add(
+        LetterTile(id: _nextId++, letter: letter, points: points[letter] ?? 1),
+      );
     }
     return result;
   }

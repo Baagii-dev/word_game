@@ -7,13 +7,22 @@ import 'package:word_battle/services/dictionary_service.dart';
 
 void main() {
   final dict = DictionaryService()
-    ..loadFromList(['морь', 'ус', 'ном', 'гэр', 'нар', 'сар', 'хонь', 'цагаан']);
+    ..loadFromList([
+      'морь',
+      'ус',
+      'ном',
+      'гэр',
+      'нар',
+      'сар',
+      'хонь',
+      'цагаан',
+    ]);
 
   LetterGenerator makeGenerator(int seed) => LetterGenerator(
-        frequency: dict.letterFrequency,
-        points: dict.letterPoints,
-        random: Random(seed),
-      );
+    frequency: dict.letterFrequency,
+    points: dict.letterPoints,
+    random: Random(seed),
+  );
 
   test('Самбар 12 үсэгтэй, эгшиг 35–50%, нэг үсэг 3-аас ихгүй', () {
     // 100 өөр санамсаргүй самбар шалгана

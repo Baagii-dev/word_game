@@ -58,15 +58,15 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   Widget _statRow(String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +84,16 @@ class _ResultScreenState extends State<ResultScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(widget.won ? '🏆' : '💀',
-                        style: const TextStyle(fontSize: 64)),
+                    Text(
+                      widget.won ? '🏆' : '💀',
+                      style: const TextStyle(fontSize: 64),
+                    ),
                     Text(
                       widget.won ? 'Ялалт!' : 'Ялагдал',
                       style: const TextStyle(
-                          fontSize: 32, fontWeight: FontWeight.bold),
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     if (widget.won)
                       Row(

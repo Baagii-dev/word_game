@@ -4,8 +4,8 @@ class PlayerProgress {
     this.unlockedLevel = 1,
     Map<int, int>? bestScores,
     Map<int, int>? stars,
-  })  : bestScores = bestScores ?? {},
-        stars = stars ?? {};
+  }) : bestScores = bestScores ?? {},
+       stars = stars ?? {};
 
   int unlockedLevel;
   final Map<int, int> bestScores; // түвшний id → оноо
@@ -13,14 +13,15 @@ class PlayerProgress {
 
   /// NoSQL (Hive / Firestore) руу хадгалахад бэлэн Map хэлбэр.
   Map<String, dynamic> toMap() => {
-        'unlockedLevel': unlockedLevel,
-        'bestScores': bestScores.map((k, v) => MapEntry('$k', v)),
-        'stars': stars.map((k, v) => MapEntry('$k', v)),
-      };
+    'unlockedLevel': unlockedLevel,
+    'bestScores': bestScores.map((k, v) => MapEntry('$k', v)),
+    'stars': stars.map((k, v) => MapEntry('$k', v)),
+  };
 
   factory PlayerProgress.fromMap(Map<String, dynamic> map) {
-    Map<int, int> toIntMap(dynamic raw) => (raw as Map? ?? {})
-        .map((k, v) => MapEntry(int.parse('$k'), (v as num).toInt()));
+    Map<int, int> toIntMap(dynamic raw) => (raw as Map? ?? {}).map(
+      (k, v) => MapEntry(int.parse('$k'), (v as num).toInt()),
+    );
 
     return PlayerProgress(
       unlockedLevel: (map['unlockedLevel'] as num?)?.toInt() ?? 1,
