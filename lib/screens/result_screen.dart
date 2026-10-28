@@ -63,8 +63,16 @@ class _ResultScreenState extends State<ResultScreen> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Expanded(child: Text(label)),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
       ],
     ),
   );
@@ -83,70 +91,77 @@ class _ResultScreenState extends State<ResultScreen> {
                 : const ColoredBox(color: AppColors.woodDark),
           ),
           SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.won ? '🏆' : '💀',
-                          style: const TextStyle(fontSize: 64),
-                        ),
-                        Text(
-                          widget.won ? 'Ялалт!' : 'Ялагдал',
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (widget.won)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              3,
-                              (i) => Icon(
-                                i < widget.stars
-                                    ? Icons.star
-                                    : Icons.star_border,
-                                color: AppColors.accent,
-                                size: 40,
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.won ? '🏆' : '💀',
+                                style: const TextStyle(fontSize: 64),
                               ),
-                            ),
+                              Text(
+                                widget.won ? 'Ялалт!' : 'Ялагдал',
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (widget.won)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    3,
+                                    (i) => Icon(
+                                      i < widget.stars
+                                          ? Icons.star
+                                          : Icons.star_border,
+                                      color: AppColors.accent,
+                                      size: 40,
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 16),
+                              _statRow('Оноо', '${widget.score}'),
+                              _statRow('Бүтээсэн үг', '${widget.wordsCount}'),
+                              _statRow(
+                                'Хамгийн урт үг',
+                                widget.longestWord.isEmpty
+                                    ? '-'
+                                    : widget.longestWord.toUpperCase(),
+                              ),
+                              const SizedBox(height: 24),
+                              if (widget.won && next != null)
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FilledButton(
+                                    onPressed: () => _play(next),
+                                    child: const Text('Дараагийн түвшин'),
+                                  ),
+                                ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton(
+                                  onPressed: () => _play(widget.level),
+                                  child: const Text('Дахин тоглох'),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Түвшин сонгох'),
+                              ),
+                            ],
                           ),
-                        const SizedBox(height: 16),
-                        _statRow('Оноо', '${widget.score}'),
-                        _statRow('Бүтээсэн үг', '${widget.wordsCount}'),
-                        _statRow(
-                          'Хамгийн урт үг',
-                          widget.longestWord.isEmpty
-                              ? '-'
-                              : widget.longestWord.toUpperCase(),
                         ),
-                        const SizedBox(height: 24),
-                        if (widget.won && next != null)
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton(
-                              onPressed: () => _play(next),
-                              child: const Text('Дараагийн түвшин'),
-                            ),
-                          ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () => _play(widget.level),
-                            child: const Text('Дахин тоглох'),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Түвшин сонгох'),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
