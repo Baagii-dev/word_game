@@ -30,6 +30,7 @@ class Level {
           maxHp: (e['maxHp'] as num).toInt(),
           attack: (e['attack'] as num).toInt(),
           specialEvery: (e['specialEvery'] as num?)?.toInt() ?? 0,
+          image: e['image'] as String?,
         ),
     ],
   );

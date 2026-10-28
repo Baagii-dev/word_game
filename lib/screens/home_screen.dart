@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../core/routes.dart';
 import '../widgets/game_button.dart';
-import '../widgets/ornament_strip.dart';
+import '../design/ornament_strip.dart';
 import '../widgets/rules_dialog.dart';
-import '../widgets/steppe_background.dart';
+import '../design/steppe_background.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -42,10 +42,10 @@ class HomeScreen extends StatelessWidget {
                         color: AppColors.accent,
                         shadows: const [
                           Shadow(
-                            color: AppColors.woodDark,
+                            color: AppColors.navyDark,
                             offset: Offset(0, 3),
                           ),
-                          Shadow(color: AppColors.woodDark, blurRadius: 8),
+                          Shadow(color: AppColors.navyDark, blurRadius: 8),
                         ],
                       ),
                     ),
@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                         shadows: [
-                          Shadow(color: AppColors.woodDark, blurRadius: 6),
+                          Shadow(color: AppColors.navyDark, blurRadius: 6),
                         ],
                       ),
                     ),
@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                     GameButton(
                       label: 'Тохиргоо',
                       icon: Icons.settings,
-                      color: AppColors.wood,
+                      color: AppColors.navy,
                       onPressed: () =>
                           Navigator.pushNamed(context, Routes.settings),
                     ),

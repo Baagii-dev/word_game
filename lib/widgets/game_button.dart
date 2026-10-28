@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../services/audio_service.dart';
 
 /// Модон загварын нэгдсэн товч. Дарахад жижгэрч, дуу гаргана.
@@ -10,7 +10,7 @@ class GameButton extends StatefulWidget {
     required this.label,
     required this.onPressed,
     this.icon,
-    this.color = AppColors.wood,
+    this.color = AppColors.navy,
     this.foreground = Colors.white,
   });
 

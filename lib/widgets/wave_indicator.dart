@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 
 /// "2/4" — хэд дэх дайсан.
 class WaveIndicator extends StatelessWidget {
@@ -15,7 +15,7 @@ class WaveIndicator extends StatelessWidget {
       width: 52,
       height: 52,
       decoration: BoxDecoration(
-        color: AppColors.woodDark,
+        color: AppColors.navyDark,
         shape: BoxShape.circle,
         border: Border.all(color: AppColors.accent, width: 3),
       ),

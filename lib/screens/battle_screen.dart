@@ -1,17 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../logic/battle_controller.dart';
 import '../models/level.dart';
 import '../services/dictionary_service.dart';
 import '../services/audio_service.dart';
-import '../widgets/character_sprite.dart';
+import '../design/characters/character_sprite.dart';
+import '../design/characters/enemy_art.dart';
+import '../design/characters/hero_art.dart';
 import '../widgets/damage_popup.dart';
 import '../widgets/shake_widget.dart';
 import '../widgets/hp_bar.dart';
 import '../widgets/letter_grid.dart';
-import '../widgets/ornament_strip.dart';
-import '../widgets/steppe_background.dart';
+import '../design/ornament_strip.dart';
+import '../design/steppe_background.dart';
 import '../widgets/wave_indicator.dart';
 import '../widgets/word_bar.dart';
 import 'result_screen.dart';
@@ -156,7 +160,7 @@ class _BattleScreenState extends State<BattleScreen>
             icon: const Icon(
               Icons.pause_circle_filled,
               size: 34,
-              color: AppColors.woodDark,
+              color: AppColors.navyDark,
             ),
           ),
           Expanded(
@@ -202,7 +206,7 @@ class _BattleScreenState extends State<BattleScreen>
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.woodDark.withValues(alpha: 0.6),
+              color: AppColors.navyDark.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
@@ -215,9 +219,9 @@ class _BattleScreenState extends State<BattleScreen>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: hurry ? const Color(0xFFFFEB3B) : Colors.white,
+                    color: hurry ? AppColors.warning : Colors.white,
                     shadows: const [
-                      Shadow(color: AppColors.woodDark, blurRadius: 6),
+                      Shadow(color: AppColors.navyDark, blurRadius: 6),
                     ],
                   ),
                 ),
@@ -232,7 +236,7 @@ class _BattleScreenState extends State<BattleScreen>
                         fontSize: 12,
                         fontWeight: c.specialIncoming ? FontWeight.bold : null,
                         color: c.specialIncoming
-                            ? const Color(0xFFFF8A80)
+                            ? AppColors.danger
                             : Colors.white70,
                       ),
                     ),
@@ -247,7 +251,7 @@ class _BattleScreenState extends State<BattleScreen>
                         fontSize: 14,
                         color: Colors.white,
                         shadows: [
-                          Shadow(color: AppColors.woodDark, blurRadius: 6),
+                          Shadow(color: AppColors.navyDark, blurRadius: 6),
                         ],
                       ),
                     ),
@@ -255,33 +259,62 @@ class _BattleScreenState extends State<BattleScreen>
               ],
             ),
           ),
-          const Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              CharacterSprite(
-                emoji: '🧙',
-                name: 'Баатар',
-                isHit: c.status == BattleStatus.enemyTurn,
-              ),
-              Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.topCenter,
-                children: [
-                  CharacterSprite(
-                    emoji: c.enemy.emoji,
-                    name: c.enemy.name,
-                    isHit: c.lastDamage != null && !isPlayerTurn,
-                    isDead: c.enemy.isDead,
+          // Дүрсний хэмжээг үлдсэн зайгаас тооцно — мессежийн самбар хэдэн
+          // мөр болсноос үл хамаарч халихгүй.
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final spriteSize = min(
+                  box.maxWidth * 0.26,
+                  box.maxHeight - 44, // нэрийн самбар + сүүдэр
+                ).clamp(40.0, 104.0);
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      CharacterSprite(
+                        art: HeroArt(size: spriteSize),
+                        name: 'Баатар',
+                        size: spriteSize,
+                        attackCount: c.hitCount,
+                        hitCount: c.enemyAttackCount,
+                        isDead: c.player.isDead,
+                        lunge: 30,
+                      ),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.topCenter,
+                        children: [
+                          CharacterSprite(
+                            key: ValueKey(c.waveIndex),
+                            art: EnemyArt(
+                              emoji: c.enemy.emoji,
+                              image: c.enemy.image,
+                              size: spriteSize,
+                            ),
+                            name: c.enemy.name,
+                            size: spriteSize,
+                            attackCount: c.enemyAttackCount,
+                            hitCount: c.hitCount,
+                            isDead: c.enemy.isDead,
+                            lunge: -30,
+                          ),
+                          Positioned(
+                            top: 0,
+                            child: DamagePopup(
+                              event: c.hitCount,
+                              amount: c.lastDamage,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 0,
-                    child: DamagePopup(event: c.hitCount, amount: c.lastDamage),
-                  ),
-                ],
-              ),
-            ],
+                );
+              },
+            ),
           ),
           const SizedBox(height: 16),
         ],
@@ -303,11 +336,11 @@ class _BattleScreenState extends State<BattleScreen>
     final canAttack = c.canAct && c.selected.isNotEmpty;
 
     return Container(
-      color: AppColors.woodDark,
+      color: AppColors.navyDark,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const OrnamentStrip(height: 18, background: AppColors.wood),
+          const OrnamentStrip(height: 18, background: AppColors.navy),
           Padding(
             padding: EdgeInsets.fromLTRB(
               10,
@@ -387,6 +420,11 @@ class _BattleScreenState extends State<BattleScreen>
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.accent,
                         foregroundColor: AppColors.text,
+                        // Идэвхгүй үед ч тод харагдана (үг сонгоогүй үед)
+                        disabledBackgroundColor: Colors.white.withValues(
+                          alpha: 0.16,
+                        ),
+                        disabledForegroundColor: Colors.white70,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         visualDensity: VisualDensity.compact,
                       ),

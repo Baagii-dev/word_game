@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import 'theme.dart';
 
 /// Монгол "угалз" хээний тууз (дахин давтагдах мушгиа).
 /// Дэлгэцийн дээд/доод ирмэгийг чимэхэд ашиглана.
@@ -10,7 +10,7 @@ class OrnamentStrip extends StatelessWidget {
   const OrnamentStrip({
     super.key,
     this.height = 22,
-    this.background = AppColors.woodDark,
+    this.background = AppColors.navyDark,
     this.color = AppColors.accent,
   });
 

@@ -91,21 +91,41 @@ class LetterGenerator {
     return false;
   }
 
+  List<String>? _wordList;
+  Set<String>? _wordListSource;
+
+  /// Set-ийг жагсаалт болгож нэг удаа хадгална (санамж бүрт дахин хөрвүүлэхгүй).
+  List<String> _listOf(Set<String> dictionary) {
+    if (!identical(_wordListSource, dictionary)) {
+      _wordList = dictionary.toList(growable: false);
+      _wordListSource = dictionary;
+    }
+    return _wordList!;
+  }
+
   /// Санамжид: самбараас бүтэх, ашиглагдаагүй санамсаргүй нэг үг.
   /// Богино-дунд урттай (3..[maxLength]) үгийг сонгоно.
+  ///
+  /// Толь бичгийг санамсаргүй цэгээс эхлэн шалгаад [sample] үг олдмогц зогсоно
+  /// (105k үгийг бүтнээр нь гүйлгэхгүй тул утсан дээр удаан биш).
   String? findWord(
     List<LetterTile> board,
     Set<String> dictionary, {
     Set<String> exclude = const {},
     int minLength = GameConfig.minWordLength,
     int maxLength = 6,
+    int sample = 25,
   }) {
     final available = <String, int>{};
     for (final t in board) {
       available[t.letter] = (available[t.letter] ?? 0) + 1;
     }
+    final list = _listOf(dictionary);
+    if (list.isEmpty) return null;
+    final start = _random.nextInt(list.length);
     final candidates = <String>[];
-    for (final word in dictionary) {
+    for (var i = 0; i < list.length && candidates.length < sample; i++) {
+      final word = list[(start + i) % list.length];
       if (word.length < minLength || word.length > maxLength) continue;
       if (exclude.contains(word)) continue;
       if (_canBuild(word, available)) candidates.add(word);

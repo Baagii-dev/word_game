@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../models/letter_tile.dart';
 import 'letter_tile_widget.dart';
 
@@ -19,7 +19,7 @@ class WordBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-        color: const Color(0xFF0B2347),
+        color: AppColors.navyDeep,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.accent.withValues(alpha: 0.7)),
       ),

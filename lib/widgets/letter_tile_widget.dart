@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../models/letter_tile.dart';
 
 /// Нэг модон үсгийн хавтан. Баруун доод буланд оноо нь бичигдэнэ.

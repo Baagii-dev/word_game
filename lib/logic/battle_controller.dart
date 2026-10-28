@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
@@ -21,14 +22,19 @@ enum BattleStatus { playerTurn, enemyTurn, enemyDefeated, won, lost }
 /// Бүх тоглоомын дүрэм энд байна. Дэлгэц (BattleScreen) зөвхөн
 /// энэ классын төлөвийг харуулж, товч дарахад методыг нь дуудна.
 class BattleController extends ChangeNotifier {
-  BattleController({required this.level, required DictionaryService dictionary})
-    : _dictionaryWords = dictionary.words,
-      _validator = WordValidator(dictionary.words),
-      _damage = DamageCalculator(dictionary.letterPoints),
-      _generator = LetterGenerator(
-        frequency: dictionary.letterFrequency,
-        points: dictionary.letterPoints,
-      );
+  /// [random] — тест дээр ижил үр дүн авахад зориулсан (үгүй бол санамсаргүй).
+  BattleController({
+    required this.level,
+    required DictionaryService dictionary,
+    Random? random,
+  }) : _dictionaryWords = dictionary.words,
+       _validator = WordValidator(dictionary.words),
+       _damage = DamageCalculator(dictionary.letterPoints),
+       _generator = LetterGenerator(
+         frequency: dictionary.letterFrequency,
+         points: dictionary.letterPoints,
+         random: random,
+       );
 
   final Level level;
   final Set<String> _dictionaryWords;
@@ -59,9 +65,11 @@ class BattleController extends ChangeNotifier {
   void Function(BattleEvent event)? onEvent;
   int hitCount = 0; // цохилт бүрт нэмэгдэнэ (popup анимац)
   int invalidCount = 0; // буруу үг бүрт нэмэгдэнэ (сэгсрэх анимац)
+  int enemyAttackCount = 0; // дайсан довтлох бүрт нэмэгдэнэ (анимац)
 
   Timer? _timer;
   bool _disposed = false;
+  bool _paused = false; // апп далд орсон / цонх нээгдсэн үед true
 
   Enemy get enemy => enemies[waveIndex];
   String get currentWord => selected.map((t) => t.letter).join();
@@ -209,6 +217,7 @@ class BattleController extends ChangeNotifier {
 
   void _startTicker() {
     _timer?.cancel();
+    if (_paused) return; // pause үед цаг явахгүй (resume() эхлүүлнэ)
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       timeLeft--;
       if (timeLeft <= 0) {
@@ -223,12 +232,16 @@ class BattleController extends ChangeNotifier {
   }
 
   /// Апп далд ороход ээлжийн цаг зогсоно.
+  /// Дайсны ээлж, дайсан үхэх анимац үед ч дуудагдаж болно — дараагийн
+  /// ээлж эхлэхэд цаг зогссон хэвээр байна.
   void pause() {
-    if (status == BattleStatus.playerTurn) _timer?.cancel();
+    _paused = true;
+    _timer?.cancel();
   }
 
   /// Буцаж ирэхэд үлдсэн цагаас үргэлжилнэ.
   void resume() {
+    _paused = false;
     if (status == BattleStatus.playerTurn && !_disposed) _startTicker();
   }
 
@@ -243,6 +256,7 @@ class BattleController extends ChangeNotifier {
       if (_disposed) return;
       final special = specialIncoming;
       enemyTurns++;
+      enemyAttackCount++;
       player.takeDamage(special ? enemy.attack * 2 : enemy.attack);
       if (special) message = '${enemy.name} хүчтэй цохилт хийлээ!';
       onEvent?.call(BattleEvent.enemyAttack);

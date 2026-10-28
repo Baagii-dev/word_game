@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_battle/core/routes.dart';
-import 'package:word_battle/core/theme.dart';
+import 'package:word_battle/design/theme.dart';
 import 'package:word_battle/models/level.dart';
 import 'package:word_battle/screens/result_screen.dart';
 import 'package:word_battle/screens/settings_screen.dart';

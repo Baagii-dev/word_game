@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../models/level.dart';
 import '../services/storage_service.dart';
-import '../widgets/ornament_strip.dart';
-import '../widgets/steppe_background.dart';
+import '../design/ornament_strip.dart';
+import '../design/steppe_background.dart';
 import 'battle_screen.dart';
 
 class LevelSelectScreen extends StatelessWidget {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants.dart';
-import '../core/theme.dart';
+import '../design/theme.dart';
 import 'game_button.dart';
 import 'letter_tile_widget.dart';
 import '../models/letter_tile.dart';
-import 'ornament_strip.dart';
+import '../design/ornament_strip.dart';
 
 /// "Хэрхэн тоглох вэ?" — хэсэг хэсгээр, жишээтэй заавар.
 Future<void> showRulesDialog(BuildContext context) {
@@ -30,7 +30,7 @@ class _RulesDialog extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              color: AppColors.woodDark,
+              color: AppColors.navyDark,
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               child: const Text(
                 'Хэрхэн тоглох вэ?',
@@ -42,7 +42,7 @@ class _RulesDialog extends StatelessWidget {
                 ),
               ),
             ),
-            const OrnamentStrip(height: 16, background: AppColors.wood),
+            const OrnamentStrip(height: 16, background: AppColors.navy),
             Flexible(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -150,7 +150,7 @@ class _Section extends StatelessWidget {
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
-              color: AppColors.woodDark,
+              color: AppColors.navyDark,
             ),
           ),
           const SizedBox(height: 4),
@@ -197,7 +197,7 @@ class _DamageExample extends StatelessWidget {
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: AppColors.woodDark,
+                color: AppColors.navyDark,
               ),
             ),
             const SizedBox(height: 4),

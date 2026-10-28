@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'core/theme.dart';
+import 'design/theme.dart';
 import 'core/routes.dart';
 
 class WordBattleApp extends StatelessWidget {

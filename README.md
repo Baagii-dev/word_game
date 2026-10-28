@@ -1,6 +1,8 @@
-# word_battle
+# Үгийн Тулаан (word_battle)
 
-A new Flutter project.
+Монгол үг бүтээж дайсныг ялдаг Flutter тоглоом.
+
+📐 **Кодын бүтэц, юуг хаанаас засах:** [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## Getting Started
 

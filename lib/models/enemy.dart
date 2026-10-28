@@ -8,6 +8,7 @@ class Enemy {
     required this.maxHp,
     required this.attack,
     this.specialEvery = 0,
+    this.image,
   }) : hp = maxHp;
 
   final String name;
@@ -15,6 +16,7 @@ class Enemy {
   emoji; // дараа нь 'assets/images/enemies/chono.png' болгож солино
   final int maxHp;
   final int attack; // нэг ээлжинд тоглогчоос хасах HP
+  final String? image; // сонголттой зураг: 'assets/images/characters/wolf.png'
   final int specialEvery; // N ээлж тутамд 2× хүчтэй цохилт (0 = байхгүй)
   int hp;
 
@@ -31,5 +33,6 @@ class Enemy {
     maxHp: maxHp,
     attack: attack,
     specialEvery: specialEvery,
+    image: image,
   );
 }

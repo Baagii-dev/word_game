@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import 'theme.dart';
 
 /// Тал нутгийн дэвсгэр: тэнгэр, нар, үүл, толгод, (сонголтоор) гэр.
 /// [horizon] — тэнгэр/талын зааг (0..1, дээрээс).
@@ -75,7 +75,7 @@ class _SteppePainter extends CustomPainter {
           ],
         ).createShader(Rect.fromCircle(center: sun, radius: sunR * 2.2)),
     );
-    canvas.drawCircle(sun, sunR, Paint()..color = const Color(0xFFFFD66B));
+    canvas.drawCircle(sun, sunR, Paint()..color = AppColors.sun);
 
     // Үүл
     if (showClouds) {
@@ -90,7 +90,7 @@ class _SteppePainter extends CustomPainter {
       ..quadraticBezierTo(w * 0.78, hy - h * 0.1, w, hy - h * 0.03)
       ..lineTo(w, hy + 2)
       ..close();
-    canvas.drawPath(far, Paint()..color = const Color(0xFF8DB85A));
+    canvas.drawPath(far, Paint()..color = AppColors.hillFar);
 
     // Тал (урд талын нуга)
     final field = Path()

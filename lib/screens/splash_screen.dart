@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../core/routes.dart';
-import '../core/theme.dart';
+import '../design/theme.dart';
 
 /// Нээлтийн дэлгэц: лого томорч харагдаад нүүр хуудас руу шилжинэ.
 class SplashScreen extends StatefulWidget {
@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 style: TextStyle(
                   fontSize: 38,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.woodDark,
+                  color: AppColors.navyDark,
                 ),
               ),
             ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/ornament_strip.dart';
-import '../widgets/steppe_background.dart';
+import '../design/ornament_strip.dart';
+import '../design/steppe_background.dart';
 import '../services/settings_service.dart';
 
 class SettingsScreen extends StatelessWidget {

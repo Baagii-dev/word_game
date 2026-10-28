@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
+import '../design/theme.dart';
 import '../models/level.dart';
 import '../services/storage_service.dart';
-import '../widgets/steppe_background.dart';
+import '../design/steppe_background.dart';
 import 'battle_screen.dart';
 
 /// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүнг хадгална.
@@ -82,13 +82,13 @@ class _ResultScreenState extends State<ResultScreen> {
     final next = _nextLevel;
 
     return Scaffold(
-      backgroundColor: widget.won ? AppColors.grass : AppColors.woodDark,
+      backgroundColor: widget.won ? AppColors.grass : AppColors.navyDark,
       body: Stack(
         children: [
           Positioned.fill(
             child: widget.won
                 ? const SteppeBackground(horizon: 0.75)
-                : const ColoredBox(color: AppColors.woodDark),
+                : const ColoredBox(color: AppColors.navyDark),
           ),
           SafeArea(
             child: LayoutBuilder(
