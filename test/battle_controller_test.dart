@@ -9,7 +9,7 @@ import 'package:word_battle/services/dictionary_service.dart';
 
 void main() {
   final dict = DictionaryService()
-    ..loadFromList(['морь', 'ном', 'гэр', 'нар', 'сар', 'хонь', 'цагаан']);
+    ..loadFromList(['үг', 'ус', 'морь', 'ном', 'гэр', 'нар', 'сар', 'хонь', 'цагаан']);
 
   Level makeLevel({int hp = 100}) => Level(
     id: 99,
@@ -49,6 +49,20 @@ void main() {
     });
   });
 
+  test('2 үсэгтэй үг ("үг") зөв тооцогдож хохирол өгнө', () {
+    fakeAsync((async) {
+      final c = makeController();
+      spell(c, 'үг');
+      c.attack();
+
+      expect(c.enemy.hp, lessThan(c.enemy.maxHp));
+      expect(c.combo, 1);
+      expect(c.wordsCount, 1);
+      expect(c.status, BattleStatus.enemyTurn);
+      c.dispose();
+    });
+  });
+
   test('Буруу үг ээлж алдуулахгүй, combo-г тасалж, сонголтыг цэвэрлэнэ', () {
     fakeAsync((async) {
       final c = makeController();
@@ -66,10 +80,10 @@ void main() {
     });
   });
 
-  test('3-аас богино үг хүчингүй', () {
+  test('2-оос богино (1 үсэгтэй) үг хүчингүй', () {
     fakeAsync((async) {
       final c = makeController();
-      spell(c, 'ом');
+      spell(c, 'а');
       c.attack();
 
       expect(c.wordsCount, 0);

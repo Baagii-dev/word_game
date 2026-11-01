@@ -5,15 +5,18 @@ void main() {
   late WordValidator validator;
 
   setUp(() {
-    validator = WordValidator({'морь', 'ус', 'ном'});
+    validator = WordValidator({'морь', 'ус', 'үг', 'ном'});
   });
 
-  test('Толь бичигт байгаа үг зөв', () {
+  test('Толь бичигт байгаа үг зөв (2 үсэгтэй үг орно)', () {
     expect(validator.check('морь'), WordCheck.ok);
+    expect(validator.check('үг'), WordCheck.ok);
+    expect(validator.check('ус'), WordCheck.ok);
   });
 
   test('Том үсгээр бичсэн ч зөв', () {
     expect(validator.check('МОРЬ'), WordCheck.ok);
+    expect(validator.check('ҮГ'), WordCheck.ok);
   });
 
   test('1 үсэгтэй үг хэт богино', () {

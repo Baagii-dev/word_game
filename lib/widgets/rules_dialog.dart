@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants.dart';
+import '../design/ornament_strip.dart';
 import '../design/theme.dart';
+import '../models/letter_tile.dart';
 import 'game_button.dart';
 import 'letter_tile_widget.dart';
-import '../models/letter_tile.dart';
-import '../design/ornament_strip.dart';
 
 /// "Хэрхэн тоглох вэ?" — хэсэг хэсгээр, жишээтэй заавар.
 Future<void> showRulesDialog(BuildContext context) {
@@ -103,7 +103,7 @@ class _RulesDialog extends StatelessWidget {
                     icon: '📖',
                     title: 'Анхаарах',
                     lines: [
-                      'Үг хамгийн багадаа ${GameConfig.minWordLength} үсэгтэй байна.',
+                      'Үг хамгийн багадаа ${GameConfig.minWordLength} үсэгтэй байна (жишээ: "үг", "ус", "морь").',
                       'Толь бичгийн үндсэн хэлбэр л зөвшөөрөгдөнө (жишээ: "морь" — зөв, "моринд" — буруу).',
                       'Нэг дайсантай тулалдахдаа ижил үгийг давтаж болохгүй.',
                       'Буруу үг бол ээлж алдахгүй, зөвхөн сонголт арилна.',
@@ -246,7 +246,7 @@ class _DamageExample extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             const Text(
-              '• 3–4 үсэг: ×1\n• 5–6 үсэг: ×1.5\n• 7–8 үсэг: ×2\n• 9+ үсэг: ×3',
+              '• 2–4 үсэг: ×1\n• 5–6 үсэг: ×1.5\n• 7–8 үсэг: ×2\n• 9+ үсэг: ×3',
               style: TextStyle(
                 fontSize: 14,
                 height: 1.4,

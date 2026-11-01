@@ -9,9 +9,9 @@ void main() {
   final lines = File('assets/data/words.txt').readAsLinesSync();
   final dict = DictionaryService()..loadFromList(lines);
 
-  test('Бодит толь бичиг ачаалагдана, үндсэн үгс байна', () {
+  test('Бодит толь бичиг ачаалагдана, 2+ үсэгтэй үндсэн үгс байна', () {
     expect(dict.words.length, greaterThan(50000));
-    for (final w in ['морь', 'ном', 'гэр', 'хонь', 'луу']) {
+    for (final w in ['үг', 'ус', 'од', 'морь', 'ном', 'гэр', 'хонь', 'луу']) {
       expect(dict.words.contains(w), isTrue, reason: w);
     }
     expect(dict.words.contains('анэу'), isFalse); // товчлол хасагдсан
