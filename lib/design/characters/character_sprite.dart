@@ -9,7 +9,7 @@ import '../theme.dart';
 /// Анимац нь тоолуурын өөрчлөлтөөр (hitCount, attackCount) нэг удаа тоглогдоно:
 ///  • idle   — тайван байхдаа аажим дээш доош найгана
 ///  • attack — довтлоход өрсөлдөгч тийш шидэгдэнэ ([lunge] px)
-///  • hit    — цохилт авахад сэгсэрч, улаан болно
+///  • hit    — цохилт авахад сэгсэрч, улаан болж, цавчилтын оч цацарна
 ///  • dead   — үхэхэд живж, бүдгэрнэ
 class CharacterSprite extends StatefulWidget {
   const CharacterSprite({
@@ -130,10 +130,15 @@ class _CharacterSpriteState extends State<CharacterSprite>
                       Positioned(
                         bottom: 0,
                         child: Container(
-                          width: size * 0.8 * (1 + bob / 60),
-                          height: size * 0.14,
+                          width: size * 0.85 * (1 + bob / 60),
+                          height: size * 0.16,
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.28),
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.black.withValues(alpha: 0.42),
+                                Colors.black.withValues(alpha: 0.0),
+                              ],
+                            ),
                             borderRadius: BorderRadius.circular(size),
                           ),
                         ),
@@ -148,6 +153,15 @@ class _CharacterSpriteState extends State<CharacterSprite>
                           ),
                         ),
                       ),
+                      // Цохилт авах үеийн сэлэмний цавчилт / оч эффект
+                      if (_hit.isAnimating)
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: CustomPaint(
+                              painter: _SlashEffectPainter(progress: _hit.value),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -158,14 +172,29 @@ class _CharacterSpriteState extends State<CharacterSprite>
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.navyDark,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [AppColors.navy, AppColors.navyDark],
+                    ),
                     borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    border: Border.all(
+                      color: AppColors.accent.withValues(alpha: 0.85),
+                      width: 1.2,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black26, offset: Offset(0, 2)),
+                    ],
                   ),
                   child: Text(
                     widget.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -175,4 +204,40 @@ class _CharacterSpriteState extends State<CharacterSprite>
       },
     );
   }
+}
+
+class _SlashEffectPainter extends CustomPainter {
+  _SlashEffectPainter({required this.progress});
+
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final alpha = (1.0 - progress).clamp(0.0, 1.0);
+    if (alpha <= 0) return;
+
+    final p1 = Offset(size.width * 0.18, size.height * 0.15);
+    final p2 = Offset(size.width * 0.82, size.height * 0.78);
+    final currentEnd = Offset.lerp(
+      p1,
+      p2,
+      (progress * 2.2).clamp(0.0, 1.0),
+    )!;
+
+    final glowPaint = Paint()
+      ..color = AppColors.accent.withValues(alpha: alpha * 0.75)
+      ..strokeWidth = 7 * alpha
+      ..strokeCap = StrokeCap.round;
+
+    final corePaint = Paint()
+      ..color = Colors.white.withValues(alpha: alpha)
+      ..strokeWidth = 3 * alpha
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(p1, currentEnd, glowPaint);
+    canvas.drawLine(p1, currentEnd, corePaint);
+  }
+
+  @override
+  bool shouldRepaint(_SlashEffectPainter old) => old.progress != progress;
 }

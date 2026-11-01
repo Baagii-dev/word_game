@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../design/theme.dart';
 import '../services/audio_service.dart';
 
-/// Модон загварын нэгдсэн товч. Дарахад жижгэрч, дуу гаргана.
+/// Алтан хүрээтэй, 3D товгор загварын нэгдсэн товч. Дарахад жижгэрч, дуу гаргана.
 class GameButton extends StatefulWidget {
   const GameButton({
     super.key,
@@ -30,6 +30,9 @@ class _GameButtonState extends State<GameButton> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onPressed != null;
+    final topColor = Color.lerp(widget.color, Colors.white, 0.22)!;
+    final botColor = Color.lerp(widget.color, Colors.black, 0.18)!;
+
     return GestureDetector(
       onTapDown: enabled ? (_) => setState(() => _down = true) : null,
       onTapCancel: () => setState(() => _down = false),
@@ -41,35 +44,40 @@ class _GameButtonState extends State<GameButton> {
             }
           : null,
       child: AnimatedScale(
-        scale: _down ? 0.95 : 1,
+        scale: _down ? 0.96 : 1,
         duration: const Duration(milliseconds: 90),
         child: Opacity(
           opacity: enabled ? 1 : 0.5,
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color.lerp(widget.color, Colors.white, 0.18)!,
-                  widget.color,
-                ],
+                colors: [topColor, widget.color, botColor],
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.accent, width: 2),
+              border: Border.all(color: AppColors.accent, width: 2.2),
               boxShadow: _down
                   ? null
-                  : const [
-                      BoxShadow(color: Colors.black38, offset: Offset(0, 4)),
+                  : [
+                      BoxShadow(
+                        color: Color.lerp(widget.color, Colors.black, 0.55)!,
+                        offset: const Offset(0, 4),
+                      ),
+                      const BoxShadow(
+                        color: Colors.black38,
+                        offset: Offset(0, 6),
+                        blurRadius: 6,
+                      ),
                     ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (widget.icon != null) ...[
-                  Icon(widget.icon, color: widget.foreground),
+                  Icon(widget.icon, color: widget.foreground, size: 24),
                   const SizedBox(width: 8),
                 ],
                 Text(
@@ -77,7 +85,8 @@ class _GameButtonState extends State<GameButton> {
                   style: TextStyle(
                     color: widget.foreground,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.4,
                   ),
                 ),
               ],

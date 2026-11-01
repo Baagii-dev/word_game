@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../design/ornament_strip.dart';
+import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../models/level.dart';
 import '../services/storage_service.dart';
-import '../design/ornament_strip.dart';
-import '../design/steppe_background.dart';
 import 'battle_screen.dart';
 
 class LevelSelectScreen extends StatelessWidget {
@@ -25,7 +25,7 @@ class LevelSelectScreen extends StatelessWidget {
       // Ахиц өөрчлөгдөхөд (түвшин нээгдэх, од) жагсаалт автоматаар шинэчлэгдэнэ
       body: Stack(
         children: [
-          const Positioned.fill(child: SteppeBackground(horizon: 0.8)),
+          const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
           ListenableBuilder(
             listenable: storage,
             builder: (context, _) {
@@ -40,22 +40,45 @@ class LevelSelectScreen extends StatelessWidget {
                   final locked = level.id > progress.unlockedLevel;
                   final stars = progress.stars[level.id] ?? 0;
                   final best = progress.bestScores[level.id];
-
                   return Card(
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
+                        horizontal: 14,
                         vertical: 8,
                       ),
-                      leading: CircleAvatar(
-                        backgroundColor: locked
-                            ? Colors.grey
-                            : AppColors.accent,
+                      leading: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: locked
+                                ? [Colors.grey.shade400, Colors.grey.shade600]
+                                : [AppColors.accentLight, AppColors.accent],
+                          ),
+                          border: Border.all(
+                            color: locked
+                                ? Colors.grey.shade700
+                                : AppColors.tileShadow,
+                            width: 2,
+                          ),
+                        ),
+                        alignment: Alignment.center,
                         child: locked
                             ? const Icon(Icons.lock, color: Colors.white)
-                            : Text('${level.id}'),
+                            : const Icon(
+                                Icons.military_tech,
+                                color: Colors.white,
+                                size: 32,
+                              ),
                       ),
-                      title: Text(level.name),
+                      title: Text(
+                        '${level.id}. ${level.name}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.navyDeep,
+                        ),
+                      ),
                       subtitle: Text(
                         locked
                             ? 'Өмнөх түвшнийг давж нээнэ'
@@ -68,7 +91,7 @@ class LevelSelectScreen extends StatelessWidget {
                           3,
                           (s) => Icon(
                             s < stars ? Icons.star : Icons.star_border,
-                            size: 20,
+                            size: 22,
                             color: AppColors.accent,
                           ),
                         ),

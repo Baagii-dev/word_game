@@ -37,6 +37,8 @@ class Level {
 
   int get waveCount => _enemyTemplates.length;
 
+  get enemies => null;
+
   /// Тулаан эхлэх бүрт дайснуудын шинэ хуулбар авна
   /// (өмнөх тулаанд хасагдсан HP үлдэхгүй).
   List<Enemy> createEnemies() => _enemyTemplates.map((e) => e.copy()).toList();

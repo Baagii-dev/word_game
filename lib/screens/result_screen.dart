@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../design/characters/enemy_art.dart';
+import '../design/characters/hero_art.dart';
+import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../models/level.dart';
 import '../services/storage_service.dart';
-import '../design/steppe_background.dart';
 import 'battle_screen.dart';
 
 /// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүнг хадгална.
@@ -80,15 +82,18 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     final next = _nextLevel;
+    final boss = widget.level.enemies.last;
 
     return Scaffold(
       backgroundColor: widget.won ? AppColors.grass : AppColors.navyDark,
       body: Stack(
         children: [
           Positioned.fill(
-            child: widget.won
-                ? const SteppeBackground(horizon: 0.75)
-                : const ColoredBox(color: AppColors.navyDark),
+            child: SteppeBackground(
+              horizon: 0.75,
+              levelId: widget.won ? widget.level.id : 3,
+              showGer: widget.won && widget.level.id == 1,
+            ),
           ),
           SafeArea(
             child: LayoutBuilder(
@@ -104,15 +109,20 @@ class _ResultScreenState extends State<ResultScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                widget.won ? '🏆' : '💀',
-                                style: const TextStyle(fontSize: 64),
-                              ),
+                              widget.won
+                                  ? const HeroArt(size: 76)
+                                  : EnemyArt(
+                                      emoji: boss.emoji,
+                                      image: boss.image,
+                                      size: 76,
+                                    ),
+                              const SizedBox(height: 6),
                               Text(
                                 widget.won ? 'Ялалт!' : 'Ялагдал',
                                 style: const TextStyle(
                                   fontSize: 32,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.navyDeep,
                                 ),
                               ),
                               if (widget.won)

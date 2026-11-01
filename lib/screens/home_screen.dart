@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../design/theme.dart';
 import '../core/routes.dart';
-import '../widgets/game_button.dart';
+import '../design/characters/enemy_art.dart';
+import '../design/characters/hero_art.dart';
 import '../design/ornament_strip.dart';
-import '../widgets/rules_dialog.dart';
 import '../design/steppe_background.dart';
+import '../design/theme.dart';
+import '../widgets/game_button.dart';
+import '../widgets/rules_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,7 +19,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const Positioned.fill(child: SteppeBackground(horizon: 0.87)),
+          const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
           Positioned(
             top: MediaQuery.paddingOf(context).top,
             left: 0,
@@ -27,41 +29,97 @@ class HomeScreen extends StatelessWidget {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(32, 40, 32, 32),
+                padding: const EdgeInsets.fromLTRB(28, 28, 28, 28),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('⚔️📜', style: TextStyle(fontSize: 64)),
-                    const SizedBox(height: 8),
+                    // Баатар ба Луугийн сүлдэт чимэглэл
+                    SizedBox(
+                      height: 96,
+                      width: 220,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 92,
+                            height: 92,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const RadialGradient(
+                                colors: [
+                                  AppColors.accentLight,
+                                  AppColors.accent,
+                                  AppColors.tileShadow,
+                                ],
+                              ),
+                              border: Border.all(
+                                color: AppColors.navyDeep,
+                                width: 2.5,
+                              ),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black38,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Positioned(
+                            left: 18,
+                            bottom: 2,
+                            child: HeroArt(size: 82),
+                          ),
+                          const Positioned(
+                            right: 14,
+                            bottom: 4,
+                            child: EnemyArt(emoji: '🐉', size: 76),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     Text(
                       'Үгийн Тулаан',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 40,
+                        fontSize: 38,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.accent,
+                        color: AppColors.accentLight,
+                        letterSpacing: 0.6,
                         shadows: const [
                           Shadow(
-                            color: AppColors.navyDark,
+                            color: AppColors.navyDeep,
                             offset: Offset(0, 3),
                           ),
-                          Shadow(color: AppColors.navyDark, blurRadius: 8),
+                          Shadow(color: AppColors.navyDeep, blurRadius: 10),
                         ],
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      'Монгол үгээр мангасыг ял!',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(color: AppColors.navyDark, blurRadius: 6),
-                        ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.navyDeep.withValues(alpha: 0.55),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.accent.withValues(alpha: 0.65),
+                        ),
+                      ),
+                      child: const Text(
+                        'Монгол үгээр мангасыг ял!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 36),
+                    const SizedBox(height: 28),
                     GameButton(
                       label: 'Тоглох',
                       icon: Icons.play_arrow,
@@ -69,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                       onPressed: () =>
                           Navigator.pushNamed(context, Routes.levels),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     GameButton(
                       label: 'Заавар',
                       icon: Icons.help_outline,
@@ -77,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                       foreground: AppColors.text,
                       onPressed: () => _showRules(context),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     GameButton(
                       label: 'Тохиргоо',
                       icon: Icons.settings,

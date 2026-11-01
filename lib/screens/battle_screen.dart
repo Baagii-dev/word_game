@@ -2,20 +2,20 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../design/theme.dart';
-import '../logic/battle_controller.dart';
-import '../models/level.dart';
-import '../services/dictionary_service.dart';
-import '../services/audio_service.dart';
 import '../design/characters/character_sprite.dart';
 import '../design/characters/enemy_art.dart';
 import '../design/characters/hero_art.dart';
-import '../widgets/damage_popup.dart';
-import '../widgets/shake_widget.dart';
-import '../widgets/hp_bar.dart';
-import '../widgets/letter_grid.dart';
 import '../design/ornament_strip.dart';
 import '../design/steppe_background.dart';
+import '../design/theme.dart';
+import '../logic/battle_controller.dart';
+import '../models/level.dart';
+import '../services/audio_service.dart';
+import '../services/dictionary_service.dart';
+import '../widgets/damage_popup.dart';
+import '../widgets/hp_bar.dart';
+import '../widgets/letter_grid.dart';
+import '../widgets/shake_widget.dart';
 import '../widgets/wave_indicator.dart';
 import '../widgets/word_bar.dart';
 import 'result_screen.dart';
@@ -131,7 +131,7 @@ class _BattleScreenState extends State<BattleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.skyTop,
+      backgroundColor: AppColors.navyDark,
       body: SafeArea(
         bottom: false,
         child: ListenableBuilder(
@@ -151,7 +151,14 @@ class _BattleScreenState extends State<BattleScreen>
   // ---------- Дээд мөр: HP, wave ----------
   Widget _buildTopBar() {
     final c = controller;
-    return Padding(
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.navyDeep, AppColors.navyDark],
+        ),
+      ),
       padding: const EdgeInsets.fromLTRB(4, 8, 12, 8),
       child: Row(
         children: [
@@ -160,7 +167,7 @@ class _BattleScreenState extends State<BattleScreen>
             icon: const Icon(
               Icons.pause_circle_filled,
               size: 34,
-              color: AppColors.navyDark,
+              color: AppColors.accent,
             ),
           ),
           Expanded(
@@ -197,8 +204,9 @@ class _BattleScreenState extends State<BattleScreen>
 
     return SteppeBackground(
       horizon: 0.62,
-      showGer: false,
-      showClouds: false,
+      showGer: widget.level.id == 1,
+      showClouds: true,
+      levelId: widget.level.id,
       child: Column(
         children: [
           const SizedBox(height: 8),
@@ -206,8 +214,14 @@ class _BattleScreenState extends State<BattleScreen>
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.navyDark.withValues(alpha: 0.6),
+              color: AppColors.navyDeep.withValues(alpha: 0.72),
               borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: hurry
+                    ? AppColors.warning
+                    : AppColors.accent.withValues(alpha: 0.65),
+                width: 1.4,
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -336,7 +350,13 @@ class _BattleScreenState extends State<BattleScreen>
     final canAttack = c.canAct && c.selected.isNotEmpty;
 
     return Container(
-      color: AppColors.navyDark,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.navyDark, AppColors.navyDeep],
+        ),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

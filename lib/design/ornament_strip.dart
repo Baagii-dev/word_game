@@ -1,11 +1,9 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'theme.dart';
 
-/// Монгол "угалз" хээний тууз (дахин давтагдах мушгиа).
-/// Дэлгэцийн дээд/доод ирмэгийг чимэхэд ашиглана.
+/// Монгол "алхан хээ" болон "угалз" хосолсон гоёлын тууз.
+/// Дэлгэцийн дээд/доод ирмэг болон самбарын заагийг чимэхэд ашиглана.
 class OrnamentStrip extends StatelessWidget {
   const OrnamentStrip({
     super.key,
@@ -36,37 +34,69 @@ class _OrnamentPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = background);
-
-    final line = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.6
-      ..strokeCap = StrokeCap.round;
-
-    // Дээд, доод алтан шугам
-    canvas.drawLine(const Offset(0, 1.5), Offset(size.width, 1.5), line);
-    canvas.drawLine(
-      Offset(0, size.height - 1.5),
-      Offset(size.width, size.height - 1.5),
-      line,
+    final rect = Offset.zero & size;
+    // Гүнзгий градиент дэвсгэр
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.lerp(background, Colors.black, 0.22)!,
+            background,
+            Color.lerp(background, Colors.black, 0.28)!,
+          ],
+        ).createShader(rect),
     );
 
-    final cell = size.height * 1.5;
-    final r = size.height * 0.34;
-    var i = 0;
-    for (var x = cell / 2; x < size.width + cell; x += cell, i++) {
-      final dir = i.isEven ? 1.0 : -1.0; // зэрэгцээ мушгиа эсрэг чиглэлтэй
-      final path = Path();
-      for (var t = 0.0; t <= 3 * pi; t += 0.18) {
-        final rr = r * (0.18 + t / (3 * pi) * 0.82);
-        final p = Offset(
-          x + dir * rr * cos(t + pi),
-          size.height / 2 + rr * sin(t + pi),
-        );
-        t == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
-      }
-      canvas.drawPath(path, line);
+    final borderPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6;
+
+    final glowPaint = Paint()
+      ..color = Color.lerp(color, Colors.white, 0.35)!.withValues(alpha: 0.85)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.square
+      ..strokeJoin = StrokeJoin.miter;
+
+    // Дээд, доод давхар алтан хүрээ
+    canvas.drawLine(const Offset(0, 1.2), Offset(size.width, 1.2), borderPaint);
+    canvas.drawLine(
+      Offset(0, size.height - 1.2),
+      Offset(size.width, size.height - 1.2),
+      borderPaint,
+    );
+
+    // Алхан хээ (T-хэлбэрийн тасралтгүй монгол хээ)
+    final top = size.height * 0.22;
+    final bottom = size.height * 0.78;
+    final mid = size.height * 0.5;
+    final unit = size.height * 1.45;
+    if (unit <= 4) return;
+
+    final path = Path();
+    for (double x = -unit; x < size.width + unit; x += unit) {
+      final s = unit / 4;
+      // Доороос дээш алхан эргэлт
+      path.moveTo(x, bottom);
+      path.lineTo(x, top);
+      path.lineTo(x + s * 2.5, top);
+      path.lineTo(x + s * 2.5, mid);
+      path.lineTo(x + s * 1.2, mid);
+      // Дээрээс доош эргэлт
+      path.moveTo(x + s * 1.5, bottom);
+      path.lineTo(x + s * 4, bottom);
+      path.lineTo(x + s * 4, top);
+    }
+    canvas.drawPath(path, glowPaint);
+
+    // Хээний голд жижиг алтан цэгүүд
+    final dotPaint = Paint()..color = color;
+    for (double x = unit * 0.3; x < size.width + unit; x += unit) {
+      canvas.drawCircle(Offset(x, bottom - (bottom - mid) * 0.45), 1.3, dotPaint);
     }
   }
 

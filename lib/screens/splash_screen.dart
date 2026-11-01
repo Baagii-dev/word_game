@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../core/routes.dart';
+import '../design/characters/hero_art.dart';
+import '../design/steppe_background.dart';
 import '../design/theme.dart';
 
 /// Нээлтийн дэлгэц: лого томорч харагдаад нүүр хуудас руу шилжинэ.
@@ -33,31 +35,40 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.6, end: 1),
-          duration: const Duration(milliseconds: 900),
-          curve: Curves.elasticOut,
-          builder: (context, scale, child) => Opacity(
-            opacity: scale.clamp(0.0, 1.0),
-            child: Transform.scale(scale: scale, child: child),
-          ),
-          child: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('⚔️📜', style: TextStyle(fontSize: 88)),
-              SizedBox(height: 12),
-              Text(
-                'Үгийн Тулаан',
-                style: TextStyle(
-                  fontSize: 38,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.navyDark,
-                ),
+      body: Stack(
+        children: [
+          const Positioned.fill(child: SteppeBackground(horizon: 0.76)),
+          Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.6, end: 1),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.elasticOut,
+              builder: (context, scale, child) => Opacity(
+                opacity: scale.clamp(0.0, 1.0),
+                child: Transform.scale(scale: scale, child: child),
               ),
-            ],
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  HeroArt(size: 110),
+                  SizedBox(height: 12),
+                  Text(
+                    'Үгийн Тулаан',
+                    style: TextStyle(
+                      fontSize: 38,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.accentLight,
+                      shadows: [
+                        Shadow(color: AppColors.navyDeep, offset: Offset(0, 3)),
+                        Shadow(color: AppColors.navyDeep, blurRadius: 8),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
