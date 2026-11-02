@@ -198,7 +198,12 @@ class _SteppePainter extends CustomPainter {
       ..moveTo(w * 0.48, hy + h * 0.01)
       ..quadraticBezierTo(w * 0.35, hy + (h - hy) * 0.45, w * 0.56, h)
       ..lineTo(w * 0.72, h)
-      ..quadraticBezierTo(w * 0.46, hy + (h - hy) * 0.45, w * 0.53, hy + h * 0.01)
+      ..quadraticBezierTo(
+        w * 0.46,
+        hy + (h - hy) * 0.45,
+        w * 0.53,
+        hy + h * 0.01,
+      )
       ..close();
     canvas.drawPath(
       road,
@@ -329,7 +334,8 @@ class _SteppePainter extends CustomPainter {
     }
 
     // Гэрэлт цохнууд (fireflies)
-    final glow = Paint()..color = const Color(0xFFFFF59D).withValues(alpha: 0.75);
+    final glow = Paint()
+      ..color = const Color(0xFFFFF59D).withValues(alpha: 0.75);
     for (final pt in const [
       Offset(0.18, 0.42),
       Offset(0.32, 0.55),
@@ -525,9 +531,15 @@ class _SteppePainter extends CustomPainter {
       final snow = Path()
         ..moveTo(peak.dx, peak.dy)
         ..lineTo(snowLeft.dx, snowLeft.dy)
-        ..lineTo(peak.dx - (peak.dx - snowLeft.dx) * 0.35, peak.dy + snowH * 0.78)
+        ..lineTo(
+          peak.dx - (peak.dx - snowLeft.dx) * 0.35,
+          peak.dy + snowH * 0.78,
+        )
         ..lineTo(peak.dx, peak.dy + snowH * 1.05)
-        ..lineTo(peak.dx + (snowRight.dx - peak.dx) * 0.4, peak.dy + snowH * 0.8)
+        ..lineTo(
+          peak.dx + (snowRight.dx - peak.dx) * 0.4,
+          peak.dy + snowH * 0.8,
+        )
         ..lineTo(snowRight.dx, snowRight.dy)
         ..close();
       canvas.drawPath(snow, Paint()..color = AppColors.mountainSnow);
@@ -607,8 +619,7 @@ class _SteppePainter extends CustomPainter {
   }
 
   void _cloud(Canvas canvas, Offset c, double width) {
-    final shadow = Paint()
-      ..color = AppColors.skyTop.withValues(alpha: 0.18);
+    final shadow = Paint()..color = AppColors.skyTop.withValues(alpha: 0.18);
     final p = Paint()..color = Colors.white.withValues(alpha: 0.92);
     final r = width * 0.28;
 
@@ -741,9 +752,7 @@ class _SteppePainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [Colors.white, AppColors.cream],
-        ).createShader(
-          Rect.fromLTWH(wall.left, wall.top - size, wallW, size),
-        ),
+        ).createShader(Rect.fromLTWH(wall.left, wall.top - size, wallW, size)),
     );
 
     // Унийн зураас

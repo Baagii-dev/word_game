@@ -158,7 +158,9 @@ class _CharacterSpriteState extends State<CharacterSprite>
                         Positioned.fill(
                           child: IgnorePointer(
                             child: CustomPaint(
-                              painter: _SlashEffectPainter(progress: _hit.value),
+                              painter: _SlashEffectPainter(
+                                progress: _hit.value,
+                              ),
                             ),
                           ),
                         ),
@@ -218,11 +220,7 @@ class _SlashEffectPainter extends CustomPainter {
 
     final p1 = Offset(size.width * 0.18, size.height * 0.15);
     final p2 = Offset(size.width * 0.82, size.height * 0.78);
-    final currentEnd = Offset.lerp(
-      p1,
-      p2,
-      (progress * 2.2).clamp(0.0, 1.0),
-    )!;
+    final currentEnd = Offset.lerp(p1, p2, (progress * 2.2).clamp(0.0, 1.0))!;
 
     final glowPaint = Paint()
       ..color = AppColors.accent.withValues(alpha: alpha * 0.75)
