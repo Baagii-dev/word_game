@@ -142,11 +142,7 @@ class _HeroPainter extends CustomPainter {
         ..lineTo(s.$2 - s.$1 * 6, 56)
         ..close();
       shape(pauldron, const Color(0xFF4A3525));
-      canvas.drawCircle(
-        Offset(s.$2, 52),
-        1.6,
-        fill(AppColors.accent),
-      );
+      canvas.drawCircle(Offset(s.$2, 52), 1.6, fill(AppColors.accent));
     }
 
     // 5. Улаан бүс + алтан горхи + унжлага
@@ -268,8 +264,7 @@ class _HeroPainter extends CustomPainter {
     canvas.drawCircle(const Offset(50, 35), 15.5, outline);
 
     // Хацрын туяа
-    final cheek = Paint()
-      ..color = AppColors.red.withValues(alpha: 0.22);
+    final cheek = Paint()..color = AppColors.red.withValues(alpha: 0.22);
     canvas.drawOval(const Rect.fromLTWH(43, 38, 5.5, 3.2), cheek);
     canvas.drawOval(const Rect.fromLTWH(59, 38, 5.5, 3.2), cheek);
 

@@ -39,7 +39,11 @@ class LetterTileWidget extends StatelessWidget {
             border: Border.all(color: AppColors.tileBorder, width: 2),
             boxShadow: const [
               BoxShadow(color: AppColors.tileShadow, offset: Offset(0, 3)),
-              BoxShadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 2),
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(0, 4),
+                blurRadius: 2,
+              ),
             ],
           ),
           child: Stack(

@@ -96,7 +96,11 @@ class _OrnamentPainter extends CustomPainter {
     // Хээний голд жижиг алтан цэгүүд
     final dotPaint = Paint()..color = color;
     for (double x = unit * 0.3; x < size.width + unit; x += unit) {
-      canvas.drawCircle(Offset(x, bottom - (bottom - mid) * 0.45), 1.3, dotPaint);
+      canvas.drawCircle(
+        Offset(x, bottom - (bottom - mid) * 0.45),
+        1.3,
+        dotPaint,
+      );
     }
   }
 

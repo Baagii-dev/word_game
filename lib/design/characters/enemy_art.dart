@@ -95,7 +95,11 @@ class _EnemyPainter extends CustomPainter {
       for (final c in [left, right]) {
         canvas.drawCircle(c, r, fill(color));
         canvas.drawCircle(c, r, outline);
-        canvas.drawCircle(c + const Offset(-0.6, 0), r * 0.42, fill(Colors.black));
+        canvas.drawCircle(
+          c + const Offset(-0.6, 0),
+          r * 0.42,
+          fill(Colors.black),
+        );
       }
       // Ууртай хөмсөг (зүүн тийш баатар луу харсан)
       final brow = Paint()
@@ -153,11 +157,12 @@ class _EnemyPainter extends CustomPainter {
           r: 3.2,
         );
         // Хамар + сахал + шүд
-        canvas.drawCircle(const Offset(46, 54), 3.2, fill(const Color(0xFFE56B6F)));
-        shape(
-          Path()..addRect(const Rect.fromLTWH(43, 58, 6, 5)),
-          Colors.white,
+        canvas.drawCircle(
+          const Offset(46, 54),
+          3.2,
+          fill(const Color(0xFFE56B6F)),
         );
+        shape(Path()..addRect(const Rect.fromLTWH(43, 58, 6, 5)), Colors.white);
         for (final dy in [-2.0, 2.0]) {
           canvas.drawLine(
             Offset(32, 54 + dy),
@@ -174,23 +179,21 @@ class _EnemyPainter extends CustomPainter {
       case '🐍': // Могой
         // Ороосон бие
         shape(
-          Path()
-            ..addRRect(
-              RRect.fromRectAndRadius(
-                const Rect.fromLTWH(20, 74, 62, 16),
-                const Radius.circular(8),
-              ),
+          Path()..addRRect(
+            RRect.fromRectAndRadius(
+              const Rect.fromLTWH(20, 74, 62, 16),
+              const Radius.circular(8),
             ),
+          ),
           const Color(0xFF388E3C),
         );
         shape(
-          Path()
-            ..addRRect(
-              RRect.fromRectAndRadius(
-                const Rect.fromLTWH(26, 60, 50, 16),
-                const Radius.circular(8),
-              ),
+          Path()..addRRect(
+            RRect.fromRectAndRadius(
+              const Rect.fromLTWH(26, 60, 50, 16),
+              const Radius.circular(8),
             ),
+          ),
           const Color(0xFF4CAF50),
         );
         // Хүзүү ба халхавч (кобра)
@@ -335,10 +338,7 @@ class _EnemyPainter extends CustomPainter {
           coat,
         );
         // Толгой
-        shape(
-          Path()..addOval(const Rect.fromLTWH(22, 20, 56, 44)),
-          coat,
-        );
+        shape(Path()..addOval(const Rect.fromLTWH(22, 20, 56, 44)), coat);
         if (isTiger) {
           // Барын судал
           final stripe = Paint()
@@ -351,10 +351,7 @@ class _EnemyPainter extends CustomPainter {
           }
         }
         // Хоншоор ба архирсан ам
-        shape(
-          Path()..addOval(const Rect.fromLTWH(34, 40, 32, 22)),
-          muzzle,
-        );
+        shape(Path()..addOval(const Rect.fromLTWH(34, 40, 32, 22)), muzzle);
         shape(
           Path()..addRRect(
             RRect.fromRectAndRadius(
@@ -404,7 +401,9 @@ class _EnemyPainter extends CustomPainter {
         );
         // Толгой
         shape(
-          Path()..addCircle(const Offset(50, 34), 16),
+          Path()..addOval(
+            Rect.fromCircle(center: const Offset(50, 34), radius: 16),
+          ),
           const Color(0xFF455A64),
         );
         // Махир алтан хошуу
@@ -625,8 +624,4 @@ class _EnemyPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_EnemyPainter old) => old.emoji != emoji;
-}
-
-extension on Path {
-  addCircle(Offset offset, int i) {}
 }

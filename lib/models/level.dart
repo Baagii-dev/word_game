@@ -37,7 +37,8 @@ class Level {
 
   int get waveCount => _enemyTemplates.length;
 
-  get enemies => null;
+  /// Түвшний дайснууд (загвар). Тулаанд `createEnemies()` ашиглана.
+  List<Enemy> get enemies => List.unmodifiable(_enemyTemplates);
 
   /// Тулаан эхлэх бүрт дайснуудын шинэ хуулбар авна
   /// (өмнөх тулаанд хасагдсан HP үлдэхгүй).

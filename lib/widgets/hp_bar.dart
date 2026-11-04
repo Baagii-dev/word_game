@@ -78,7 +78,11 @@ class HpBar extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                   fontSize: 12,
                   shadows: [
-                    Shadow(color: Colors.black87, offset: Offset(0, 1), blurRadius: 2),
+                    Shadow(
+                      color: Colors.black87,
+                      offset: Offset(0, 1),
+                      blurRadius: 2,
+                    ),
                   ],
                 ),
               ),

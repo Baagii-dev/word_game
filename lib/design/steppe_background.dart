@@ -437,7 +437,11 @@ class _SteppePainter extends CustomPainter {
 
     // Гэрэлт цохнууд (fireflies)
     final glow = Paint()
+<<<<<<< HEAD
       ..color = const Color(0xFFFFF59D).withValues(alpha: 0.85);
+=======
+      ..color = const Color(0xFFFFF59D).withValues(alpha: 0.75);
+>>>>>>> a37a90db963b6c24a7ebb7bca03f71b1155020ce
     for (final pt in const [
       Offset(0.18, 0.42),
       Offset(0.32, 0.55),
@@ -721,6 +725,7 @@ class _SteppePainter extends CustomPainter {
   }
 
   void _cloud(Canvas canvas, Offset c, double width) {
+<<<<<<< HEAD
     final shadow = Paint()
       ..color = (isDark ? Colors.black : AppColors.skyTop).withValues(
         alpha: 0.18,
@@ -729,6 +734,10 @@ class _SteppePainter extends CustomPainter {
       ..color = (isDark ? const Color(0xFF324F76) : Colors.white).withValues(
         alpha: isDark ? 0.55 : 0.92,
       );
+=======
+    final shadow = Paint()..color = AppColors.skyTop.withValues(alpha: 0.18);
+    final p = Paint()..color = Colors.white.withValues(alpha: 0.92);
+>>>>>>> a37a90db963b6c24a7ebb7bca03f71b1155020ce
     final r = width * 0.28;
 
     canvas.drawRRect(
@@ -858,9 +867,13 @@ class _SteppePainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
+<<<<<<< HEAD
           colors: isDark
               ? const [Color(0xFFEAE3D5), Color(0xFFD0C6B4)]
               : const [Colors.white, AppColors.cream],
+=======
+          colors: [Colors.white, AppColors.cream],
+>>>>>>> a37a90db963b6c24a7ebb7bca03f71b1155020ce
         ).createShader(Rect.fromLTWH(wall.left, wall.top - size, wallW, size)),
     );
 
