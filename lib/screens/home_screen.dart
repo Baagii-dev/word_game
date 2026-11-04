@@ -6,6 +6,7 @@ import '../design/characters/hero_art.dart';
 import '../design/ornament_strip.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
+import '../services/settings_service.dart';
 import '../widgets/game_button.dart';
 import '../widgets/rules_dialog.dart';
 
@@ -16,6 +17,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = SettingsService.instance;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -25,6 +28,33 @@ class HomeScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: const OrnamentStrip(),
+          ),
+          // Баруун дээд буланд Өдөр / Шөнийн горим (Dark Mode) хурдан солих товч
+          Positioned(
+            top: MediaQuery.paddingOf(context).top + 28,
+            right: 16,
+            child: ListenableBuilder(
+              listenable: settings,
+              builder: (context, _) => Material(
+                color: AppColors.navyDeep.withValues(alpha: 0.65),
+                shape: CircleBorder(
+                  side: BorderSide(
+                    color: AppColors.accent.withValues(alpha: 0.8),
+                    width: 1.5,
+                  ),
+                ),
+                child: IconButton(
+                  tooltip: settings.darkMode
+                      ? 'Өдрийн горим'
+                      : 'Харанхуй горим',
+                  onPressed: () => settings.setDarkMode(!settings.darkMode),
+                  icon: Icon(
+                    settings.darkMode ? Icons.light_mode : Icons.dark_mode,
+                    color: AppColors.accentLight,
+                  ),
+                ),
+              ),
+            ),
           ),
           SafeArea(
             child: Center(
@@ -79,7 +109,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text(
+                    const Text(
                       'Үгийн Тулаан',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -87,7 +117,7 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         color: AppColors.accentLight,
                         letterSpacing: 0.6,
-                        shadows: const [
+                        shadows: [
                           Shadow(
                             color: AppColors.navyDeep,
                             offset: Offset(0, 3),

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Тохиргоо: дуу, чичиргээ. Төхөөрөмж дээр хадгалагдана.
+/// Тохиргоо: дуу, чичиргээ, харанхуй горим (dark mode). Төхөөрөмж дээр хадгалагдана.
 class SettingsService extends ChangeNotifier {
   SettingsService._();
 
@@ -9,12 +9,14 @@ class SettingsService extends ChangeNotifier {
 
   bool soundOn = true;
   bool hapticsOn = true;
+  bool darkMode = false;
 
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       soundOn = prefs.getBool('soundOn') ?? true;
       hapticsOn = prefs.getBool('hapticsOn') ?? true;
+      darkMode = prefs.getBool('darkMode') ?? false;
     } catch (_) {}
     notifyListeners();
   }
@@ -29,6 +31,12 @@ class SettingsService extends ChangeNotifier {
     hapticsOn = value;
     notifyListeners();
     await _save('hapticsOn', value);
+  }
+
+  Future<void> setDarkMode(bool value) async {
+    darkMode = value;
+    notifyListeners();
+    await _save('darkMode', value);
   }
 
   Future<void> _save(String key, bool value) async {

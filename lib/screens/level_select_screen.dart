@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../design/characters/enemy_art.dart';
 import '../design/ornament_strip.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
@@ -13,6 +14,7 @@ class LevelSelectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storage = StorageService.instance;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -40,6 +42,8 @@ class LevelSelectScreen extends StatelessWidget {
                   final locked = level.id > progress.unlockedLevel;
                   final stars = progress.stars[level.id] ?? 0;
                   final best = progress.bestScores[level.id];
+                  final boss = level.enemies.last;
+
                   return Card(
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
@@ -53,7 +57,7 @@ class LevelSelectScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: locked
-                                ? [Colors.grey.shade400, Colors.grey.shade600]
+                                ? [Colors.grey.shade500, Colors.grey.shade700]
                                 : [AppColors.accentLight, AppColors.accent],
                           ),
                           border: Border.all(
@@ -66,17 +70,19 @@ class LevelSelectScreen extends StatelessWidget {
                         alignment: Alignment.center,
                         child: locked
                             ? const Icon(Icons.lock, color: Colors.white)
-                            : const Icon(
-                                Icons.military_tech,
-                                color: Colors.white,
-                                size: 32,
+                            : EnemyArt(
+                                emoji: boss.emoji,
+                                image: boss.image,
+                                size: 36,
                               ),
                       ),
                       title: Text(
                         '${level.id}. ${level.name}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: AppColors.navyDeep,
+                          color: isDark
+                              ? AppColors.accentLight
+                              : AppColors.navyDeep,
                         ),
                       ),
                       subtitle: Text(

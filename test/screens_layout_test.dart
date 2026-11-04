@@ -6,6 +6,7 @@ import 'package:word_battle/design/theme.dart';
 import 'package:word_battle/models/level.dart';
 import 'package:word_battle/screens/result_screen.dart';
 import 'package:word_battle/screens/settings_screen.dart';
+import 'package:word_battle/services/settings_service.dart';
 import 'package:word_battle/widgets/rules_dialog.dart';
 
 /// Жижиг дэлгэц дээр overflow (хэт халих) алдаа гарахгүй эсэхийг шалгана.
@@ -14,11 +15,18 @@ void main() {
 
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  Future<void> pumpAt(WidgetTester t, Size size, Widget home) async {
+  Future<void> pumpAt(
+    WidgetTester t,
+    Size size,
+    Widget home, {
+    ThemeData? theme,
+  }) async {
     t.view.physicalSize = size * 2;
     t.view.devicePixelRatio = 2;
     addTearDown(t.view.reset);
-    await t.pumpWidget(MaterialApp(theme: AppTheme.light, home: home));
+    await t.pumpWidget(
+      MaterialApp(theme: theme ?? AppTheme.light, home: home),
+    );
     await t.pump(const Duration(milliseconds: 100));
   }
 
@@ -57,8 +65,9 @@ void main() {
       expect(t.takeException(), isNull);
     });
 
-    testWidgets('Тохиргооны дэлгэц халихгүй ($label)', (t) async {
-      await pumpAt(t, size, const SettingsScreen());
+    testWidgets('Тохиргооны дэлгэц ба Dark Mode ($label)', (t) async {
+      await pumpAt(t, size, const SettingsScreen(), theme: AppTheme.dark);
+      expect(find.text('Харанхуй горим'), findsOneWidget);
       expect(t.takeException(), isNull);
     });
 
@@ -79,6 +88,16 @@ void main() {
       expect(t.takeException(), isNull);
     });
   }
+
+  test('Dark Mode тохиргоо хадгалагдана', () async {
+    SharedPreferences.setMockInitialValues({});
+    final s = SettingsService.instance;
+    await s.load();
+    expect(s.darkMode, isFalse);
+    await s.setDarkMode(true);
+    expect(s.darkMode, isTrue);
+    await s.setDarkMode(false);
+  });
 
   test('Нэрлэсэн маршрутууд бүгд тодорхойлогдсон', () {
     for (final name in [

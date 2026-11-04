@@ -83,6 +83,7 @@ class _ResultScreenState extends State<ResultScreen> {
   Widget build(BuildContext context) {
     final next = _nextLevel;
     final boss = widget.level.enemies.last;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: widget.won ? AppColors.grass : AppColors.navyDark,
@@ -119,10 +120,12 @@ class _ResultScreenState extends State<ResultScreen> {
                               const SizedBox(height: 6),
                               Text(
                                 widget.won ? 'Ялалт!' : 'Ялагдал',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w900,
-                                  color: AppColors.navyDeep,
+                                  color: isDark
+                                      ? AppColors.accentLight
+                                      : AppColors.navyDeep,
                                 ),
                               ),
                               if (widget.won)

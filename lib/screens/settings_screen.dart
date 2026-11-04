@@ -42,6 +42,16 @@ class SettingsScreen extends StatelessWidget {
                         value: settings.hapticsOn,
                         onChanged: settings.setHaptics,
                       ),
+                      SwitchListTile(
+                        secondary: Icon(
+                          settings.darkMode
+                              ? Icons.dark_mode
+                              : Icons.light_mode,
+                        ),
+                        title: const Text('Харанхуй горим'),
+                        value: settings.darkMode,
+                        onChanged: settings.setDarkMode,
+                      ),
                     ],
                   ),
                 ),

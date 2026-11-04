@@ -140,6 +140,10 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? AppColors.accentLight : AppColors.navyDark;
+    final bodyColor = isDark ? AppColors.cream : AppColors.text;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -147,10 +151,10 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             '$icon  $title',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
-              color: AppColors.navyDark,
+              color: titleColor,
             ),
           ),
           const SizedBox(height: 4),
@@ -159,11 +163,7 @@ class _Section extends StatelessWidget {
               padding: const EdgeInsets.only(top: 3),
               child: Text(
                 line,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.35,
-                  color: AppColors.text,
-                ),
+                style: TextStyle(fontSize: 14, height: 1.35, color: bodyColor),
               ),
             ),
         ],
@@ -178,6 +178,10 @@ class _DamageExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? AppColors.accentLight : AppColors.navyDark;
+    final bodyColor = isDark ? AppColors.cream : AppColors.text;
+
     // Жишээ: үсэг бүрийн оноо тоглоомд хавтан бүр дээр бичигдсэн байдаг.
     const letters = [('м', 2), ('о', 1), ('р', 1), ('ь', 3)];
     return Padding(
@@ -185,30 +189,26 @@ class _DamageExample extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.accent.withValues(alpha: 0.18),
+          color: AppColors.accent.withValues(alpha: isDark ? 0.12 : 0.18),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.tileBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '⚔️  Хохирол хэрхэн тооцогдох вэ?',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: AppColors.navyDark,
+                color: titleColor,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Хавтан бүрийн баруун доод буланд оноо бичигтэй. '
               'Түгээмэл үсэг бага (1–2), ховор үсэг их (3–5) оноотой.',
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.35,
-                color: AppColors.text,
-              ),
+              style: TextStyle(fontSize: 14, height: 1.35, color: bodyColor),
             ),
             const SizedBox(height: 10),
             Row(
@@ -229,29 +229,25 @@ class _DamageExample extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            const Center(
+            Center(
               child: Text(
                 'Жишээ: 2 + 1 + 1 + 3 = 7 хохирол',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: bodyColor,
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Урт үг илүү хүчтэй — нийлбэрийг үржүүлнэ:',
-              style: TextStyle(fontSize: 14, color: AppColors.text),
+              style: TextStyle(fontSize: 14, color: bodyColor),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               '• 2–4 үсэг: ×1\n• 5–6 үсэг: ×1.5\n• 7–8 үсэг: ×2\n• 9+ үсэг: ×3',
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.4,
-                color: AppColors.text,
-              ),
+              style: TextStyle(fontSize: 14, height: 1.4, color: bodyColor),
             ),
           ],
         ),

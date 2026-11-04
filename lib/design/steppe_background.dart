@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 /// Тал нутаг, Ойн зах, Мангасын агуйн баялаг дэвсгэр зураглал.
+/// Dark Mode идэвхтэй үед од мичид, сартай шөнийн тал нутаг харагдана.
 /// [horizon] — тэнгэр/газрын зааг (0..1, дээрээс).
 /// [levelId] — 1: Тал нутаг, 2: Ойн зах, 3: Мангасын агуй.
 class SteppeBackground extends StatelessWidget {
@@ -25,12 +26,14 @@ class SteppeBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return CustomPaint(
       painter: _SteppePainter(
         horizon: horizon,
         showGer: showGer,
         showClouds: showClouds,
         levelId: levelId,
+        isDark: isDark,
       ),
       child: child ?? const SizedBox.expand(),
     );
@@ -43,12 +46,14 @@ class _SteppePainter extends CustomPainter {
     required this.showGer,
     required this.showClouds,
     required this.levelId,
+    required this.isDark,
   });
 
   final double horizon;
   final bool showGer;
   final bool showClouds;
   final int levelId;
+  final bool isDark;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -66,84 +71,124 @@ class _SteppePainter extends CustomPainter {
   }
 
   // ══════════════════════════════════════════════════════════════
-  //  1. ТАЛ НУТАГ (Default / Түвшин 1)
+  //  1. ТАЛ НУТАГ (Default / Түвшин 1 — Өдөр болон Шөнийн горим)
   // ══════════════════════════════════════════════════════════════
   void _paintSteppe(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
     final hy = h * horizon;
 
-    // 1. Тэнгэрийн олон давхаргат градиент
+    // 1. Тэнгэрийн градиент
     canvas.drawRect(
       Rect.fromLTWH(0, 0, w, h),
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            AppColors.skyTop,
-            AppColors.skyMid,
-            AppColors.sky,
-            Color(0xFFE8F6FF),
-          ],
-          stops: [0.0, 0.45, 0.85, 1.0],
+          colors: isDark
+              ? const [
+                  AppColors.nightSkyTop,
+                  AppColors.nightSkyMid,
+                  AppColors.nightSkyBottom,
+                ]
+              : const [
+                  AppColors.skyTop,
+                  AppColors.skyMid,
+                  AppColors.sky,
+                  Color(0xFFE8F6FF),
+                ],
+          stops: isDark ? const [0.0, 0.55, 1.0] : const [0.0, 0.45, 0.85, 1.0],
         ).createShader(Rect.fromLTWH(0, 0, w, hy)),
     );
 
-    // 2. Нар ба цацраг
-    final sun = Offset(w * 0.8, hy * 0.26);
-    final sunR = min(w, h) * 0.068;
-    for (final factor in [3.2, 2.1, 1.4]) {
+    // 2. Шөнийн од мичид ба сар эсвэл Өдрийн нар
+    final skyBody = Offset(w * 0.8, hy * 0.26);
+    final bodyR = min(w, h) * 0.068;
+
+    if (isDark) {
+      _paintNightStars(canvas, w, hy);
+      // Сарны зөөлөн туяа
+      for (final factor in [3.0, 1.8]) {
+        canvas.drawCircle(
+          skyBody,
+          bodyR * factor,
+          Paint()
+            ..shader = RadialGradient(
+              colors: [
+                AppColors.moon.withValues(alpha: 0.28 / factor),
+                AppColors.moon.withValues(alpha: 0),
+              ],
+            ).createShader(
+              Rect.fromCircle(center: skyBody, radius: bodyR * factor),
+            ),
+        );
+      }
+      // Тэргэл/хавирган сар
+      canvas.drawCircle(skyBody, bodyR, Paint()..color = AppColors.moon);
       canvas.drawCircle(
-        sun,
-        sunR * factor,
-        Paint()
-          ..shader = RadialGradient(
-            colors: [
-              AppColors.sun.withValues(alpha: 0.35 / factor),
-              AppColors.accent.withValues(alpha: 0),
-            ],
-          ).createShader(Rect.fromCircle(center: sun, radius: sunR * factor)),
+        skyBody - Offset(bodyR * 0.35, bodyR * 0.18),
+        bodyR * 0.82,
+        Paint()..color = AppColors.nightSkyTop.withValues(alpha: 0.22),
+      );
+    } else {
+      for (final factor in [3.2, 2.1, 1.4]) {
+        canvas.drawCircle(
+          skyBody,
+          bodyR * factor,
+          Paint()
+            ..shader = RadialGradient(
+              colors: [
+                AppColors.sun.withValues(alpha: 0.35 / factor),
+                AppColors.accent.withValues(alpha: 0),
+              ],
+            ).createShader(
+              Rect.fromCircle(center: skyBody, radius: bodyR * factor),
+            ),
+        );
+      }
+      canvas.drawCircle(skyBody, bodyR, Paint()..color = AppColors.sun);
+      canvas.drawCircle(
+        skyBody - Offset(bodyR * 0.2, bodyR * 0.2),
+        bodyR * 0.65,
+        Paint()..color = Colors.white.withValues(alpha: 0.45),
       );
     }
-    canvas.drawCircle(sun, sunR, Paint()..color = AppColors.sun);
-    canvas.drawCircle(
-      sun - Offset(sunR * 0.2, sunR * 0.2),
-      sunR * 0.65,
-      Paint()..color = Colors.white.withValues(alpha: 0.45),
-    );
 
     // 3. Үүлс ба шувууд
     if (showClouds) {
       _cloud(canvas, Offset(w * 0.18, hy * 0.18), w * 0.17);
       _cloud(canvas, Offset(w * 0.52, hy * 0.11), w * 0.13);
       _cloud(canvas, Offset(w * 0.86, hy * 0.42), w * 0.11);
-      _bird(canvas, Offset(w * 0.38, hy * 0.28), min(w, h) * 0.018);
-      _bird(canvas, Offset(w * 0.42, hy * 0.25), min(w, h) * 0.014);
-      _bird(canvas, Offset(w * 0.45, hy * 0.29), min(w, h) * 0.012);
+      if (!isDark) {
+        _bird(canvas, Offset(w * 0.38, hy * 0.28), min(w, h) * 0.018);
+        _bird(canvas, Offset(w * 0.42, hy * 0.25), min(w, h) * 0.014);
+        _bird(canvas, Offset(w * 0.45, hy * 0.29), min(w, h) * 0.012);
+      }
     }
 
     // 4. Цаст уулс (алсын сүрлэг уулс)
+    final mtnFar = isDark ? AppColors.nightMountainFar : AppColors.mountainFar;
+    final mtnMid = isDark ? AppColors.nightMountainMid : AppColors.mountainMid;
     _snowMountain(
       canvas,
       peak: Offset(w * 0.22, hy - h * 0.22),
       left: Offset(-w * 0.05, hy),
       right: Offset(w * 0.52, hy),
-      color: AppColors.mountainFar,
+      color: mtnFar,
     );
     _snowMountain(
       canvas,
       peak: Offset(w * 0.76, hy - h * 0.25),
       left: Offset(w * 0.42, hy),
       right: Offset(w * 1.08, hy),
-      color: AppColors.mountainMid,
+      color: mtnMid,
     );
     _snowMountain(
       canvas,
       peak: Offset(w * 0.5, hy - h * 0.17),
       left: Offset(w * 0.24, hy),
       right: Offset(w * 0.78, hy),
-      color: Color.lerp(AppColors.mountainMid, AppColors.mountainFar, 0.4)!,
+      color: Color.lerp(mtnMid, mtnFar, 0.4)!,
     );
 
     // 5. Алс толгод
@@ -160,7 +205,9 @@ class _SteppePainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.grassLight, AppColors.hillFar],
+          colors: isDark
+              ? const [AppColors.nightGrassLight, AppColors.nightGrass]
+              : const [AppColors.grassLight, AppColors.hillFar],
         ).createShader(Rect.fromLTWH(0, hy - h * 0.11, w, h * 0.12)),
     );
 
@@ -172,7 +219,10 @@ class _SteppePainter extends CustomPainter {
       ..lineTo(w, h)
       ..lineTo(0, h)
       ..close();
-    canvas.drawPath(midHills, Paint()..color = AppColors.grass);
+    canvas.drawPath(
+      midHills,
+      Paint()..color = isDark ? AppColors.nightGrass : AppColors.grass,
+    );
 
     // 7. Наад талын ногоон тал
     final field = Path()
@@ -185,24 +235,42 @@ class _SteppePainter extends CustomPainter {
     canvas.drawPath(
       field,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.grassLight, AppColors.grass, AppColors.grassDark],
-          stops: [0.0, 0.35, 1.0],
+          colors: isDark
+              ? const [
+                  AppColors.nightGrassLight,
+                  AppColors.nightGrass,
+                  AppColors.nightGrassDark,
+                ]
+              : const [
+                  AppColors.grassLight,
+                  AppColors.grass,
+                  AppColors.grassDark,
+                ],
+          stops: const [0.0, 0.35, 1.0],
         ).createShader(Rect.fromLTWH(0, hy - h * 0.03, w, h - hy + h * 0.03)),
     );
 
-    // Талын зөрөг зам / гэрэлт судал
+    // Талын зөрөг зам
     final road = Path()
       ..moveTo(w * 0.48, hy + h * 0.01)
       ..quadraticBezierTo(w * 0.35, hy + (h - hy) * 0.45, w * 0.56, h)
       ..lineTo(w * 0.72, h)
-      ..quadraticBezierTo(w * 0.46, hy + (h - hy) * 0.45, w * 0.53, hy + h * 0.01)
+      ..quadraticBezierTo(
+        w * 0.46,
+        hy + (h - hy) * 0.45,
+        w * 0.53,
+        hy + h * 0.01,
+      )
       ..close();
     canvas.drawPath(
       road,
-      Paint()..color = AppColors.tile.withValues(alpha: 0.16),
+      Paint()
+        ..color = (isDark ? AppColors.moon : AppColors.tile).withValues(
+          alpha: isDark ? 0.08 : 0.16,
+        ),
     );
 
     // 8. Өвс, цэцэгс
@@ -225,6 +293,33 @@ class _SteppePainter extends CustomPainter {
     }
   }
 
+  void _paintNightStars(Canvas canvas, double w, double hy) {
+    final starPaint = Paint()..color = Colors.white.withValues(alpha: 0.85);
+    final dimStar = Paint()..color = AppColors.moon.withValues(alpha: 0.55);
+    const stars = [
+      (0.08, 0.12, 1.6),
+      (0.15, 0.28, 1.2),
+      (0.24, 0.09, 1.8),
+      (0.31, 0.22, 1.4),
+      (0.40, 0.15, 1.7),
+      (0.48, 0.26, 1.5),
+      (0.56, 0.19, 1.6),
+      (0.64, 0.08, 1.9),
+      (0.70, 0.32, 1.3),
+      (0.91, 0.14, 1.6),
+      (0.12, 0.48, 1.1),
+      (0.60, 0.42, 1.3),
+    ];
+    for (var i = 0; i < stars.length; i++) {
+      final s = stars[i];
+      canvas.drawCircle(
+        Offset(w * s.$1, hy * s.$2),
+        s.$3,
+        i.isEven ? starPaint : dimStar,
+      );
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════
   //  2. ОЙН ЗАХ (Түвшин 2)
   // ══════════════════════════════════════════════════════════════
@@ -233,41 +328,53 @@ class _SteppePainter extends CustomPainter {
     final h = size.height;
     final hy = h * horizon;
 
-    // Үдшийн улбар-номин тэнгэр
     canvas.drawRect(
       Rect.fromLTWH(0, 0, w, h),
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            AppColors.forestSkyTop,
-            Color(0xFF3E6B68),
-            AppColors.forestSkyBottom,
-            Color(0xFFF6C27A),
-          ],
-          stops: [0.0, 0.45, 0.82, 1.0],
+          colors: isDark
+              ? const [
+                  Color(0xFF0B1924),
+                  Color(0xFF16323B),
+                  Color(0xFF234946),
+                ]
+              : const [
+                  AppColors.forestSkyTop,
+                  Color(0xFF3E6B68),
+                  AppColors.forestSkyBottom,
+                  Color(0xFFF6C27A),
+                ],
+          stops: isDark ? const [0.0, 0.55, 1.0] : const [0.0, 0.45, 0.82, 1.0],
         ).createShader(Rect.fromLTWH(0, 0, w, hy)),
     );
 
-    // Жаргаж буй том нар
+    if (isDark) {
+      _paintNightStars(canvas, w, hy);
+    }
+
+    // Нар / Сар
     final sun = Offset(w * 0.5, hy * 0.58);
     final sunR = min(w, h) * 0.11;
+    final glowColor = isDark ? AppColors.moon : const Color(0xFFFFB74D);
     canvas.drawCircle(
       sun,
       sunR * 1.9,
       Paint()
         ..shader = RadialGradient(
           colors: [
-            const Color(0xFFFFB74D).withValues(alpha: 0.45),
-            const Color(0xFFFFB74D).withValues(alpha: 0),
+            glowColor.withValues(alpha: 0.4),
+            glowColor.withValues(alpha: 0),
           ],
         ).createShader(Rect.fromCircle(center: sun, radius: sunR * 1.9)),
     );
     canvas.drawCircle(
       sun,
       sunR,
-      Paint()..color = const Color(0xFFFFCC66).withValues(alpha: 0.9),
+      Paint()
+        ..color = (isDark ? AppColors.moon : const Color(0xFFFFCC66))
+            .withValues(alpha: 0.9),
     );
 
     // Алсын бараан уулс
@@ -329,7 +436,8 @@ class _SteppePainter extends CustomPainter {
     }
 
     // Гэрэлт цохнууд (fireflies)
-    final glow = Paint()..color = const Color(0xFFFFF59D).withValues(alpha: 0.75);
+    final glow = Paint()
+      ..color = const Color(0xFFFFF59D).withValues(alpha: 0.85);
     for (final pt in const [
       Offset(0.18, 0.42),
       Offset(0.32, 0.55),
@@ -352,7 +460,6 @@ class _SteppePainter extends CustomPainter {
     final h = size.height;
     final hy = h * horizon;
 
-    // Харанхуй улаан-хүрэн агуйн дэвсгэр
     canvas.drawRect(
       Rect.fromLTWH(0, 0, w, h),
       Paint()
@@ -367,7 +474,6 @@ class _SteppePainter extends CustomPainter {
         ).createShader(Rect.fromLTWH(0, 0, w, hy)),
     );
 
-    // Улаан сар / шидэт талст гэрэл
     final orb = Offset(w * 0.5, hy * 0.36);
     final orbR = min(w, h) * 0.09;
     canvas.drawCircle(
@@ -387,7 +493,6 @@ class _SteppePainter extends CustomPainter {
       Paint()..color = const Color(0xFFFF6E40).withValues(alpha: 0.85),
     );
 
-    // Арзгар хадан уулс
     _snowMountain(
       canvas,
       peak: Offset(w * 0.2, hy - h * 0.24),
@@ -405,7 +510,6 @@ class _SteppePainter extends CustomPainter {
       hasSnow: false,
     );
 
-    // Дээрээс унжсан сталактит хаднууд
     final stalactites = Path()..moveTo(0, 0);
     const spikes = [
       (0.08, 0.14),
@@ -427,7 +531,6 @@ class _SteppePainter extends CustomPainter {
       ..close();
     canvas.drawPath(stalactites, Paint()..color = AppColors.caveRockNear);
 
-    // Агуйн чулуун шал
     final floor = Path()
       ..moveTo(0, hy)
       ..lineTo(w * 0.28, hy - h * 0.025)
@@ -451,7 +554,6 @@ class _SteppePainter extends CustomPainter {
         ).createShader(Rect.fromLTWH(0, hy, w, h - hy)),
     );
 
-    // Халуун лаавын ан цав ба оч
     final lavaPaint = Paint()
       ..color = AppColors.caveLava
       ..style = PaintingStyle.stroke
@@ -472,7 +574,6 @@ class _SteppePainter extends CustomPainter {
     );
     canvas.drawPath(crack, lavaPaint);
 
-    // Хөвж буй галын оч
     final ember = Paint()..color = const Color(0xFFFFAB40);
     for (final pt in const [
       Offset(0.15, 0.52),
@@ -498,7 +599,6 @@ class _SteppePainter extends CustomPainter {
     final midX = peak.dx + (right.dx - left.dx) * 0.04;
     final baseY = left.dy;
 
-    // Үндсэн уул
     final mtn = Path()
       ..moveTo(left.dx, baseY)
       ..lineTo(peak.dx, peak.dy)
@@ -506,7 +606,6 @@ class _SteppePainter extends CustomPainter {
       ..close();
     canvas.drawPath(mtn, Paint()..color = color);
 
-    // Сүүдэртэй баруун тал
     final shadowSide = Path()
       ..moveTo(peak.dx, peak.dy)
       ..lineTo(midX, baseY)
@@ -514,10 +613,9 @@ class _SteppePainter extends CustomPainter {
       ..close();
     canvas.drawPath(
       shadowSide,
-      Paint()..color = Colors.black.withValues(alpha: 0.14),
+      Paint()..color = Colors.black.withValues(alpha: 0.18),
     );
 
-    // Цаст оргил
     if (hasSnow) {
       final snowH = (baseY - peak.dy) * 0.34;
       final snowLeft = Offset.lerp(peak, left, 0.34)!;
@@ -525,12 +623,24 @@ class _SteppePainter extends CustomPainter {
       final snow = Path()
         ..moveTo(peak.dx, peak.dy)
         ..lineTo(snowLeft.dx, snowLeft.dy)
-        ..lineTo(peak.dx - (peak.dx - snowLeft.dx) * 0.35, peak.dy + snowH * 0.78)
+        ..lineTo(
+          peak.dx - (peak.dx - snowLeft.dx) * 0.35,
+          peak.dy + snowH * 0.78,
+        )
         ..lineTo(peak.dx, peak.dy + snowH * 1.05)
-        ..lineTo(peak.dx + (snowRight.dx - peak.dx) * 0.4, peak.dy + snowH * 0.8)
+        ..lineTo(
+          peak.dx + (snowRight.dx - peak.dx) * 0.4,
+          peak.dy + snowH * 0.8,
+        )
         ..lineTo(snowRight.dx, snowRight.dy)
         ..close();
-      canvas.drawPath(snow, Paint()..color = AppColors.mountainSnow);
+      canvas.drawPath(
+        snow,
+        Paint()
+          ..color = isDark
+              ? const Color(0xFFBBD4EC)
+              : AppColors.mountainSnow,
+      );
     }
   }
 
@@ -564,7 +674,8 @@ class _SteppePainter extends CustomPainter {
     final grassPaint = Paint()
       ..color = isForest
           ? const Color(0xFF568B44)
-          : AppColors.grassDark.withValues(alpha: 0.55)
+          : (isDark ? AppColors.nightGrassDark : AppColors.grassDark)
+                .withValues(alpha: 0.65)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.8
       ..strokeCap = StrokeCap.round;
@@ -587,7 +698,10 @@ class _SteppePainter extends CustomPainter {
         canvas.drawCircle(
           Offset(gx + 1, gy - 10),
           2.0,
-          Paint()..color = AppColors.sun,
+          Paint()
+            ..color = isDark
+                ? AppColors.accentLight.withValues(alpha: 0.65)
+                : AppColors.sun,
         );
       }
     }
@@ -608,11 +722,15 @@ class _SteppePainter extends CustomPainter {
 
   void _cloud(Canvas canvas, Offset c, double width) {
     final shadow = Paint()
-      ..color = AppColors.skyTop.withValues(alpha: 0.18);
-    final p = Paint()..color = Colors.white.withValues(alpha: 0.92);
+      ..color = (isDark ? Colors.black : AppColors.skyTop).withValues(
+        alpha: 0.18,
+      );
+    final p = Paint()
+      ..color = (isDark ? const Color(0xFF324F76) : Colors.white).withValues(
+        alpha: isDark ? 0.55 : 0.92,
+      );
     final r = width * 0.28;
 
-    // Үүлний доод зөөлөн сүүдэр
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(c.dx - r, c.dy + r * 0.32, r * 4, r * 0.9),
@@ -656,13 +774,13 @@ class _SteppePainter extends CustomPainter {
         width: wallW * 1.15,
         height: size * 0.28,
       ),
-      Paint()..color = Colors.black.withValues(alpha: 0.22),
+      Paint()..color = Colors.black.withValues(alpha: 0.28),
     );
 
     // Яндангийн утаа
     if (withSmoke) {
       final smokePaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.45)
+        ..color = Colors.white.withValues(alpha: isDark ? 0.25 : 0.45)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(
         Offset(base.dx + size * 0.15, wall.top - size * 0.78),
@@ -677,11 +795,10 @@ class _SteppePainter extends CustomPainter {
       canvas.drawCircle(
         Offset(base.dx + size * 0.44, wall.top - size * 1.28),
         size * 0.20,
-        Paint()..color = Colors.white.withValues(alpha: 0.28),
+        Paint()..color = Colors.white.withValues(alpha: isDark ? 0.16 : 0.28),
       );
     }
 
-    // Дээвэр (бөмбөгөр эсгий)
     final roof = Path()
       ..moveTo(wall.left - size * 0.1, wall.top + 2)
       ..quadraticBezierTo(
@@ -699,11 +816,13 @@ class _SteppePainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [AppColors.cream, Colors.white, AppColors.tile],
+          colors: isDark
+              ? const [Color(0xFFD6CFC2), Color(0xFFEAE3D5), Color(0xFFC5B9A5)]
+              : const [AppColors.cream, Colors.white, AppColors.tile],
         ).createShader(wall),
     );
 
-    // Ханын ташуу тор (хана)
+    // Ханын ташуу тор
     final latticePaint = Paint()
       ..color = AppColors.tileBorder.withValues(alpha: 0.22)
       ..strokeWidth = 1.0;
@@ -723,7 +842,6 @@ class _SteppePainter extends CustomPainter {
     }
     canvas.restore();
 
-    // Ханын хүрээ ба бүслүүр
     final stroke = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.6
@@ -733,20 +851,19 @@ class _SteppePainter extends CustomPainter {
       stroke,
     );
 
-    // Дээвэр зурах
+    // Дээвэр
     canvas.drawPath(
       roof,
       Paint()
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.white, AppColors.cream],
-        ).createShader(
-          Rect.fromLTWH(wall.left, wall.top - size, wallW, size),
-        ),
+          colors: isDark
+              ? const [Color(0xFFEAE3D5), Color(0xFFD0C6B4)]
+              : const [Colors.white, AppColors.cream],
+        ).createShader(Rect.fromLTWH(wall.left, wall.top - size, wallW, size)),
     );
 
-    // Унийн зураас
     final crownCenter = Offset(base.dx, wall.top - size * 0.48);
     for (final ratio in [-0.7, -0.35, 0.0, 0.35, 0.7]) {
       canvas.drawLine(
@@ -759,7 +876,7 @@ class _SteppePainter extends CustomPainter {
     }
     canvas.drawPath(roof, stroke);
 
-    // Хялгасан бүслүүр (улаан хээтэй тууз)
+    // Хялгасан бүслүүр
     canvas.drawRect(
       Rect.fromLTWH(wall.left, wall.top, wallW, size * 0.13),
       Paint()..color = AppColors.red,
@@ -772,7 +889,7 @@ class _SteppePainter extends CustomPainter {
         ..strokeWidth = 1.4,
     );
 
-    // Тооно (оройн алтан/улаан титэм)
+    // Тооно (шөнийн горимд тоононоос дулаан гэрэл цацарна)
     final toono = Path()
       ..moveTo(base.dx - size * 0.32, wall.top - size * 0.42)
       ..quadraticBezierTo(
@@ -782,7 +899,10 @@ class _SteppePainter extends CustomPainter {
         wall.top - size * 0.42,
       )
       ..close();
-    canvas.drawPath(toono, Paint()..color = AppColors.red);
+    canvas.drawPath(
+      toono,
+      Paint()..color = isDark ? AppColors.accentLight : AppColors.red,
+    );
     canvas.drawPath(toono, stroke);
 
     // Гоёмсог хаалга
@@ -802,7 +922,6 @@ class _SteppePainter extends CustomPainter {
         ..strokeWidth = 1.6
         ..color = AppColors.accent,
     );
-    // Хаалганы алтан цагираг/хээ
     canvas.drawCircle(
       door.center,
       size * 0.08,
@@ -818,5 +937,6 @@ class _SteppePainter extends CustomPainter {
       old.horizon != horizon ||
       old.showGer != showGer ||
       old.showClouds != showClouds ||
-      old.levelId != levelId;
+      old.levelId != levelId ||
+      old.isDark != isDark;
 }

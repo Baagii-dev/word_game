@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 ///  Дизайн өөрчлөхдөө эхлээд энэ файлыг засна.
 /// ══════════════════════════════════════════════════════════════
 class AppColors {
-  // ---- Тэнгэр / тал ----
+  // ---- Тэнгэр / тал (Өдөр) ----
   static const Color skyTop = Color(0xFF1E5FA8);
   static const Color skyMid = Color(0xFF56A8E8);
   static const Color sky = Color(0xFFB5E3FA);
@@ -17,6 +17,18 @@ class AppColors {
   static const Color grassDark = Color(0xFF3E681E);
   static const Color hillFar = Color(0xFF88B653); // алс толгод
   static const Color sun = Color(0xFFFFE07D);
+
+  // ---- Шөнийн тал нутаг (Dark Mode) ----
+  static const Color nightSkyTop = Color(0xFF071124);
+  static const Color nightSkyMid = Color(0xFF122647);
+  static const Color nightSkyBottom = Color(0xFF1E3B63);
+  static const Color nightMountainFar = Color(0xFF1C3352);
+  static const Color nightMountainMid = Color(0xFF14263E);
+  static const Color nightGrassLight = Color(0xFF284F3A);
+  static const Color nightGrass = Color(0xFF1D3B2B);
+  static const Color nightGrassDark = Color(0xFF11241A);
+  static const Color nightSurface = Color(0xFF152642);
+  static const Color moon = Color(0xFFFFF3C4);
 
   // ---- Ойн зах (Түвшин 2) ----
   static const Color forestSkyTop = Color(0xFF1B3B48);
@@ -88,8 +100,10 @@ class AppDurations {
 class AppTheme {
   static ThemeData get light => ThemeData(
     useMaterial3: true,
+    brightness: Brightness.light,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.navy,
+      brightness: Brightness.light,
       primary: AppColors.navy,
       secondary: AppColors.accent,
     ),
@@ -120,6 +134,57 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
         side: const BorderSide(color: AppColors.tileBorder, width: 2),
+      ),
+    ),
+  );
+
+  static ThemeData get dark => ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.navy,
+      brightness: Brightness.dark,
+      primary: AppColors.accent,
+      secondary: AppColors.accentLight,
+      surface: AppColors.nightSurface,
+    ),
+    scaffoldBackgroundColor: AppColors.nightSkyTop,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.navyDeep,
+      foregroundColor: Colors.white,
+      centerTitle: true,
+      elevation: 0,
+      titleTextStyle: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+        letterSpacing: 0.4,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: AppColors.nightSurface,
+      elevation: 6,
+      shadowColor: Colors.black87,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        side: const BorderSide(color: AppColors.accent, width: 1.8),
+      ),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.nightSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: AppColors.accent, width: 2),
+      ),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected) ? AppColors.accent : null,
+      ),
+      trackColor: WidgetStateProperty.resolveWith(
+        (s) => s.contains(WidgetState.selected)
+            ? AppColors.accent.withValues(alpha: 0.4)
+            : null,
       ),
     ),
   );
