@@ -18,6 +18,8 @@ class HpBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ratio = max == 0 ? 0.0 : (current / max).clamp(0.0, 1.0).toDouble();
+    final topColor = Color.lerp(color, Colors.white, 0.28) ?? color;
+    final botColor = Color.lerp(color, Colors.black, 0.22) ?? color;
 
     return Container(
       height: 24,
@@ -46,11 +48,7 @@ class HpBar extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [
-                          Color.lerp(color, Colors.white, 0.28)!,
-                          color,
-                          Color.lerp(color, Colors.black, 0.22)!,
-                        ],
+                        colors: [topColor, color, botColor],
                       ),
                     ),
                   ),

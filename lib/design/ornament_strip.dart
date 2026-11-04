@@ -34,6 +34,7 @@ class _OrnamentPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) return;
     final rect = Offset.zero & size;
     // Гүнзгий градиент дэвсгэр
     canvas.drawRect(
@@ -43,9 +44,9 @@ class _OrnamentPainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color.lerp(background, Colors.black, 0.22)!,
+            Color.lerp(background, Colors.black, 0.22) ?? background,
             background,
-            Color.lerp(background, Colors.black, 0.28)!,
+            Color.lerp(background, Colors.black, 0.28) ?? background,
           ],
         ).createShader(rect),
     );
@@ -56,14 +57,20 @@ class _OrnamentPainter extends CustomPainter {
       ..strokeWidth = 1.6;
 
     final glowPaint = Paint()
-      ..color = Color.lerp(color, Colors.white, 0.35)!.withValues(alpha: 0.85)
+      ..color = (Color.lerp(color, Colors.white, 0.35) ?? color).withValues(
+        alpha: 0.85,
+      )
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.square
       ..strokeJoin = StrokeJoin.miter;
 
     // Дээд, доод давхар алтан хүрээ
-    canvas.drawLine(const Offset(0, 1.2), Offset(size.width, 1.2), borderPaint);
+    canvas.drawLine(
+      const Offset(0, 1.2),
+      Offset(size.width, 1.2),
+      borderPaint,
+    );
     canvas.drawLine(
       Offset(0, size.height - 1.2),
       Offset(size.width, size.height - 1.2),
@@ -80,20 +87,17 @@ class _OrnamentPainter extends CustomPainter {
     final path = Path();
     for (double x = -unit; x < size.width + unit; x += unit) {
       final s = unit / 4;
-      // Доороос дээш алхан эргэлт
       path.moveTo(x, bottom);
       path.lineTo(x, top);
       path.lineTo(x + s * 2.5, top);
       path.lineTo(x + s * 2.5, mid);
       path.lineTo(x + s * 1.2, mid);
-      // Дээрээс доош эргэлт
       path.moveTo(x + s * 1.5, bottom);
       path.lineTo(x + s * 4, bottom);
       path.lineTo(x + s * 4, top);
     }
     canvas.drawPath(path, glowPaint);
 
-    // Хээний голд жижиг алтан цэгүүд
     final dotPaint = Paint()..color = color;
     for (double x = unit * 0.3; x < size.width + unit; x += unit) {
       canvas.drawCircle(

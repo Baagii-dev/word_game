@@ -27,7 +27,7 @@ class LevelSelectScreen extends StatelessWidget {
       // Ахиц өөрчлөгдөхөд (түвшин нээгдэх, од) жагсаалт автоматаар шинэчлэгдэнэ
       body: Stack(
         children: [
-          const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
+          Positioned.fill(child: SteppeBackground(horizon: 0.78)),
           ListenableBuilder(
             listenable: storage,
             builder: (context, _) {
@@ -42,7 +42,9 @@ class LevelSelectScreen extends StatelessWidget {
                   final locked = level.id > progress.unlockedLevel;
                   final stars = progress.stars[level.id] ?? 0;
                   final best = progress.bestScores[level.id];
-                  final boss = level.enemies.last;
+                  final boss = level.enemies.isNotEmpty
+                      ? level.enemies.last
+                      : null;
 
                   return Card(
                     child: ListTile(
@@ -68,8 +70,11 @@ class LevelSelectScreen extends StatelessWidget {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: locked
-                            ? const Icon(Icons.lock, color: Colors.white)
+                        child: locked || boss == null
+                            ? Icon(
+                                locked ? Icons.lock : Icons.flag,
+                                color: Colors.white,
+                              )
                             : EnemyArt(
                                 emoji: boss.emoji,
                                 image: boss.image,

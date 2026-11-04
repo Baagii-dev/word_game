@@ -177,15 +177,5 @@ class AppTheme {
         side: const BorderSide(color: AppColors.accent, width: 2),
       ),
     ),
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith(
-        (s) => s.contains(WidgetState.selected) ? AppColors.accent : null,
-      ),
-      trackColor: WidgetStateProperty.resolveWith(
-        (s) => s.contains(WidgetState.selected)
-            ? AppColors.accent.withValues(alpha: 0.4)
-            : null,
-      ),
-    ),
   );
 }

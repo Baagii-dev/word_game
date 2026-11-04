@@ -30,8 +30,10 @@ class _GameButtonState extends State<GameButton> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onPressed != null;
-    final topColor = Color.lerp(widget.color, Colors.white, 0.22)!;
-    final botColor = Color.lerp(widget.color, Colors.black, 0.18)!;
+    final topColor = Color.lerp(widget.color, Colors.white, 0.22) ?? widget.color;
+    final botColor = Color.lerp(widget.color, Colors.black, 0.18) ?? widget.color;
+    final shadowColor =
+        Color.lerp(widget.color, Colors.black, 0.55) ?? Colors.black54;
 
     return GestureDetector(
       onTapDown: enabled ? (_) => setState(() => _down = true) : null,
@@ -40,7 +42,7 @@ class _GameButtonState extends State<GameButton> {
       onTap: enabled
           ? () {
               AudioService.instance.play(Sfx.tap);
-              widget.onPressed!();
+              widget.onPressed?.call();
             }
           : null,
       child: AnimatedScale(
@@ -62,10 +64,7 @@ class _GameButtonState extends State<GameButton> {
               boxShadow: _down
                   ? null
                   : [
-                      BoxShadow(
-                        color: Color.lerp(widget.color, Colors.black, 0.55)!,
-                        offset: const Offset(0, 4),
-                      ),
+                      BoxShadow(color: shadowColor, offset: const Offset(0, 4)),
                       const BoxShadow(
                         color: Colors.black38,
                         offset: Offset(0, 6),

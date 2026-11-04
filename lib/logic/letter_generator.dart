@@ -51,6 +51,8 @@ class LetterGenerator {
         pool = _all;
       }
 
+      if (pool.isEmpty) pool = kAlphabet.split('');
+
       final letter = _weightedPick(pool);
       final sameCount = result.where((t) => t.letter == letter).length;
       if (sameCount >= GameConfig.maxSameLetter) continue;
@@ -65,6 +67,7 @@ class LetterGenerator {
   /// Давтамжаар жинлэсэн санамсаргүй сонголт.
   /// Жишээ: 'а' 10%, 'ф' 0.5% бол 'а' 20 дахин олон гарна.
   String _weightedPick(List<String> pool) {
+    if (pool.isEmpty) return 'а';
     final total = pool.fold<double>(0, (s, l) => s + (frequency[l] ?? 0.001));
     var r = _random.nextDouble() * total;
     for (final letter in pool) {
@@ -96,15 +99,15 @@ class LetterGenerator {
 
   /// Set-ийг жагсаалт болгож нэг удаа хадгална (санамж бүрт дахин хөрвүүлэхгүй).
   List<String> _listOf(Set<String> dictionary) {
-    if (!identical(_wordListSource, dictionary)) {
+    if (!identical(_wordListSource, dictionary) || _wordList == null) {
       _wordList = dictionary.toList(growable: false);
       _wordListSource = dictionary;
     }
-    return _wordList!;
+    return _wordList ?? const [];
   }
 
   /// Санамжид: самбараас бүтэх, ашиглагдаагүй санамсаргүй нэг үг.
-  /// Богино-дунд урттай (3..[maxLength]) үгийг сонгоно.
+  /// Богино-дунд урттай (2..[maxLength]) үгийг сонгоно.
   ///
   /// Толь бичгийг санамсаргүй цэгээс эхлэн шалгаад [sample] үг олдмогц зогсоно
   /// (105k үгийг бүтнээр нь гүйлгэхгүй тул утсан дээр удаан биш).
@@ -137,8 +140,9 @@ class LetterGenerator {
   bool _canBuild(String word, Map<String, int> available) {
     final need = <String, int>{};
     for (final ch in word.split('')) {
-      need[ch] = (need[ch] ?? 0) + 1;
-      if (need[ch]! > (available[ch] ?? 0)) return false;
+      final count = (need[ch] ?? 0) + 1;
+      need[ch] = count;
+      if (count > (available[ch] ?? 0)) return false;
     }
     return true;
   }

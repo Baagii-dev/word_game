@@ -82,7 +82,9 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     final next = _nextLevel;
-    final boss = widget.level.enemies.last;
+    final boss = widget.level.enemies.isNotEmpty
+        ? widget.level.enemies.last
+        : null;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -110,7 +112,7 @@ class _ResultScreenState extends State<ResultScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              widget.won
+                              widget.won || boss == null
                                   ? const HeroArt(size: 76)
                                   : EnemyArt(
                                       emoji: boss.emoji,

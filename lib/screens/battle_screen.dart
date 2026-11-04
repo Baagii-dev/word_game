@@ -201,6 +201,7 @@ class _BattleScreenState extends State<BattleScreen>
     final c = controller;
     final isPlayerTurn = c.status == BattleStatus.playerTurn;
     final hurry = isPlayerTurn && c.timeLeft <= 5;
+    final msg = c.message;
 
     return SteppeBackground(
       horizon: 0.62,
@@ -255,11 +256,11 @@ class _BattleScreenState extends State<BattleScreen>
                       ),
                     ),
                   ),
-                if (c.message != null)
+                if (msg != null)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                     child: Text(
-                      c.message!,
+                      msg,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 14,

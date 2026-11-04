@@ -1,10 +1,11 @@
 /// Хадгалагдах ахиц: аль түвшин нээгдсэн, түвшин бүрийн шилдэг оноо, од.
 class PlayerProgress {
   PlayerProgress({
-    this.unlockedLevel = 1,
+    int? unlockedLevel,
     Map<int, int>? bestScores,
     Map<int, int>? stars,
-  }) : bestScores = bestScores ?? {},
+  }) : unlockedLevel = unlockedLevel ?? 1,
+       bestScores = bestScores ?? {},
        stars = stars ?? {};
 
   int unlockedLevel;
@@ -19,9 +20,18 @@ class PlayerProgress {
   };
 
   factory PlayerProgress.fromMap(Map<String, dynamic> map) {
-    Map<int, int> toIntMap(dynamic raw) => (raw as Map? ?? {}).map(
-      (k, v) => MapEntry(int.parse('$k'), (v as num).toInt()),
-    );
+    Map<int, int> toIntMap(dynamic raw) {
+      if (raw is! Map) return {};
+      final result = <int, int>{};
+      for (final entry in raw.entries) {
+        final k = int.tryParse('${entry.key}');
+        final v = entry.value;
+        if (k != null && v is num) {
+          result[k] = v.toInt();
+        }
+      }
+      return result;
+    }
 
     return PlayerProgress(
       unlockedLevel: (map['unlockedLevel'] as num?)?.toInt() ?? 1,

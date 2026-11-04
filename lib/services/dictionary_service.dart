@@ -41,7 +41,7 @@ class DictionaryService {
     for (final word in words) {
       for (final ch in word.split('')) {
         if (counts.containsKey(ch)) {
-          counts[ch] = counts[ch]! + 1;
+          counts[ch] = (counts[ch] ?? 0) + 1;
           total++;
         }
       }
