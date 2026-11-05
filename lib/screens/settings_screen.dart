@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: SteppeBackground(horizon: 0.8)),
+          const Positioned.fill(child: SteppeBackground(horizon: 0.8)),
           ListenableBuilder(
             listenable: settings,
             builder: (context, _) => ListView(

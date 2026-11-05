@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(child: SteppeBackground(horizon: 0.78)),
+          const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
           Positioned(
             top: MediaQuery.paddingOf(context).top,
             left: 0,

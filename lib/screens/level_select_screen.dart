@@ -27,7 +27,7 @@ class LevelSelectScreen extends StatelessWidget {
       // Ахиц өөрчлөгдөхөд (түвшин нээгдэх, од) жагсаалт автоматаар шинэчлэгдэнэ
       body: Stack(
         children: [
-          Positioned.fill(child: SteppeBackground(horizon: 0.78)),
+          const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
           ListenableBuilder(
             listenable: storage,
             builder: (context, _) {

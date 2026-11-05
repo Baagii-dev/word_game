@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(child: SteppeBackground(horizon: 0.76)),
+          const Positioned.fill(child: SteppeBackground(horizon: 0.76)),
           Center(
             child: TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.6, end: 1),
