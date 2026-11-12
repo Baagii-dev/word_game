@@ -8,7 +8,7 @@ import '../models/level.dart';
 import '../services/storage_service.dart';
 import 'battle_screen.dart';
 
-/// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүнг хадгална.
+/// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүн болон түүхийг хадгална.
 class ResultScreen extends StatefulWidget {
   const ResultScreen({
     super.key,
@@ -36,12 +36,15 @@ class _ResultScreenState extends State<ResultScreen> {
   void initState() {
     super.initState();
     // Дэлгэц зурагдаж дууссаны дараа хадгална
-    // (build хийгдэж байх үед өөр дэлгэцийг шинэчлэхээс сэргийлнэ)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       StorageService.instance.saveResult(
         levelId: widget.level.id,
+        levelName: widget.level.name,
+        won: widget.won,
         score: widget.score,
         stars: widget.stars,
+        wordsCount: widget.wordsCount,
+        longestWord: widget.longestWord,
       );
     });
   }

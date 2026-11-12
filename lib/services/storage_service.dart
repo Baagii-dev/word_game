@@ -5,15 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/player_progress.dart';
 
-/// Тоглогчийн ахицыг төхөөрөмж дээр хадгалах (shared_preferences, JSON).
-///
-/// Дараа нь Firestore руу шилжих бол `load()` болон `_persist()`-ийг л
-/// өөрчлөхөд хангалттай — бусад код өөрчлөгдөхгүй.
+/// Тоглогчийн ахиц болон тоглолтын түүхийг төхөөрөмж дээр хадгалах (shared_preferences, JSON).
 class StorageService extends ChangeNotifier {
   StorageService._();
 
   static final StorageService instance = StorageService._();
   static const String _key = 'progress';
+  static const int maxHistoryCount = 50;
 
   PlayerProgress progress = PlayerProgress();
 
@@ -36,7 +34,13 @@ class StorageService extends ChangeNotifier {
     required int levelId,
     required int score,
     required int stars,
+    String? levelName,
+    bool? won,
+    int wordsCount = 0,
+    String longestWord = '',
   }) async {
+    final isWin = won ?? (stars > 0);
+
     if (score > (progress.bestScores[levelId] ?? 0)) {
       progress.bestScores[levelId] = score;
     }
@@ -44,9 +48,33 @@ class StorageService extends ChangeNotifier {
       progress.stars[levelId] = stars;
     }
     // Ялсан бол дараагийн түвшнийг нээнэ
-    if (stars > 0 && levelId >= progress.unlockedLevel) {
+    if (isWin && levelId >= progress.unlockedLevel) {
       progress.unlockedLevel = levelId + 1;
     }
+
+    // Түүхэнд нэмэх (хамгийн шинэ нь эхэндээ)
+    progress.history.insert(
+      0,
+      BattleRecord(
+        levelId: levelId,
+        levelName: levelName ?? 'Түвшин $levelId',
+        won: isWin,
+        score: score,
+        stars: stars,
+        wordsCount: wordsCount,
+        longestWord: longestWord,
+      ),
+    );
+    if (progress.history.length > maxHistoryCount) {
+      progress.history.removeRange(maxHistoryCount, progress.history.length);
+    }
+
+    notifyListeners();
+    await _persist();
+  }
+
+  Future<void> clearHistory() async {
+    progress.history.clear();
     notifyListeners();
     await _persist();
   }

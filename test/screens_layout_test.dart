@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_battle/core/routes.dart';
 import 'package:word_battle/design/theme.dart';
 import 'package:word_battle/models/level.dart';
+import 'package:word_battle/screens/history_screen.dart';
 import 'package:word_battle/screens/result_screen.dart';
 import 'package:word_battle/screens/settings_screen.dart';
 import 'package:word_battle/services/settings_service.dart';
@@ -71,6 +72,12 @@ void main() {
       expect(t.takeException(), isNull);
     });
 
+    testWidgets('Түүхийн дэлгэц халихгүй ($label)', (t) async {
+      await pumpAt(t, size, const HistoryScreen(), theme: AppTheme.dark);
+      expect(find.text('Тоглолтын түүх'), findsOneWidget);
+      expect(t.takeException(), isNull);
+    });
+
     testWidgets('Зааврын цонх халихгүй ($label)', (t) async {
       await pumpAt(
         t,
@@ -105,6 +112,7 @@ void main() {
       Routes.home,
       Routes.levels,
       Routes.settings,
+      Routes.history,
     ]) {
       expect(Routes.onGenerate(RouteSettings(name: name)), isA<Route>());
     }

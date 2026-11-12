@@ -59,20 +59,20 @@ class HomeScreen extends StatelessWidget {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(28, 28, 28, 28),
+                padding: const EdgeInsets.fromLTRB(28, 24, 28, 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Баатар ба Луугийн сүлдэт чимэглэл
                     SizedBox(
-                      height: 96,
+                      height: 92,
                       width: 220,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            width: 92,
-                            height: 92,
+                            width: 88,
+                            height: 88,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: const RadialGradient(
@@ -98,22 +98,22 @@ class HomeScreen extends StatelessWidget {
                           const Positioned(
                             left: 18,
                             bottom: 2,
-                            child: HeroArt(size: 82),
+                            child: HeroArt(size: 78),
                           ),
                           const Positioned(
                             right: 14,
                             bottom: 4,
-                            child: EnemyArt(emoji: '🐉', size: 76),
+                            child: EnemyArt(emoji: '🐉', size: 74),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     const Text(
                       'Үгийн Тулаан',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 38,
+                        fontSize: 36,
                         fontWeight: FontWeight.w900,
                         color: AppColors.accentLight,
                         letterSpacing: 0.6,
@@ -149,7 +149,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 22),
                     GameButton(
                       label: 'Тоглох',
                       icon: Icons.play_arrow,
@@ -157,7 +157,15 @@ class HomeScreen extends StatelessWidget {
                       onPressed: () =>
                           Navigator.pushNamed(context, Routes.levels),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
+                    GameButton(
+                      label: 'Түүх',
+                      icon: Icons.history,
+                      color: AppColors.navy,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, Routes.history),
+                    ),
+                    const SizedBox(height: 10),
                     GameButton(
                       label: 'Заавар',
                       icon: Icons.help_outline,
@@ -165,11 +173,11 @@ class HomeScreen extends StatelessWidget {
                       foreground: AppColors.text,
                       onPressed: () => _showRules(context),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     GameButton(
                       label: 'Тохиргоо',
                       icon: Icons.settings,
-                      color: AppColors.navy,
+                      color: AppColors.navyDark,
                       onPressed: () =>
                           Navigator.pushNamed(context, Routes.settings),
                     ),
