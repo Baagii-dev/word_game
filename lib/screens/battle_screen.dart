@@ -295,7 +295,7 @@ class _BattleScreenState extends State<BattleScreen>
                           CharacterSprite(
                             key: ValueKey(c.waveIndex),
                             art: EnemyArt(
-                              emoji: c.enemy.emoji,
+                              kind: c.enemy.kind,
                               image: c.enemy.image,
                               size: spriteSize,
                             ),

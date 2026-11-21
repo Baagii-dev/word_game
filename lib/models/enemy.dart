@@ -1,10 +1,29 @@
 import 'dart:math';
 
-/// Дайсан. Зураг бэлэн болтол emoji-гоор түр дүрсэлнэ.
+/// Дайсны төрөл — кодоор зурах дүрсийг (EnemyArt) сонгоно.
+/// levels.json-д `"kind": "wolf"` гэх мэтээр нэрээр нь бичнэ.
+enum EnemyKind {
+  mouse, // Хулгана
+  snake, // Могой
+  wolf, // Чоно
+  fox, // Үнэг
+  bear, // Баавгай
+  tiger, // Бар
+  eagle, // Хар шувуу
+  dragon, // Луу
+  witch, // Шулам
+  demon; // Мангас
+
+  /// JSON-ы нэрээс төрөл олно. Танихгүй бол мангас болно.
+  static EnemyKind parse(String? name) =>
+      EnemyKind.values.asNameMap()[name] ?? EnemyKind.demon;
+}
+
+/// Дайсан. Зураг (`image`) байхгүй бол [kind]-аар кодоор зурсан дүрс харагдана.
 class Enemy {
   Enemy({
     required this.name,
-    required this.emoji,
+    required this.kind,
     required this.maxHp,
     required this.attack,
     this.specialEvery = 0,
@@ -12,8 +31,7 @@ class Enemy {
   }) : hp = maxHp;
 
   final String name;
-  final String
-  emoji; // дараа нь 'assets/images/enemies/chono.png' болгож солино
+  final EnemyKind kind;
   final int maxHp;
   final int attack; // нэг ээлжинд тоглогчоос хасах HP
   final String? image; // сонголттой зураг: 'assets/images/characters/wolf.png'
@@ -29,7 +47,7 @@ class Enemy {
   /// Түвшин бүрт шинэ, бүтэн HP-тэй хуулбар үүсгэнэ.
   Enemy copy() => Enemy(
     name: name,
-    emoji: emoji,
+    kind: kind,
     maxHp: maxHp,
     attack: attack,
     specialEvery: specialEvery,

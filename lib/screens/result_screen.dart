@@ -132,7 +132,7 @@ class _ResultScreenState extends State<ResultScreen> {
                               widget.won || boss == null
                                   ? const HeroArt(size: 76)
                                   : EnemyArt(
-                                      emoji: boss.emoji,
+                                      kind: boss.kind,
                                       image: boss.image,
                                       size: 76,
                                     ),

@@ -6,6 +6,7 @@ import '../design/characters/hero_art.dart';
 import '../design/glass.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
+import '../models/enemy.dart';
 import '../services/audio_service.dart';
 import '../services/settings_service.dart';
 import '../widgets/game_button.dart';
@@ -185,7 +186,7 @@ class _Emblem extends StatelessWidget {
           const Positioned(
             right: 22,
             bottom: 6,
-            child: EnemyArt(emoji: '🐉', size: 86),
+            child: EnemyArt(kind: EnemyKind.dragon, size: 86),
           ),
         ],
       ),

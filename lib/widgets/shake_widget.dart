@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-/// [trigger] өөрчлөгдөх бүрт хүүхдийг хажуу тийш сэгсэрнэ (буруу үг гэх мэт).
 class ShakeWidget extends StatefulWidget {
   const ShakeWidget({super.key, required this.trigger, required this.child});
 

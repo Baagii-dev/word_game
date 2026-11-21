@@ -113,7 +113,7 @@ class _LevelCard extends StatelessWidget {
                             color: Colors.white70,
                           )
                         : EnemyArt(
-                            emoji: boss.emoji,
+                            kind: boss.kind,
                             image: boss.image,
                             size: 40,
                           ),

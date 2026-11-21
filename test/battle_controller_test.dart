@@ -9,13 +9,25 @@ import 'package:word_battle/services/dictionary_service.dart';
 
 void main() {
   final dict = DictionaryService()
-    ..loadFromList(['үг', 'ус', 'морь', 'ном', 'гэр', 'нар', 'сар', 'хонь', 'цагаан']);
+    ..loadFromList([
+      'үг',
+      'ус',
+      'морь',
+      'ном',
+      'гэр',
+      'нар',
+      'сар',
+      'хонь',
+      'цагаан',
+    ]);
 
   Level makeLevel({int hp = 100}) => Level(
     id: 99,
     name: 'тест',
     description: '',
-    enemies: [Enemy(name: 'Хулгана', emoji: '🐭', maxHp: hp, attack: 3)],
+    enemies: [
+      Enemy(name: 'Хулгана', kind: EnemyKind.mouse, maxHp: hp, attack: 3),
+    ],
   );
 
   BattleController makeController({int hp = 100}) => BattleController(
@@ -179,7 +191,7 @@ void main() {
         enemies: [
           Enemy(
             name: 'Мангас',
-            emoji: '👹',
+            kind: EnemyKind.demon,
             maxHp: 100,
             attack: 2,
             specialEvery: 2,

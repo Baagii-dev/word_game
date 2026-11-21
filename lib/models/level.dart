@@ -26,7 +26,7 @@ class Level {
       for (final e in json['enemies'] as List)
         Enemy(
           name: e['name'] as String,
-          emoji: e['emoji'] as String,
+          kind: EnemyKind.parse(e['kind'] as String?),
           maxHp: (e['maxHp'] as num).toInt(),
           attack: (e['attack'] as num).toInt(),
           specialEvery: (e['specialEvery'] as num?)?.toInt() ?? 0,
@@ -69,9 +69,15 @@ final List<Level> kLevels = [
     name: 'Тал нутаг',
     description: 'Эхлэлийн түвшин',
     enemies: [
-      Enemy(name: 'Хулгана', emoji: '🐭', maxHp: 12, attack: 2),
-      Enemy(name: 'Могой', emoji: '🐍', maxHp: 16, attack: 3),
-      Enemy(name: 'Чоно', emoji: '🐺', maxHp: 22, attack: 4, specialEvery: 4),
+      Enemy(name: 'Хулгана', kind: EnemyKind.mouse, maxHp: 12, attack: 2),
+      Enemy(name: 'Могой', kind: EnemyKind.snake, maxHp: 16, attack: 3),
+      Enemy(
+        name: 'Чоно',
+        kind: EnemyKind.wolf,
+        maxHp: 22,
+        attack: 4,
+        specialEvery: 4,
+      ),
     ],
   ),
   Level(
@@ -79,18 +85,24 @@ final List<Level> kLevels = [
     name: 'Ойн зах',
     description: 'Дайснууд хүчирхэгжинэ',
     enemies: [
-      Enemy(name: 'Үнэг', emoji: '🦊', maxHp: 20, attack: 4),
+      Enemy(name: 'Үнэг', kind: EnemyKind.fox, maxHp: 20, attack: 4),
       Enemy(
         name: 'Баавгай',
-        emoji: '🐻',
+        kind: EnemyKind.bear,
         maxHp: 30,
         attack: 5,
         specialEvery: 4,
       ),
-      Enemy(name: 'Бар', emoji: '🐯', maxHp: 32, attack: 5, specialEvery: 3),
+      Enemy(
+        name: 'Бар',
+        kind: EnemyKind.tiger,
+        maxHp: 32,
+        attack: 5,
+        specialEvery: 3,
+      ),
       Enemy(
         name: 'Хар шувуу',
-        emoji: '🦅',
+        kind: EnemyKind.eagle,
         maxHp: 28,
         attack: 6,
         specialEvery: 3,
@@ -102,9 +114,27 @@ final List<Level> kLevels = [
     name: 'Мангасын агуй',
     description: 'Эцсийн тулаан',
     enemies: [
-      Enemy(name: 'Луу', emoji: '🐉', maxHp: 40, attack: 6, specialEvery: 3),
-      Enemy(name: 'Шулам', emoji: '🧟', maxHp: 45, attack: 7, specialEvery: 3),
-      Enemy(name: 'Мангас', emoji: '👹', maxHp: 65, attack: 8, specialEvery: 2),
+      Enemy(
+        name: 'Луу',
+        kind: EnemyKind.dragon,
+        maxHp: 40,
+        attack: 6,
+        specialEvery: 3,
+      ),
+      Enemy(
+        name: 'Шулам',
+        kind: EnemyKind.witch,
+        maxHp: 45,
+        attack: 7,
+        specialEvery: 3,
+      ),
+      Enemy(
+        name: 'Мангас',
+        kind: EnemyKind.demon,
+        maxHp: 65,
+        attack: 8,
+        specialEvery: 2,
+      ),
     ],
   ),
 ];

@@ -166,7 +166,9 @@ void main() {
         id: 97,
         name: 't',
         description: '',
-        enemies: [Enemy(name: 'x', emoji: 'x', maxHp: 999, attack: 5)],
+        enemies: [
+          Enemy(name: 'x', kind: EnemyKind.mouse, maxHp: 999, attack: 5),
+        ],
       );
       final c = BattleController(
         level: level,
@@ -189,7 +191,9 @@ void main() {
         id: 96,
         name: 't',
         description: '',
-        enemies: [Enemy(name: 'x', emoji: 'x', maxHp: 999, attack: 1)],
+        enemies: [
+          Enemy(name: 'x', kind: EnemyKind.mouse, maxHp: 999, attack: 1),
+        ],
       );
       final c = BattleController(
         level: level,
