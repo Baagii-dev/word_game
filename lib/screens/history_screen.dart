@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../design/ornament_strip.dart';
+import '../design/glass.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../models/player_progress.dart';
@@ -59,6 +59,7 @@ class HistoryScreen extends StatelessWidget {
         );
 
         return Scaffold(
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
             title: const Text('Тоглолтын түүх'),
             actions: [
@@ -66,104 +67,105 @@ class HistoryScreen extends StatelessWidget {
                 IconButton(
                   tooltip: 'Түүх арилгах',
                   onPressed: () => _confirmClear(context),
-                  icon: const Icon(Icons.delete_outline),
+                  icon: const Icon(Icons.delete_outline_rounded),
                 ),
             ],
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(18),
-              child: OrnamentStrip(height: 18),
-            ),
           ),
           body: Stack(
             children: [
               const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
-              history.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  '📜',
-                                  style: TextStyle(fontSize: 48),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Одоогоор тоглолтын түүх алга',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? AppColors.accentLight
-                                        : AppColors.navyDeep,
+              const Positioned.fill(
+                child: ScrimOverlay(top: 0.55, bottom: 0.4),
+              ),
+              SafeArea(
+                child: history.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    '📜',
+                                    style: TextStyle(fontSize: 48),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'Тулаанд орж тоглосны дараа үр дүн энд хадгалагдана.',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Одоогоор тоглолтын түүх алга',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? AppColors.accentLight
+                                          : AppColors.navyDeep,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    'Тулаанд орж тоглосны дараа үр дүн энд хадгалагдана.',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          // Нийт үзүүлэлтийн самбар
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Wrap(
+                                alignment: WrapAlignment.spaceAround,
+                                spacing: 12,
+                                runSpacing: 8,
+                                children: [
+                                  _StatBadge(
+                                    label: 'Тоглосон',
+                                    value: '${history.length}',
+                                    isDark: isDark,
+                                  ),
+                                  _StatBadge(
+                                    label: 'Ялалт',
+                                    value: '$wins',
+                                    isDark: isDark,
+                                  ),
+                                  _StatBadge(
+                                    label: 'Дээд оноо',
+                                    value: '$bestScore',
+                                    isDark: isDark,
+                                  ),
+                                  _StatBadge(
+                                    label: 'Урт үг',
+                                    value: longest.isEmpty
+                                        ? '-'
+                                        : longest.toUpperCase(),
+                                    isDark: isDark,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          for (final record in history)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: _RecordCard(
+                                record: record,
+                                dateText: _formatDate(record.playedAt),
+                                isDark: isDark,
+                              ),
+                            ),
+                        ],
                       ),
-                    )
-                  : ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        // Нийт үзүүлэлтийн самбар
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Wrap(
-                              alignment: WrapAlignment.spaceAround,
-                              spacing: 12,
-                              runSpacing: 8,
-                              children: [
-                                _StatBadge(
-                                  label: 'Тоглосон',
-                                  value: '${history.length}',
-                                  isDark: isDark,
-                                ),
-                                _StatBadge(
-                                  label: 'Ялалт',
-                                  value: '$wins',
-                                  isDark: isDark,
-                                ),
-                                _StatBadge(
-                                  label: 'Дээд оноо',
-                                  value: '$bestScore',
-                                  isDark: isDark,
-                                ),
-                                _StatBadge(
-                                  label: 'Урт үг',
-                                  value: longest.isEmpty
-                                      ? '-'
-                                      : longest.toUpperCase(),
-                                  isDark: isDark,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        for (final record in history)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: _RecordCard(
-                              record: record,
-                              dateText: _formatDate(record.playedAt),
-                              isDark: isDark,
-                            ),
-                          ),
-                      ],
-                    ),
+              ),
             ],
           ),
         );
@@ -222,8 +224,15 @@ class _RecordCard extends StatelessWidget {
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        leading: CircleAvatar(
-          backgroundColor: record.won ? AppColors.playerHp : AppColors.enemyHp,
+        leading: Container(
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            color: (record.won ? AppColors.mint : AppColors.primaryEnd)
+                .withValues(alpha: 0.18),
+          ),
           child: Text(
             record.won ? '🏆' : '💀',
             style: const TextStyle(fontSize: 20),

@@ -25,11 +25,7 @@ class EnemyArt extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const RadialGradient(
-          colors: [
-            Color(0xFF6B232B),
-            Color(0xFF3B1219),
-            AppColors.navyDeep,
-          ],
+          colors: [Color(0xFF6B232B), Color(0xFF3B1219), AppColors.navyDeep],
         ),
         border: Border.all(color: AppColors.accent, width: 2.5),
         boxShadow: const [

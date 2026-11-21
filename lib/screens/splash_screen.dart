@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../core/routes.dart';
 import '../design/characters/hero_art.dart';
+import '../design/glass.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
 
@@ -38,6 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         children: [
           const Positioned.fill(child: SteppeBackground(horizon: 0.76)),
+          const Positioned.fill(child: ScrimOverlay(top: 0.3, bottom: 0.6)),
           Center(
             child: TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.6, end: 1),
@@ -57,10 +59,15 @@ class _SplashScreenState extends State<SplashScreen> {
                     style: TextStyle(
                       fontSize: 38,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.accentLight,
+                      color: Colors.white,
+                      letterSpacing: -0.8,
                       shadows: [
-                        Shadow(color: AppColors.navyDeep, offset: Offset(0, 3)),
-                        Shadow(color: AppColors.navyDeep, blurRadius: 8),
+                        Shadow(color: AppColors.bronze, blurRadius: 24),
+                        Shadow(
+                          color: Color(0x66000000),
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
+                        ),
                       ],
                     ),
                   ),

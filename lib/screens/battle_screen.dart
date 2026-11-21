@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../design/characters/character_sprite.dart';
 import '../design/characters/enemy_art.dart';
 import '../design/characters/hero_art.dart';
-import '../design/ornament_strip.dart';
+import '../design/glass.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../logic/battle_controller.dart';
@@ -13,6 +13,7 @@ import '../models/level.dart';
 import '../services/audio_service.dart';
 import '../services/dictionary_service.dart';
 import '../widgets/damage_popup.dart';
+import '../widgets/game_button.dart';
 import '../widgets/hp_bar.dart';
 import '../widgets/letter_grid.dart';
 import '../widgets/shake_widget.dart';
@@ -131,7 +132,7 @@ class _BattleScreenState extends State<BattleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.navyDark,
+      backgroundColor: AppColors.ink,
       body: SafeArea(
         bottom: false,
         child: ListenableBuilder(
@@ -152,33 +153,27 @@ class _BattleScreenState extends State<BattleScreen>
   Widget _buildTopBar() {
     final c = controller;
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.navyDeep, AppColors.navyDark],
-        ),
-      ),
-      padding: const EdgeInsets.fromLTRB(4, 8, 12, 8),
+      color: AppColors.ink,
+      padding: const EdgeInsets.fromLTRB(8, 8, 14, 10),
       child: Row(
         children: [
-          IconButton(
+          GlassIconButton(
+            icon: Icons.pause_rounded,
+            tooltip: 'Түр зогсоох',
+            size: 40,
             onPressed: _confirmExit,
-            icon: const Icon(
-              Icons.pause_circle_filled,
-              size: 34,
-              color: AppColors.accent,
-            ),
           ),
+          const SizedBox(width: 10),
           Expanded(
             child: HpBar(
               current: c.player.hp,
               max: c.player.maxHp,
-              color: AppColors.playerHp,
+              color: AppColors.mint,
+              label: 'Таны амь',
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: WaveIndicator(
               current: c.waveIndex + 1,
               total: c.enemies.length,
@@ -188,7 +183,9 @@ class _BattleScreenState extends State<BattleScreen>
             child: HpBar(
               current: c.enemy.hp,
               max: c.enemy.maxHp,
-              color: AppColors.enemyHp,
+              color: AppColors.primaryEnd,
+              label: 'Дайсны амь',
+              alignEnd: true,
             ),
           ),
         ],
@@ -211,67 +208,60 @@ class _BattleScreenState extends State<BattleScreen>
       child: Column(
         children: [
           const SizedBox(height: 8),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.navyDeep.withValues(alpha: 0.72),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: hurry
-                    ? AppColors.warning
-                    : AppColors.accent.withValues(alpha: 0.65),
-                width: 1.4,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: GlassPanel(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              opacity: 0.5,
+              borderColor: hurry
+                  ? AppColors.warning.withValues(alpha: 0.8)
+                  : AppColors.inkLine,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    isPlayerTurn
+                        ? 'Таны ээлж · ${c.timeLeft} сек'
+                        : _statusText(c.status),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: hurry ? AppColors.warning : Colors.white,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                  if (c.turnsUntilSpecial != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        c.specialIncoming
+                            ? '⚠ Дайсан дараагийн ээлжинд хүчтэй цохино!'
+                            : '⚡ Хүчтэй цохилт: ${c.turnsUntilSpecial} ээлжийн дараа',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: c.specialIncoming
+                              ? FontWeight.bold
+                              : null,
+                          color: c.specialIncoming
+                              ? AppColors.danger
+                              : Colors.white70,
+                        ),
+                      ),
+                    ),
+                  if (msg != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                      child: Text(
+                        msg,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  isPlayerTurn
-                      ? 'Таны ээлж · ${c.timeLeft} сек'
-                      : _statusText(c.status),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: hurry ? AppColors.warning : Colors.white,
-                    shadows: const [
-                      Shadow(color: AppColors.navyDark, blurRadius: 6),
-                    ],
-                  ),
-                ),
-                if (c.turnsUntilSpecial != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      c.specialIncoming
-                          ? '⚠ Дайсан дараагийн ээлжинд хүчтэй цохино!'
-                          : '⚡ Хүчтэй цохилт: ${c.turnsUntilSpecial} ээлжийн дараа',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: c.specialIncoming ? FontWeight.bold : null,
-                        color: c.specialIncoming
-                            ? AppColors.danger
-                            : Colors.white70,
-                      ),
-                    ),
-                  ),
-                if (msg != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                    child: Text(
-                      msg,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(color: AppColors.navyDark, blurRadius: 6),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
             ),
           ),
           // Дүрсний хэмжээг үлдсэн зайгаас тооцно — мессежийн самбар хэдэн
@@ -352,22 +342,37 @@ class _BattleScreenState extends State<BattleScreen>
 
     return Container(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppColors.navyDark, AppColors.navyDeep],
+        color: AppColors.inkSoft,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSizes.radiusXl),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x55000000),
+            blurRadius: 24,
+            offset: Offset(0, -6),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const OrnamentStrip(height: 18, background: AppColors.navy),
+          // Жижиг бариул зураас — доод самбар гэдгийг илтгэнэ
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
           Padding(
             padding: EdgeInsets.fromLTRB(
+              12,
               10,
-              10,
-              10,
-              10 + MediaQuery.paddingOf(context).bottom,
+              12,
+              12 + MediaQuery.paddingOf(context).bottom,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -384,70 +389,54 @@ class _BattleScreenState extends State<BattleScreen>
                       ),
                     ),
                     const SizedBox(width: 8),
-                    IconButton.filled(
+                    _SquareAction(
+                      icon: Icons.backspace_rounded,
+                      tooltip: 'Арилгах',
                       onPressed: canAttack ? c.clearSelection : null,
-                      icon: const Icon(Icons.backspace),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 LetterGrid(tiles: c.board, onTap: c.selectTile),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Row(
                   children: [
-                    OutlinedButton.icon(
+                    _PillAction(
+                      icon: Icons.lightbulb,
+                      label: '${c.hintsLeft}',
                       onPressed: c.canAct && c.hintsLeft > 0 ? c.hint : null,
-                      icon: const Icon(Icons.lightbulb),
-                      label: Text('${c.hintsLeft}'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white70),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        visualDensity: VisualDensity.compact,
-                      ),
                     ),
                     const SizedBox(width: 6),
-                    OutlinedButton.icon(
+                    _PillAction(
+                      icon: Icons.shuffle_rounded,
+                      label: 'Холих',
                       onPressed: c.canAct ? c.shuffle : null,
-                      icon: const Icon(Icons.shuffle),
-                      label: const Text('Холих'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white70),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        visualDensity: VisualDensity.compact,
-                      ),
                     ),
                     Expanded(
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text(
-                          c.combo > 0
-                              ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
-                              : '⚔ ${c.previewDamage}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Text(
+                            c.combo > 0
+                                ? '🔥${c.combo}  ⚔ ${c.previewDamage}'
+                                : '⚔ ${c.previewDamage}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    FilledButton.icon(
-                      onPressed: canAttack ? c.attack : null,
-                      icon: const Icon(Icons.flash_on),
-                      label: const Text('Довтлох'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.accent,
-                        foregroundColor: AppColors.text,
-                        // Идэвхгүй үед ч тод харагдана (үг сонгоогүй үед)
-                        disabledBackgroundColor: Colors.white.withValues(
-                          alpha: 0.16,
-                        ),
-                        disabledForegroundColor: Colors.white70,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        visualDensity: VisualDensity.compact,
+                    SizedBox(
+                      width: 124,
+                      child: GameButton(
+                        label: 'Довтлох',
+                        icon: Icons.flash_on_rounded,
+                        height: 46,
+                        onPressed: canAttack ? c.attack : null,
                       ),
                     ),
                   ],
@@ -456,6 +445,72 @@ class _BattleScreenState extends State<BattleScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Самбарын дөрвөлжин товч (бүх үсгийг арилгах).
+class _SquareAction extends StatelessWidget {
+  const _SquareAction({
+    required this.icon,
+    required this.onPressed,
+    this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(icon, size: 22),
+      style: IconButton.styleFrom(
+        fixedSize: const Size(52, 58),
+        backgroundColor: AppColors.glass,
+        foregroundColor: Colors.white,
+        disabledBackgroundColor: Colors.white.withValues(alpha: 0.06),
+        disabledForegroundColor: Colors.white30,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+      ),
+    );
+  }
+}
+
+/// Санамж / Холих — тунгалаг pill товч.
+class _PillAction extends StatelessWidget {
+  const _PillAction({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: TextButton.styleFrom(
+        backgroundColor: AppColors.glass,
+        foregroundColor: Colors.white,
+        disabledBackgroundColor: Colors.white.withValues(alpha: 0.06),
+        disabledForegroundColor: Colors.white30,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        minimumSize: const Size(0, 46),
+        visualDensity: VisualDensity.compact,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
       ),
     );
   }

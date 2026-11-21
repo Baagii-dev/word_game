@@ -59,7 +59,8 @@ class PlayerProgress {
   int unlockedLevel;
   final Map<int, int> bestScores; // түвшний id → оноо
   final Map<int, int> stars; // түвшний id → 0..3 од
-  final List<BattleRecord> history; // сүүлд тоглосон тулаанууд (эхэндээ шинэ нь)
+  final List<BattleRecord>
+  history; // сүүлд тоглосон тулаанууд (эхэндээ шинэ нь)
 
   /// NoSQL (Hive / Firestore) руу хадгалахад бэлэн Map хэлбэр.
   Map<String, dynamic> toMap() => {

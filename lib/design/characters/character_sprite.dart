@@ -155,14 +155,12 @@ class _CharacterSpriteState extends State<CharacterSprite>
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 2,
+                    vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.navyDark,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                    border: Border.all(
-                      color: AppColors.accent.withValues(alpha: 0.8),
-                    ),
+                    color: AppColors.ink.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.inkLine),
                   ),
                   child: Text(
                     widget.name,

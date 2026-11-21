@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../design/ornament_strip.dart';
+import '../design/glass.dart';
 import '../design/steppe_background.dart';
+import '../design/theme.dart';
 import '../services/settings_service.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -12,54 +13,88 @@ class SettingsScreen extends StatelessWidget {
     final settings = SettingsService.instance;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Тохиргоо'),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(18),
-          child: OrnamentStrip(height: 18),
-        ),
-      ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(title: const Text('Тохиргоо')),
       body: Stack(
         children: [
           const Positioned.fill(child: SteppeBackground(horizon: 0.8)),
-          ListenableBuilder(
-            listenable: settings,
-            builder: (context, _) => ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Card(
-                  child: Column(
-                    children: [
-                      SwitchListTile(
-                        secondary: const Icon(Icons.volume_up),
-                        title: const Text('Дуу'),
-                        value: settings.soundOn,
-                        onChanged: settings.setSound,
-                      ),
-                      SwitchListTile(
-                        secondary: const Icon(Icons.vibration),
-                        title: const Text('Чичиргээ'),
-                        value: settings.hapticsOn,
-                        onChanged: settings.setHaptics,
-                      ),
-                      SwitchListTile(
-                        secondary: Icon(
-                          settings.darkMode
-                              ? Icons.dark_mode
-                              : Icons.light_mode,
+          const Positioned.fill(child: ScrimOverlay(top: 0.55, bottom: 0.4)),
+          SafeArea(
+            child: ListenableBuilder(
+              listenable: settings,
+              builder: (context, _) => ListView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                children: [
+                  GlassPanel(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    opacity: 0.55,
+                    child: Theme(
+                      // Glass дээр текст үргэлж цагаан
+                      data: Theme.of(context).copyWith(
+                        listTileTheme: const ListTileThemeData(
+                          textColor: Colors.white,
+                          iconColor: Colors.white,
                         ),
-                        title: const Text('Харанхуй горим'),
-                        value: settings.darkMode,
-                        onChanged: settings.setDarkMode,
                       ),
-                    ],
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: Column(
+                          children: [
+                            _tile(
+                              icon: Icons.volume_up_rounded,
+                              title: 'Дуу',
+                              value: settings.soundOn,
+                              onChanged: settings.setSound,
+                            ),
+                            const Divider(indent: 64, color: AppColors.inkLine),
+                            _tile(
+                              icon: Icons.vibration_rounded,
+                              title: 'Чичиргээ',
+                              value: settings.hapticsOn,
+                              onChanged: settings.setHaptics,
+                            ),
+                            const Divider(indent: 64, color: AppColors.inkLine),
+                            _tile(
+                              icon: settings.darkMode
+                                  ? Icons.dark_mode_rounded
+                                  : Icons.light_mode_rounded,
+                              title: 'Харанхуй горим',
+                              value: settings.darkMode,
+                              onChanged: settings.setDarkMode,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _tile({
+    required IconData icon,
+    required String title,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return SwitchListTile(
+      secondary: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: AppColors.glass,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, size: 20),
+      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      value: value,
+      onChanged: onChanged,
     );
   }
 }

@@ -2,92 +2,105 @@ import 'package:flutter/material.dart';
 
 import '../design/theme.dart';
 
-/// "26/26" гэх мэт гялгар 3D амийн мөр (HP bar).
+/// Нарийн, орчин үеийн амийн мөр (HP bar). Дээр нь нэр ба "26/26" тоо.
 class HpBar extends StatelessWidget {
   const HpBar({
     super.key,
     required this.current,
     required this.max,
     required this.color,
+    this.label,
+    this.alignEnd = false,
   });
 
   final int current;
   final int max;
   final Color color;
+  final String? label;
+
+  /// Баруун талын (дайсны) мөрийг баруунаас зүүн тийш дүүргэнэ.
+  final bool alignEnd;
 
   @override
   Widget build(BuildContext context) {
     final ratio = max == 0 ? 0.0 : (current / max).clamp(0.0, 1.0).toDouble();
-    final topColor = Color.lerp(color, Colors.white, 0.28) ?? color;
-    final botColor = Color.lerp(color, Colors.black, 0.22) ?? color;
+    final light = Color.lerp(color, Colors.white, 0.35) ?? color;
 
-    return Container(
-      height: 24,
-      decoration: BoxDecoration(
-        color: AppColors.navyDeep.withValues(alpha: 0.75),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.accent, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black38, offset: Offset(0, 2), blurRadius: 3),
-        ],
+    final caption = Row(
+      children: [
+        if (label != null)
+          Expanded(
+            child: Text(
+              label!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: alignEnd ? TextAlign.right : TextAlign.left,
+              style: const TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
+              ),
+            ),
+          )
+        else
+          const Spacer(),
+      ],
+    );
+
+    final value = Text(
+      '$current/$max',
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        fontFeatures: [FontFeature.tabularFigures()],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: TweenAnimationBuilder<double>(
-                tween: Tween(begin: ratio, end: ratio),
-                duration: AppDurations.normal,
-                curve: Curves.easeOutCubic,
-                builder: (context, val, _) => FractionallySizedBox(
-                  alignment: Alignment.centerLeft,
-                  widthFactor: val,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [topColor, color, botColor],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Дээд талын гялгар зурвас
-            Positioned(
-              top: 2,
-              left: 4,
-              right: 4,
-              height: 5,
-              child: DecoratedBox(
+    );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: alignEnd
+              ? [value, const SizedBox(width: 6), Expanded(child: caption)]
+              : [Expanded(child: caption), const SizedBox(width: 6), value],
+        ),
+        const SizedBox(height: 5),
+        Container(
+          height: 10,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: ratio, end: ratio),
+            duration: AppDurations.normal,
+            curve: Curves.easeOutCubic,
+            builder: (context, val, _) => FractionallySizedBox(
+              alignment: alignEnd
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              widthFactor: val,
+              child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.22),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            Center(
-              child: Text(
-                '$current/$max',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 12,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black87,
-                      offset: Offset(0, 1),
-                      blurRadius: 2,
+                  gradient: LinearGradient(
+                    colors: alignEnd ? [color, light] : [light, color],
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.55),
+                      blurRadius: 8,
                     ),
                   ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

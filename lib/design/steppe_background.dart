@@ -27,49 +27,44 @@ class SteppeBackground extends StatelessWidget {
     final groundFlex = 100 - skyFlex;
 
     final skyColors = switch (levelId) {
-      2 => isDark
-          ? const [Color(0xFF0B1924), Color(0xFF16323B), Color(0xFF234946)]
-          : const [
-              AppColors.forestSkyTop,
-              Color(0xFF3E6B68),
-              AppColors.forestSkyBottom,
-            ],
+      2 =>
+        isDark
+            ? const [Color(0xFF0B1924), Color(0xFF16323B), Color(0xFF234946)]
+            : const [
+                AppColors.forestSkyTop,
+                Color(0xFF3E6B68),
+                AppColors.forestSkyBottom,
+              ],
       3 => const [
         AppColors.caveSkyTop,
         AppColors.caveSkyBottom,
         Color(0xFF7B2428),
       ],
-      _ => isDark
-          ? const [
-              AppColors.nightSkyTop,
-              AppColors.nightSkyMid,
-              AppColors.nightSkyBottom,
-            ]
-          : const [AppColors.skyTop, AppColors.skyMid, AppColors.sky],
+      _ =>
+        isDark
+            ? const [
+                AppColors.nightSkyTop,
+                AppColors.nightSkyMid,
+                AppColors.nightSkyBottom,
+              ]
+            : const [AppColors.skyTop, AppColors.skyMid, AppColors.sky],
     };
 
     final groundColors = switch (levelId) {
-      2 => const [
-        Color(0xFF436F36),
-        AppColors.forestGround,
-        Color(0xFF1D3519),
-      ],
-      3 => const [
-        Color(0xFF341C42),
-        AppColors.caveRockNear,
-        Color(0xFF100718),
-      ],
-      _ => isDark
-          ? const [
-              AppColors.nightGrassLight,
-              AppColors.nightGrass,
-              AppColors.nightGrassDark,
-            ]
-          : const [
-              AppColors.grassLight,
-              AppColors.grass,
-              AppColors.grassDark,
-            ],
+      2 => const [Color(0xFF436F36), AppColors.forestGround, Color(0xFF1D3519)],
+      3 => const [Color(0xFF341C42), AppColors.caveRockNear, Color(0xFF100718)],
+      _ =>
+        isDark
+            ? const [
+                AppColors.nightGrassLight,
+                AppColors.nightGrass,
+                AppColors.nightGrassDark,
+              ]
+            : const [
+                AppColors.grassLight,
+                AppColors.grass,
+                AppColors.grassDark,
+              ],
     };
 
     final orbColor = levelId == 3
@@ -142,14 +137,11 @@ class SteppeBackground extends StatelessWidget {
                     if (showGer)
                       Align(
                         alignment: const Alignment(-0.68, 1.0),
-                        child: Text(
-                          switch (levelId) {
-                            2 => '🌲🌲',
-                            3 => '🌋',
-                            _ => '⛺',
-                          },
-                          style: const TextStyle(fontSize: 34, height: 1.0),
-                        ),
+                        child: Text(switch (levelId) {
+                          2 => '🌲🌲',
+                          3 => '🌋',
+                          _ => '⛺',
+                        }, style: const TextStyle(fontSize: 34, height: 1.0)),
                       ),
                   ],
                 ),

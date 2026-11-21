@@ -31,17 +31,14 @@ class DamagePopup extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 38,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.warning,
+                  color: Colors.white,
+                  letterSpacing: -1,
                   shadows: [
+                    Shadow(color: AppColors.primaryEnd, blurRadius: 16),
                     Shadow(
-                      color: AppColors.red,
-                      offset: Offset(0, 2),
-                      blurRadius: 4,
-                    ),
-                    Shadow(
-                      color: AppColors.navyDeep,
+                      color: AppColors.ink,
                       offset: Offset(0, 3),
-                      blurRadius: 8,
+                      blurRadius: 6,
                     ),
                   ],
                 ),

@@ -3,22 +3,27 @@ import 'package:flutter/material.dart';
 import '../design/theme.dart';
 import '../services/audio_service.dart';
 
-/// Алтан хүрээтэй, 3D товгор загварын нэгдсэн товч. Дарахад жижгэрч, дуу гаргана.
+/// Орчин үеийн градиент товч: зөөлөн өнгөт гэрэлтэлт (glow), дарахад жижгэрнэ,
+/// дуу гаргана. [glass] = true бол тунгалаг хоёрдогч товч болно.
 class GameButton extends StatefulWidget {
   const GameButton({
     super.key,
     required this.label,
     required this.onPressed,
     this.icon,
-    this.color = AppColors.navy,
+    this.colors = const [AppColors.primary, AppColors.primaryEnd],
     this.foreground = Colors.white,
+    this.glass = false,
+    this.height = 56,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
-  final Color color;
+  final List<Color> colors;
   final Color foreground;
+  final bool glass;
+  final double height;
 
   @override
   State<GameButton> createState() => _GameButtonState();
@@ -30,65 +35,80 @@ class _GameButtonState extends State<GameButton> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onPressed != null;
-    final topColor = Color.lerp(widget.color, Colors.white, 0.22) ?? widget.color;
-    final botColor = Color.lerp(widget.color, Colors.black, 0.18) ?? widget.color;
-    final shadowColor =
-        Color.lerp(widget.color, Colors.black, 0.55) ?? Colors.black54;
+    final r = BorderRadius.circular(AppSizes.radiusLg);
 
-    return GestureDetector(
-      onTapDown: enabled ? (_) => setState(() => _down = true) : null,
-      onTapCancel: () => setState(() => _down = false),
-      onTapUp: (_) => setState(() => _down = false),
-      onTap: enabled
-          ? () {
-              AudioService.instance.play(Sfx.tap);
-              widget.onPressed?.call();
-            }
-          : null,
-      child: AnimatedScale(
-        scale: _down ? 0.96 : 1,
-        duration: const Duration(milliseconds: 90),
-        child: Opacity(
-          opacity: enabled ? 1 : 0.5,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [topColor, widget.color, botColor],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.accent, width: 2.2),
-              boxShadow: _down
-                  ? null
-                  : [
-                      BoxShadow(color: shadowColor, offset: const Offset(0, 4)),
-                      const BoxShadow(
-                        color: Colors.black38,
-                        offset: Offset(0, 6),
-                        blurRadius: 6,
-                      ),
-                    ],
+    final decoration = widget.glass
+        ? BoxDecoration(
+            color: AppColors.glass,
+            borderRadius: r,
+            border: Border.all(color: AppColors.glassStrong),
+          )
+        : BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: widget.colors,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (widget.icon != null) ...[
-                  Icon(widget.icon, color: widget.foreground, size: 24),
-                  const SizedBox(width: 8),
-                ],
-                Text(
-                  widget.label,
-                  style: TextStyle(
-                    color: widget.foreground,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.4,
+            borderRadius: r,
+            boxShadow: _down || !enabled
+                ? null
+                : [
+                    BoxShadow(
+                      color: widget.colors.last.withValues(alpha: 0.45),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+          );
+
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: widget.label,
+      child: GestureDetector(
+        onTapDown: enabled ? (_) => setState(() => _down = true) : null,
+        onTapCancel: () => setState(() => _down = false),
+        onTapUp: (_) => setState(() => _down = false),
+        onTap: enabled
+            ? () {
+                AudioService.instance.play(Sfx.tap);
+                widget.onPressed?.call();
+              }
+            : null,
+        child: AnimatedScale(
+          scale: _down ? 0.97 : 1,
+          duration: const Duration(milliseconds: 90),
+          child: AnimatedOpacity(
+            opacity: enabled ? 1 : 0.45,
+            duration: AppDurations.fast,
+            child: AnimatedContainer(
+              duration: AppDurations.fast,
+              width: double.infinity,
+              height: widget.height,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: decoration,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (widget.icon != null) ...[
+                    Icon(widget.icon, color: widget.foreground, size: 22),
+                    const SizedBox(width: 10),
+                  ],
+                  Flexible(
+                    child: Text(
+                      widget.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: widget.foreground,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

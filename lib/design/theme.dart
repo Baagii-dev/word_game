@@ -66,6 +66,20 @@ class AppColors {
     0xFFFF8A80,
   ); // дайсны хүчтэй цохилтын анхааруулга
 
+  // ---- Орчин үеийн UI — дулаан хүрэн (савхи, кофе, карамель) ----
+  static const Color ink = Color(0xFF1C140F); // хамгийн бараан (эспрессо)
+  static const Color inkSoft = Color(0xFF2B2018); // самбарын гадаргуу
+  static const Color inkLine = Color(0x24FFE9D2); // нарийн хүрээ
+  static const Color glass = Color(0x2EFFE9D2); // тунгалаг гадаргуу
+  static const Color glassStrong = Color(0x47FFE9D2);
+  static const Color primary = Color(0xFFE09A4F); // үндсэн товч (карамель)
+  static const Color primaryEnd = Color(0xFFB4532A); // зэвэрсэн улбар
+  static const Color bronze = Color(0xFF9A6B45); // хүрэл хүрэн
+  static const Color bronzeDeep = Color(0xFF5E3B22);
+  static const Color mint = Color(0xFF8BC34A); // амь (өвсний ногоон)
+  static const Color textMuted = Color(0xFFC2AC93);
+  static const Color lightSurface = Color(0xFFF6EFE6);
+
   // ---- Амь (HP) ----
   static const Color playerHp = Color(0xFF43A047);
   static const Color enemyHp = Color(0xFFE53935);
@@ -85,7 +99,8 @@ class AppColors {
 class AppSizes {
   static const double radiusSm = 8;
   static const double radiusMd = 12;
-  static const double radiusLg = 16;
+  static const double radiusLg = 20;
+  static const double radiusXl = 28;
   static const double screenPadding = 16;
   static const double minTouch = 44; // хуруугаар дарах хамгийн бага хэмжээ
 }
@@ -98,84 +113,100 @@ class AppDurations {
 }
 
 class AppTheme {
-  static ThemeData get light => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.navy,
-      brightness: Brightness.light,
-      primary: AppColors.navy,
-      secondary: AppColors.accent,
-    ),
-    scaffoldBackgroundColor: AppColors.sky,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.navyDark,
-      foregroundColor: Colors.white,
-      centerTitle: true,
-      elevation: 0,
-      titleTextStyle: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        letterSpacing: 0.4,
-      ),
-    ),
-    cardTheme: CardThemeData(
-      color: AppColors.cream,
-      elevation: 4,
-      shadowColor: Colors.black45,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        side: const BorderSide(color: AppColors.tileBorder, width: 2),
-      ),
-    ),
-    dialogTheme: DialogThemeData(
-      backgroundColor: AppColors.cream,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: const BorderSide(color: AppColors.tileBorder, width: 2),
-      ),
-    ),
-  );
+  static ThemeData get light => _build(Brightness.light);
+  static ThemeData get dark => _build(Brightness.dark);
 
-  static ThemeData get dark => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.navy,
-      brightness: Brightness.dark,
-      primary: AppColors.accent,
-      secondary: AppColors.accentLight,
-      surface: AppColors.nightSurface,
-    ),
-    scaffoldBackgroundColor: AppColors.nightSkyTop,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.navyDeep,
-      foregroundColor: Colors.white,
-      centerTitle: true,
-      elevation: 0,
-      titleTextStyle: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        letterSpacing: 0.4,
+  static ThemeData _build(Brightness b) {
+    final isDark = b == Brightness.dark;
+    final surface = isDark ? AppColors.inkSoft : const Color(0xFFFFFAF3);
+    final onSurface = isDark ? Colors.white : AppColors.ink;
+    final scheme = ColorScheme.fromSeed(
+      seedColor: AppColors.bronze,
+      brightness: b,
+      primary: isDark ? AppColors.accent : AppColors.bronze,
+      onPrimary: isDark ? AppColors.ink : Colors.white,
+      secondary: AppColors.primary,
+      surface: surface,
+      onSurface: onSurface,
+    );
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+    );
+    const buttonPadding = EdgeInsets.symmetric(horizontal: 20, vertical: 14);
+    const buttonText = TextStyle(fontWeight: FontWeight.w700, fontSize: 15);
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: b,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: isDark ? AppColors.ink : AppColors.lightSurface,
+      splashFactory: InkSparkle.splashFactory,
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        titleTextStyle: const TextStyle(
+          fontSize: 19,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          letterSpacing: -0.2,
+        ),
       ),
-    ),
-    cardTheme: CardThemeData(
-      color: AppColors.nightSurface,
-      elevation: 6,
-      shadowColor: Colors.black87,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        side: const BorderSide(color: AppColors.accent, width: 1.8),
+      cardTheme: CardThemeData(
+        color: surface.withValues(alpha: isDark ? 0.86 : 0.92),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          side: BorderSide(
+            color: isDark ? AppColors.inkLine : const Color(0x14000000),
+          ),
+        ),
       ),
-    ),
-    dialogTheme: DialogThemeData(
-      backgroundColor: AppColors.nightSurface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: const BorderSide(color: AppColors.accent, width: 2),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl),
+        ),
       ),
-    ),
-  );
+      listTileTheme: ListTileThemeData(shape: shape),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          padding: buttonPadding,
+          textStyle: buttonText,
+          shape: shape,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: buttonPadding,
+          textStyle: buttonText,
+          shape: shape,
+          side: BorderSide(color: onSurface.withValues(alpha: 0.18)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(textStyle: buttonText, shape: shape),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? Colors.white : null,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? AppColors.mint : null,
+        ),
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+      ),
+      dividerTheme: DividerThemeData(
+        color: onSurface.withValues(alpha: 0.08),
+        space: 1,
+      ),
+    );
+  }
 }

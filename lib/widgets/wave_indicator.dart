@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../design/theme.dart';
 
-/// "2/4" — хэд дэх дайсан (алтан хүрээтэй медальон).
+/// "2/4" — хэд дэх дайсан (жижиг pill chip).
 class WaveIndicator extends StatelessWidget {
   const WaveIndicator({super.key, required this.current, required this.total});
 
@@ -12,30 +12,32 @@ class WaveIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 52,
-      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        gradient: const RadialGradient(
-          colors: [AppColors.navy, AppColors.navyDeep],
-        ),
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.accent, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black38, offset: Offset(0, 3), blurRadius: 4),
-        ],
+        color: AppColors.glass,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inkLine),
       ),
-      alignment: Alignment.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('⚔️', style: TextStyle(fontSize: 11, height: 1.0)),
+          const Text(
+            'ДАЙСАН',
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 8.5,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+              height: 1.1,
+            ),
+          ),
           Text(
             '$current/$total',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
-              height: 1.1,
+              height: 1.2,
             ),
           ),
         ],

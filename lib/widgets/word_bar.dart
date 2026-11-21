@@ -4,8 +4,7 @@ import '../design/theme.dart';
 import '../models/letter_tile.dart';
 import 'letter_tile_widget.dart';
 
-/// Бүтээж буй үг (зурган дээрх "TRUE" мөр).
-/// Үсэг дээр дарвал буцаад самбар руу орно.
+/// Бүтээж буй үг. Үсэг дээр дарвал буцаад самбар руу орно.
 class WordBar extends StatelessWidget {
   const WordBar({super.key, required this.tiles, required this.onTapTile});
 
@@ -14,19 +13,30 @@ class WordBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final active = tiles.isNotEmpty;
+    return AnimatedContainer(
+      duration: AppDurations.fast,
       height: 58,
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      alignment: Alignment.centerLeft,
+      alignment: active ? Alignment.centerLeft : Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.navyDeep,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.7)),
+        color: Colors.black.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(
+          color: active
+              ? AppColors.primary.withValues(alpha: 0.75)
+              : AppColors.inkLine,
+          width: active ? 1.5 : 1,
+        ),
       ),
-      child: tiles.isEmpty
+      child: !active
           ? const Text(
               'Үсэг сонгож үг бүтээ',
-              style: TextStyle(color: Colors.white54),
+              style: TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             )
           : SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -34,7 +44,7 @@ class WordBar extends StatelessWidget {
                 children: [
                   for (final tile in tiles)
                     Padding(
-                      padding: const EdgeInsets.only(right: 4),
+                      padding: const EdgeInsets.only(right: 5),
                       child: LetterTileWidget(
                         key: ValueKey(tile.id),
                         tile: tile,

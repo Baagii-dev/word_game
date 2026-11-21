@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../design/characters/enemy_art.dart';
 import '../design/characters/hero_art.dart';
+import '../design/glass.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../models/level.dart';
 import '../services/storage_service.dart';
+import '../widgets/game_button.dart';
 import 'battle_screen.dart';
 
 /// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүн болон түүхийг хадгална.
@@ -68,14 +70,23 @@ class _ResultScreenState extends State<ResultScreen> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(child: Text(label)),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+          ),
+        ),
         const SizedBox(width: 12),
         Flexible(
           child: Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
       ],
@@ -88,7 +99,6 @@ class _ResultScreenState extends State<ResultScreen> {
     final boss = widget.level.enemies.isNotEmpty
         ? widget.level.enemies.last
         : null;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: widget.won ? AppColors.grass : AppColors.navyDark,
@@ -101,6 +111,7 @@ class _ResultScreenState extends State<ResultScreen> {
               showGer: widget.won && widget.level.id == 1,
             ),
           ),
+          const Positioned.fill(child: ScrimOverlay(top: 0.3, bottom: 0.6)),
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) => SingleChildScrollView(
@@ -109,9 +120,12 @@ class _ResultScreenState extends State<ResultScreen> {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
-                      child: Card(
-                        child: Padding(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 420),
+                        child: GlassPanel(
                           padding: const EdgeInsets.all(24),
+                          radius: AppSizes.radiusXl,
+                          opacity: 0.6,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -125,12 +139,11 @@ class _ResultScreenState extends State<ResultScreen> {
                               const SizedBox(height: 6),
                               Text(
                                 widget.won ? 'Ялалт!' : 'Ялагдал',
-                                style: TextStyle(
-                                  fontSize: 32,
+                                style: const TextStyle(
+                                  fontSize: 34,
                                   fontWeight: FontWeight.w900,
-                                  color: isDark
-                                      ? AppColors.accentLight
-                                      : AppColors.navyDeep,
+                                  color: Colors.white,
+                                  letterSpacing: -0.6,
                                 ),
                               ),
                               if (widget.won)
@@ -139,11 +152,13 @@ class _ResultScreenState extends State<ResultScreen> {
                                   children: List.generate(
                                     3,
                                     (i) => Icon(
-                                      i < widget.stars
-                                          ? Icons.star
-                                          : Icons.star_border,
-                                      color: AppColors.accent,
-                                      size: 40,
+                                      Icons.star_rounded,
+                                      color: i < widget.stars
+                                          ? AppColors.accent
+                                          : Colors.white.withValues(
+                                              alpha: 0.18,
+                                            ),
+                                      size: i == 1 ? 52 : 42,
                                     ),
                                   ),
                                 ),
@@ -157,23 +172,35 @@ class _ResultScreenState extends State<ResultScreen> {
                                     : widget.longestWord.toUpperCase(),
                               ),
                               const SizedBox(height: 24),
-                              if (widget.won && next != null)
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: FilledButton(
-                                    onPressed: () => _play(next),
-                                    child: const Text('Дараагийн түвшин'),
-                                  ),
+                              if (widget.won && next != null) ...[
+                                GameButton(
+                                  label: 'Дараагийн түвшин',
+                                  icon: Icons.arrow_forward_rounded,
+                                  onPressed: () => _play(next),
                                 ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton(
-                                  onPressed: () => _play(widget.level),
-                                  child: const Text('Дахин тоглох'),
-                                ),
+                                const SizedBox(height: 10),
+                              ],
+                              GameButton(
+                                label: 'Дахин тоглох',
+                                icon: Icons.replay_rounded,
+                                glass: widget.won && next != null,
+                                colors: widget.won
+                                    ? const [
+                                        AppColors.primary,
+                                        AppColors.primaryEnd,
+                                      ]
+                                    : const [
+                                        AppColors.bronze,
+                                        AppColors.bronzeDeep,
+                                      ],
+                                onPressed: () => _play(widget.level),
                               ),
+                              const SizedBox(height: 4),
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white70,
+                                ),
                                 child: const Text('Түвшин сонгох'),
                               ),
                             ],

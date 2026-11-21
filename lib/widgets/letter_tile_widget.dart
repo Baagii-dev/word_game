@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../design/theme.dart';
 import '../models/letter_tile.dart';
 
-/// Нэг сийлбэртэй модон/ясан үсгийн хавтан. Баруун доод буланд оноо нь бичигдэнэ.
+/// Нэг үсгийн хавтан — цэвэр цагаан, зөөлөн сүүдэртэй.
+/// Баруун доод буланд оноо нь бичигдэнэ.
 class LetterTileWidget extends StatelessWidget {
   const LetterTileWidget({
     super.key,
@@ -20,73 +21,62 @@ class LetterTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(size * 0.26);
     return GestureDetector(
       onTap: hidden ? null : onTap,
       child: AnimatedOpacity(
-        opacity: hidden ? 0.16 : 1,
-        duration: const Duration(milliseconds: 150),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.white, AppColors.tile, AppColors.tileBottom],
-              stops: [0.0, 0.72, 1.0],
+        opacity: hidden ? 0.14 : 1,
+        duration: AppDurations.fast,
+        child: AnimatedScale(
+          scale: hidden ? 0.9 : 1,
+          duration: AppDurations.fast,
+          curve: Curves.easeOut,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFFFFBF4), Color(0xFFF1E4D2)],
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x33000000),
+                  offset: Offset(0, 4),
+                  blurRadius: 10,
+                ),
+                BoxShadow(color: Color(0xFFCDB394), offset: Offset(0, 2)),
+              ],
             ),
-            borderRadius: BorderRadius.circular(11),
-            border: Border.all(color: AppColors.tileBorder, width: 2),
-            boxShadow: const [
-              BoxShadow(color: AppColors.tileShadow, offset: Offset(0, 3)),
-              BoxShadow(
-                color: Colors.black26,
-                offset: Offset(0, 4),
-                blurRadius: 2,
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              // Дээд ирмэгийн дотор гялбаа
-              Positioned(
-                top: 2,
-                left: 4,
-                right: 4,
-                height: 3,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(2),
+            child: Stack(
+              children: [
+                Center(
+                  child: Text(
+                    tile.letter.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: size * 0.46,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                      height: 1.0,
+                    ),
                   ),
                 ),
-              ),
-              Center(
-                child: Text(
-                  tile.letter.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: size * 0.48,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.text,
-                    shadows: const [
-                      Shadow(color: Colors.white70, offset: Offset(0, 1)),
-                    ],
+                Positioned(
+                  right: size * 0.1,
+                  bottom: size * 0.06,
+                  child: Text(
+                    '${tile.points}',
+                    style: TextStyle(
+                      fontSize: size * 0.2,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.bronze,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                right: 4,
-                bottom: 2,
-                child: Text(
-                  '${tile.points}',
-                  style: TextStyle(
-                    fontSize: size * 0.21,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.tileShadow,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

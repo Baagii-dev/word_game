@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants.dart';
-import '../design/ornament_strip.dart';
 import '../design/theme.dart';
 import '../models/letter_tile.dart';
 import 'game_button.dart';
@@ -30,19 +29,25 @@ class _RulesDialog extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              color: AppColors.navyDark,
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.bronze, AppColors.primaryEnd],
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
               child: const Text(
                 'Хэрхэн тоглох вэ?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                   color: Colors.white,
+                  letterSpacing: -0.3,
                 ),
               ),
             ),
-            const OrnamentStrip(height: 16, background: AppColors.navy),
             Flexible(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -116,7 +121,6 @@ class _RulesDialog extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
               child: GameButton(
                 label: 'Ойлголоо',
-                color: AppColors.red,
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -141,8 +145,10 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleColor = isDark ? AppColors.accentLight : AppColors.navyDark;
-    final bodyColor = isDark ? AppColors.cream : AppColors.text;
+    final titleColor = isDark ? Colors.white : AppColors.ink;
+    final bodyColor = isDark
+        ? const Color(0xFFE3D3C0)
+        : const Color(0xFF5C4636);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -179,8 +185,10 @@ class _DamageExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleColor = isDark ? AppColors.accentLight : AppColors.navyDark;
-    final bodyColor = isDark ? AppColors.cream : AppColors.text;
+    final titleColor = isDark ? Colors.white : AppColors.ink;
+    final bodyColor = isDark
+        ? const Color(0xFFE3D3C0)
+        : const Color(0xFF5C4636);
 
     // Жишээ: үсэг бүрийн оноо тоглоомд хавтан бүр дээр бичигдсэн байдаг.
     const letters = [('м', 2), ('о', 1), ('р', 1), ('ь', 3)];
@@ -189,9 +197,8 @@ class _DamageExample extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.accent.withValues(alpha: isDark ? 0.12 : 0.18),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.tileBorder),
+          color: AppColors.bronze.withValues(alpha: isDark ? 0.16 : 0.08),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
