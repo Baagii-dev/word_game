@@ -159,11 +159,36 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     GameButton(
-                      label: 'Түүх',
-                      icon: Icons.history,
+                      label: 'Онлайн 1v1',
+                      icon: Icons.sports_mma,
                       color: AppColors.navy,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, Routes.history),
+                      onPressed: () => Navigator.pushNamed(context, Routes.duel),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GameButton(
+                            label: 'Жагсаалт',
+                            icon: Icons.emoji_events,
+                            color: AppColors.navy,
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              Routes.leaderboard,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GameButton(
+                            label: 'Түүх',
+                            icon: Icons.history,
+                            color: AppColors.navy,
+                            onPressed: () =>
+                                Navigator.pushNamed(context, Routes.history),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     GameButton(

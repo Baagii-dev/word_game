@@ -1,0 +1,38 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "word-battle-443510",
+          "appId": "1:359809638639:android:8e1affe44458b07a8e7b1a",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "word-battle-443510",
+          "appId": "1:359809638639:ios:bcfc073c7f9114888e7b1a",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "word-battle-443510",
+          "configurations": {
+            "android": "1:359809638639:android:8e1affe44458b07a8e7b1a",
+            "ios": "1:359809638639:ios:bcfc073c7f9114888e7b1a"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "auth": {
+    "providers": {
+      "anonymous": true
+    }
+  }
+}

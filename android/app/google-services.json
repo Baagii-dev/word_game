@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359809638639",
+    "project_id": "word-battle-443510",
+    "storage_bucket": "word-battle-443510.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359809638639:android:8e1affe44458b07a8e7b1a",
+        "android_client_info": {
+          "package_name": "com.example.word_battle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuCBSjxmg16zNZsP-PvmeX_Ln-Q1ZenQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

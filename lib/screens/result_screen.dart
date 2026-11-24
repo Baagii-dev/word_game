@@ -5,6 +5,7 @@ import '../design/characters/hero_art.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../models/level.dart';
+import '../online/online_service.dart';
 import '../services/storage_service.dart';
 import 'battle_screen.dart';
 
@@ -46,6 +47,12 @@ class _ResultScreenState extends State<ResultScreen> {
         wordsCount: widget.wordsCount,
         longestWord: widget.longestWord,
       );
+      // Онооны жагсаалтад нэмнэ (нэвтрээгүй бол үл тоомсорлоно)
+      if (OnlineServices.isReady) {
+        OnlineServices.current
+            .submitResult(score: widget.score, won: widget.won)
+            .catchError((_) {});
+      }
     });
   }
 

@@ -121,3 +121,29 @@ flutter test
   `flutter pub get` дахин ажиллуулна.
 - Нэг файлыг хоёр хүн зэрэг бүү засаарай; дизайн (`lib/design`, `widgets`) ба
   логик (`lib/logic`) тусдаа тул хуваан ажиллахад хялбар.
+
+
+## Онлайн боломж (leaderboard, 1v1) — `lib/online/`
+
+```
+lib/online/
+├── online_models.dart         PlayerProfile, LeaderboardEntry, DuelSnapshot, DuelSession, DuelSearch
+├── online_service.dart        OnlineService (интерфэйс) + OnlineServices.use(...)
+├── local_online_service.dart  Санах ойн хэрэгжүүлэлт: жишиг жагсаалт + bot өрсөлдөгч (Firebase шаардахгүй)
+├── duel_controller.dart       1v1 тоглогч талын дүрэм (самбар, үг шалгах, хохирол)
+└── nickname_dialog.dart       Ник асуух, өмнөх дүнг жагсаалтад оруулах
+screens/leaderboard_screen.dart  duel_lobby_screen.dart  duel_screen.dart
+widgets/word_panel.dart          1v1-ийн доод самбар
+```
+
+- `main.dart` дээр Firebase амжилттай эхэлбэл `FirebaseOnlineService` (Auth + Firestore, онлайн),
+  үгүй бол `LocalOnlineService` (санах ой, офлайн демо). Хоёул ижил `OnlineService` интерфэйстэй.
+- **Firebase төсөл:** `word-battle-443510`. Тохиргоо: `lib/firebase_options.dart`,
+  `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist` (багийнхан татаж авна).
+  Дүрэм: `firestore.rules`; deploy: `firebase deploy --only firestore:rules,auth --project word-battle-443510`.
+- **Өгөгдөл:** `users/{uid}` (ник, нийт оноо, ялалт), `matches/{id}` (1v1: төлөв, HP, сүүлийн үг, ялагч).
+  Өрсөлдөгч 15 секундэд олдохгүй бол bot-той тулаан эхэлнэ.
+- **1v1:** ээлжгүй уралдаан. Хоёр тоглогч ижил `seed`-ээс ижил эхний самбар авч, зөв үг
+  бүтээх бүрт өрсөлдөгчийн HP-г бууруулна. HP 0 болох эсвэл 90 секунд дуусахад HP өндөртэй нь ялна.
+  Ялагчийг сервер (DuelSession) нэг л удаа тогтооно.
+- Тестүүд: `test/online_test.dart` (backend, 1v1 дүрэм), `test/online_screens_test.dart` (дэлгэцүүд).

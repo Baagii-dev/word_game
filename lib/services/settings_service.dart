@@ -10,6 +10,7 @@ class SettingsService extends ChangeNotifier {
   bool soundOn = true;
   bool hapticsOn = true;
   bool darkMode = false;
+  String nickname = ''; // онлайн тоглоомын ник
 
   Future<void> load() async {
     try {
@@ -17,6 +18,7 @@ class SettingsService extends ChangeNotifier {
       soundOn = prefs.getBool('soundOn') ?? true;
       hapticsOn = prefs.getBool('hapticsOn') ?? true;
       darkMode = prefs.getBool('darkMode') ?? false;
+      nickname = prefs.getString('nickname') ?? '';
     } catch (_) {}
     notifyListeners();
   }
@@ -37,6 +39,17 @@ class SettingsService extends ChangeNotifier {
     darkMode = value;
     notifyListeners();
     await _save('darkMode', value);
+  }
+
+  Future<void> setNickname(String value) async {
+    nickname = value.trim();
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('nickname', nickname);
+    } catch (e) {
+      debugPrint('Ник хадгалж чадсангүй: $e');
+    }
   }
 
   Future<void> _save(String key, bool value) async {

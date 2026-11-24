@@ -30,8 +30,10 @@ class _GameButtonState extends State<GameButton> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onPressed != null;
-    final topColor = Color.lerp(widget.color, Colors.white, 0.22) ?? widget.color;
-    final botColor = Color.lerp(widget.color, Colors.black, 0.18) ?? widget.color;
+    final topColor =
+        Color.lerp(widget.color, Colors.white, 0.22) ?? widget.color;
+    final botColor =
+        Color.lerp(widget.color, Colors.black, 0.18) ?? widget.color;
     final shadowColor =
         Color.lerp(widget.color, Colors.black, 0.55) ?? Colors.black54;
 
@@ -79,13 +81,20 @@ class _GameButtonState extends State<GameButton> {
                   Icon(widget.icon, color: widget.foreground, size: 24),
                   const SizedBox(width: 8),
                 ],
-                Text(
-                  widget.label,
-                  style: TextStyle(
-                    color: widget.foreground,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.4,
+                // Нарийн (хагас өргөн) товчид текст багтахгүй бол жижгэрнэ
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      widget.label,
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: widget.foreground,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
                   ),
                 ),
               ],

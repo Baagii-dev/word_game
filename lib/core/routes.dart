@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../screens/duel_lobby_screen.dart';
 import '../screens/history_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/leaderboard_screen.dart';
 import '../screens/level_select_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/splash_screen.dart';
@@ -13,6 +15,8 @@ class Routes {
   static const String home = '/home';
   static const String levels = '/levels';
   static const String history = '/history';
+  static const String leaderboard = '/leaderboard';
+  static const String duel = '/duel';
   static const String settings = '/settings';
 
   static Route<dynamic> onGenerate(RouteSettings s) {
@@ -20,6 +24,8 @@ class Routes {
       home => const HomeScreen(),
       levels => const LevelSelectScreen(),
       history => const HistoryScreen(),
+      leaderboard => const LeaderboardScreen(),
+      duel => const DuelLobbyScreen(),
       settings => const SettingsScreen(),
       _ => const SplashScreen(),
     };
