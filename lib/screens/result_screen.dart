@@ -7,6 +7,7 @@ import '../design/theme.dart';
 import '../models/level.dart';
 import '../online/online_service.dart';
 import '../services/storage_service.dart';
+import '../wallet/wallet_service.dart';
 import 'battle_screen.dart';
 
 /// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүн болон түүхийг хадгална.
@@ -33,6 +34,12 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  /// Энэ тулааны шагнал (coin).
+  late final int _reward = WalletService.battleReward(
+    won: widget.won,
+    stars: widget.stars,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +53,10 @@ class _ResultScreenState extends State<ResultScreen> {
         stars: widget.stars,
         wordsCount: widget.wordsCount,
         longestWord: widget.longestWord,
+      );
+      WalletService.instance.earn(
+        _reward,
+        widget.won ? '${widget.level.name}: ялалт' : '${widget.level.name}: оролдлого',
       );
       // Онооны жагсаалтад нэмнэ (нэвтрээгүй бол үл тоомсорлоно)
       if (OnlineServices.isReady) {
@@ -157,6 +168,7 @@ class _ResultScreenState extends State<ResultScreen> {
                               const SizedBox(height: 16),
                               _statRow('Оноо', '${widget.score}'),
                               _statRow('Бүтээсэн үг', '${widget.wordsCount}'),
+                              _statRow('Шагнал', '+$_reward 🪙'),
                               _statRow(
                                 'Хамгийн урт үг',
                                 widget.longestWord.isEmpty

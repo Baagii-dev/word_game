@@ -9,6 +9,7 @@ import '../models/letter_tile.dart';
 import '../models/level.dart';
 import '../models/player.dart';
 import '../services/dictionary_service.dart';
+import '../wallet/wallet_models.dart';
 import 'damage_calculator.dart';
 import 'letter_generator.dart';
 import 'word_validator.dart';
@@ -27,6 +28,7 @@ class BattleController extends ChangeNotifier {
     required this.level,
     required DictionaryService dictionary,
     Random? random,
+    this.bonuses = BattleBonuses.none,
   }) : _dictionaryWords = dictionary.words,
        _validator = WordValidator(dictionary.words),
        _damage = DamageCalculator(dictionary.letterPoints),
@@ -37,6 +39,9 @@ class BattleController extends ChangeNotifier {
        );
 
   final Level level;
+
+  /// Дэлгүүрээс авсан бэлтгэлийн нөлөө (амь, цаг, санамж).
+  final BattleBonuses bonuses;
   final Set<String> _dictionaryWords;
   final WordValidator _validator;
   final DamageCalculator _damage;
@@ -77,6 +82,9 @@ class BattleController extends ChangeNotifier {
       currentWord.isEmpty ? 0 : _damage.calculate(currentWord, combo: combo);
   bool get canAct => status == BattleStatus.playerTurn;
 
+  /// Ээлжийн хугацаа (бэлтгэлийн нэмэлт секундтэй).
+  int get turnSeconds => GameConfig.turnSeconds + bonuses.extraSeconds;
+
   /// Дараагийн ээлжинд дайсан тусгай (2×) цохилт хийх эсэх.
   bool get specialIncoming =>
       enemy.specialEvery > 0 && (enemyTurns + 1) % enemy.specialEvery == 0;
@@ -91,9 +99,13 @@ class BattleController extends ChangeNotifier {
   // =====================================================
   void start() {
     enemies = level.createEnemies();
-    player = Player(maxHp: GameConfig.playerMaxHp);
+    player = Player(maxHp: GameConfig.playerMaxHp + bonuses.extraHp);
+    hintsLeft += bonuses.extraHints;
     waveIndex = 0;
-    message = '${enemy.name} гарч ирлээ!';
+    final bonusText = bonuses.describe();
+    message = bonusText.isEmpty
+        ? '${enemy.name} гарч ирлээ!'
+        : '${enemy.name} гарч ирлээ! $bonusText';
     _newBoard();
     _startPlayerTurn();
   }
@@ -210,7 +222,7 @@ class BattleController extends ChangeNotifier {
   // =====================================================
   void _startPlayerTurn() {
     status = BattleStatus.playerTurn;
-    timeLeft = GameConfig.turnSeconds;
+    timeLeft = turnSeconds;
     _startTicker();
     _notify();
   }

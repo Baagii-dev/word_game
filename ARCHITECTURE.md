@@ -147,3 +147,29 @@ widgets/word_panel.dart          1v1-ийн доод самбар
   бүтээх бүрт өрсөлдөгчийн HP-г бууруулна. HP 0 болох эсвэл 90 секунд дуусахад HP өндөртэй нь ялна.
   Ялагчийг сервер (DuelSession) нэг л удаа тогтооно.
 - Тестүүд: `test/online_test.dart` (backend, 1v1 дүрэм), `test/online_screens_test.dart` (дэлгэцүүд).
+
+
+## Дэлгүүр, түрийвч (coin) — `lib/wallet/`
+
+```
+lib/wallet/
+├── wallet_models.dart         ShopItem (бэлтгэл, баатрын дүр), CoinPack, WalletTransaction, BattleBonuses
+├── wallet_service.dart        WalletService: coin, inventory, дүр, гүйлгээний түүх (+ үүлэн хуулбар)
+├── payment_service.dart       PaymentService интерфэйс + MockPaymentService (туршилтын төлбөр)
+├── firestore_wallet_cloud.dart  wallets/{uid} дээр хуулбарлана
+└── checkout_dialog.dart       Төлбөрийн цонх: баталгаажуулах → боловсруулах → үр дүн
+screens/shop_screen.dart       Дэлгүүр
+```
+
+- **Coin олох:** ердийн тулаан (ялбал 10 + од бүрт 5, ялагдвал 2), 1v1 (ялбал 25, ялагдвал 5).
+- **Coin зарцуулах:** бэлтгэл (санамж +3, цаг +10 сек, амь +10 — дараагийн тулаанд нэг удаа),
+  баатрын дүр (байнгын). Тулаан эхлэхэд `WalletService.consumeBattleBonuses()` бэлтгэлийг ашиглаж
+  `BattleController(bonuses: ...)`-д дамжуулна.
+- **Төлбөр:** `PaymentService` интерфэйс. Одоо `MockPaymentService` — жинхэнэ карт/мөнгөгүй, тест горим
+  (дэлгэц дээр анхааруулга бий). QPay/Stripe/In-App Purchase холбохдоо зөвхөн энэ интерфэйсийг хэрэгжүүлнэ.
+- **Хадгалалт:** төхөөрөмж дээр (`shared_preferences`) + онлайн нэвтэрсэн бол Firestore `wallets/{uid}`
+  (хамгийн сүүлд өөрчлөгдсөн хувилбар хүчинтэй). Дүрэм: зөвхөн эзэн нь бичнэ.
+- Тестүүд: `wallet_test.dart` (түрийвч, төлбөр, үүл), `shop_screen_test.dart` (дэлгүүр, төлбөрийн цонх),
+  `battle_bonus_test.dart`.
+
+Хоёр утсан дээр турших заавар: [docs/TWO_DEVICE_TEST.md](docs/TWO_DEVICE_TEST.md).

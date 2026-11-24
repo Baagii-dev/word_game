@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../services/settings_service.dart';
 import '../services/storage_service.dart';
+import '../wallet/firestore_wallet_cloud.dart';
+import '../wallet/wallet_service.dart';
 import 'local_online_service.dart';
 import 'online_models.dart';
 import 'online_service.dart';
@@ -34,12 +36,20 @@ Future<PlayerProfile?> ensureProfile(BuildContext context) async {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Онлайнд холбогдож чадсангүй — офлайн демо горимоор үргэлжилнэ'),
+          content: Text(
+            'Онлайнд холбогдож чадсангүй — офлайн демо горимоор үргэлжилнэ',
+          ),
         ),
       );
     }
   }
   await SettingsService.instance.setNickname(profile.name);
+  if (activeService.isOnline) {
+    await WalletService.instance.attachCloud(
+      FirestoreWalletCloud(),
+      profile.uid,
+    );
+  }
 
   // Өмнө нь тоглосон дүнг жагсаалтад оруулна
   final history = StorageService.instance.progress.history;

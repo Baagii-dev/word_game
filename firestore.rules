@@ -31,6 +31,15 @@ service cloud.firestore {
         && request.resource.data.totalScore - resource.data.totalScore <= 100000;
     }
 
+    // Түрийвч: зөвхөн эзэн нь уншиж, бичнэ (coin сөрөг, хэт том болохгүй)
+    match /wallets/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.coins is int
+        && request.resource.data.coins >= 0
+        && request.resource.data.coins <= 1000000;
+    }
+
     match /matches/{matchId} {
       allow read: if signedIn();
 

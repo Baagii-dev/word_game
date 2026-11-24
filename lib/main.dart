@@ -10,6 +10,8 @@ import 'online/online_service.dart';
 import 'services/dictionary_service.dart';
 import 'services/settings_service.dart';
 import 'services/storage_service.dart';
+import 'wallet/firestore_wallet_cloud.dart';
+import 'wallet/wallet_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +21,7 @@ Future<void> main() async {
   await StorageService.instance.load();
   await SettingsService.instance.load();
 
+  await WalletService.instance.load();
   await _setupOnline();
 
   runApp(const WordBattleApp());
@@ -28,7 +31,9 @@ Future<void> main() async {
 /// эс бөгөөс (тохиргоо дутуу, интернэтгүй) санах ойн офлайн демо горим.
 Future<void> _setupOnline() async {
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     OnlineServices.use(FirebaseOnlineService());
   } catch (e) {
     debugPrint('Firebase эхлээгүй, офлайн горимд ажиллана: $e');
@@ -38,7 +43,13 @@ Future<void> _setupOnline() async {
   final nick = SettingsService.instance.nickname;
   if (nick.isNotEmpty) {
     try {
-      await OnlineServices.current.signIn(nick);
+      final profile = await OnlineServices.current.signIn(nick);
+      if (OnlineServices.current.isOnline) {
+        await WalletService.instance.attachCloud(
+          FirestoreWalletCloud(),
+          profile.uid,
+        );
+      }
     } catch (e) {
       debugPrint('Онлайн нэвтрэлт амжилтгүй, офлайн горимд шилжив: $e');
       final local = LocalOnlineService();

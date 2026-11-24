@@ -10,6 +10,7 @@ import '../online/online_models.dart';
 import '../online/online_service.dart';
 import '../services/audio_service.dart';
 import '../services/dictionary_service.dart';
+import '../wallet/wallet_service.dart';
 import '../widgets/damage_popup.dart';
 import '../widgets/hp_bar.dart';
 import '../widgets/word_panel.dart';
@@ -29,6 +30,7 @@ class DuelScreen extends StatefulWidget {
 class _DuelScreenState extends State<DuelScreen> {
   late final DuelController controller;
   bool _resultShown = false;
+  int _reward = 0;
   int _lastHits = 0;
   int _lastOppHits = 0;
 
@@ -57,6 +59,11 @@ class _DuelScreenState extends State<DuelScreen> {
       _resultShown = true;
       final s = c.snapshot;
       AudioService.instance.play(s.iWon ? Sfx.victory : Sfx.defeat);
+      _reward = WalletService.duelReward(won: s.iWon);
+      WalletService.instance.earn(
+        _reward,
+        '1v1 тулаан: ${s.iWon ? 'ялалт' : 'оролдлого'}',
+      );
       if (OnlineServices.isReady) {
         OnlineServices.current
             .submitDuelResult(won: s.iWon, score: c.finalScore)
@@ -85,6 +92,7 @@ class _DuelScreenState extends State<DuelScreen> {
             Text('Өрсөлдөгчийн амь: ${s.opponentHp}/${s.maxHp}'),
             const SizedBox(height: 8),
             Text('Бүтээсэн үг: ${c.wordsCount}'),
+            Text('Шагнал: +$_reward 🪙'),
             Text(
               'Тулааны оноо: ${c.finalScore}',
               style: const TextStyle(fontWeight: FontWeight.bold),

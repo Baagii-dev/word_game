@@ -7,6 +7,7 @@ import '../design/ornament_strip.dart';
 import '../design/steppe_background.dart';
 import '../design/theme.dart';
 import '../services/settings_service.dart';
+import '../wallet/wallet_service.dart';
 import '../widgets/game_button.dart';
 import '../widgets/rules_dialog.dart';
 
@@ -28,6 +29,42 @@ class HomeScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: const OrnamentStrip(),
+          ),
+          // Зүүн дээд буланд coin үлдэгдэл (дэлгүүр рүү орно)
+          Positioned(
+            top: MediaQuery.paddingOf(context).top + 32,
+            left: 16,
+            child: ListenableBuilder(
+              listenable: WalletService.instance,
+              builder: (context, _) => Material(
+                color: AppColors.navyDeep.withValues(alpha: 0.65),
+                shape: StadiumBorder(
+                  side: BorderSide(
+                    color: AppColors.accent.withValues(alpha: 0.8),
+                    width: 1.5,
+                  ),
+                ),
+                child: InkWell(
+                  customBorder: const StadiumBorder(),
+                  onTap: () => Navigator.pushNamed(context, Routes.shop),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    child: Text(
+                      '🪙 ${WalletService.instance.coins}',
+                      key: const Key('home_coins'),
+                      style: const TextStyle(
+                        color: AppColors.accentLight,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
           // Баруун дээд буланд Өдөр / Шөнийн горим (Dark Mode) хурдан солих товч
           Positioned(
@@ -162,7 +199,8 @@ class HomeScreen extends StatelessWidget {
                       label: 'Онлайн 1v1',
                       icon: Icons.sports_mma,
                       color: AppColors.navy,
-                      onPressed: () => Navigator.pushNamed(context, Routes.duel),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, Routes.duel),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -191,12 +229,28 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    GameButton(
-                      label: 'Заавар',
-                      icon: Icons.help_outline,
-                      color: AppColors.accent,
-                      foreground: AppColors.text,
-                      onPressed: () => _showRules(context),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GameButton(
+                            label: 'Дэлгүүр',
+                            icon: Icons.storefront,
+                            color: AppColors.red,
+                            onPressed: () =>
+                                Navigator.pushNamed(context, Routes.shop),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GameButton(
+                            label: 'Заавар',
+                            icon: Icons.help_outline,
+                            color: AppColors.accent,
+                            foreground: AppColors.text,
+                            onPressed: () => _showRules(context),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     GameButton(

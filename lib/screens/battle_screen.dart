@@ -12,6 +12,7 @@ import '../logic/battle_controller.dart';
 import '../models/level.dart';
 import '../services/audio_service.dart';
 import '../services/dictionary_service.dart';
+import '../wallet/wallet_service.dart';
 import '../widgets/damage_popup.dart';
 import '../widgets/hp_bar.dart';
 import '../widgets/letter_grid.dart';
@@ -43,6 +44,8 @@ class _BattleScreenState extends State<BattleScreen>
         BattleController(
             level: widget.level,
             dictionary: DictionaryService.instance,
+            // Дэлгүүрээс авсан бэлтгэлийг тулаан бүрт нэг удаа ашиглана
+            bonuses: WalletService.instance.consumeBattleBonuses(),
           )
           ..onEvent = _onEvent
           ..start();

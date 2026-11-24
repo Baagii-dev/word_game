@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/assets.dart';
+import '../../wallet/wallet_service.dart';
 import '../theme.dart';
 
 /// Баатрын дүрс: `AppAssets.heroImage` тохируулбал PNG зураг,
@@ -9,6 +10,9 @@ class HeroArt extends StatelessWidget {
   const HeroArt({super.key, required this.size});
 
   final double size;
+
+  /// Дэлгүүрээс сонгосон баатрын дүр (emoji).
+  String get heroEmoji => WalletService.instance.heroEmoji;
 
   @override
   Widget build(BuildContext context) {
@@ -19,19 +23,18 @@ class HeroArt extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const RadialGradient(
-          colors: [
-            Color(0xFF4285D6),
-            AppColors.heroDeel,
-            AppColors.navyDeep,
-          ],
+          colors: [Color(0xFF4285D6), AppColors.heroDeel, AppColors.navyDeep],
         ),
         border: Border.all(color: AppColors.accent, width: 2.5),
         boxShadow: const [
           BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
-      child: const FittedBox(
-        child: Text('🏇', style: TextStyle(fontSize: 80, height: 1.1)),
+      child: FittedBox(
+        child: Text(
+          heroEmoji,
+          style: const TextStyle(fontSize: 80, height: 1.1),
+        ),
       ),
     );
 

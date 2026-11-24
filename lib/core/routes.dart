@@ -6,6 +6,7 @@ import '../screens/home_screen.dart';
 import '../screens/leaderboard_screen.dart';
 import '../screens/level_select_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/shop_screen.dart';
 import '../screens/splash_screen.dart';
 
 /// Нэрлэсэн маршрутууд. Тулаан/үр дүнгийн дэлгэц аргументтай тул
@@ -17,6 +18,7 @@ class Routes {
   static const String history = '/history';
   static const String leaderboard = '/leaderboard';
   static const String duel = '/duel';
+  static const String shop = '/shop';
   static const String settings = '/settings';
 
   static Route<dynamic> onGenerate(RouteSettings s) {
@@ -26,6 +28,7 @@ class Routes {
       history => const HistoryScreen(),
       leaderboard => const LeaderboardScreen(),
       duel => const DuelLobbyScreen(),
+      shop => ShopScreen(),
       settings => const SettingsScreen(),
       _ => const SplashScreen(),
     };
