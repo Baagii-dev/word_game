@@ -232,13 +232,13 @@ void main() {
     await wait(t, 900);
     check(t, 'үлгэрийн хуудас');
     // Хуудас бүрийг дарж уншина
-    while (find.text('Тулаанд орох').evaluate().isEmpty) {
+    while (find.text('Замд гарах').evaluate().isEmpty) {
       await t.tap(find.text('Цааш'));
       await wait(t, 300);
     }
-    await t.tap(find.text('Тулаанд орох')); // бичигдэж байвал бүтэн гаргана
+    await t.tap(find.text('Замд гарах')); // бичигдэж байвал бүтэн гаргана
     await wait(t, 300);
-    await t.tap(find.text('Тулаанд орох'));
+    await t.tap(find.text('Замд гарах'));
     await wait(t, 900);
     await playPath(1);
     check(t, 'үлгэр 1 эхлэл');

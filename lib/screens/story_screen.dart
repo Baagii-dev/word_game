@@ -100,33 +100,34 @@ class _StoryScreenState extends State<StoryScreen>
           ),
           const Positioned.fill(child: ScrimOverlay(top: 0.45, bottom: 0.7)),
           SafeArea(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: _advance,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-                    child: Row(
-                      children: [
-                        GlassIconButton(
-                          icon: Icons.close_rounded,
-                          tooltip: 'Буцах',
-                          size: 40,
-                          onPressed: () => Navigator.maybePop(context),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Row(
+                    children: [
+                      GlassIconButton(
+                        icon: Icons.close_rounded,
+                        tooltip: 'Буцах',
+                        size: 40,
+                        onPressed: () => Navigator.maybePop(context),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: _finish,
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
                         ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: _finish,
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.white,
-                          ),
-                          child: const Text('Алгасах »'),
-                        ),
-                      ],
-                    ),
+                        child: const Text('Алгасах »'),
+                      ),
+                    ],
                   ),
-                  Expanded(
+                ),
+                // Зөвхөн хуудасны хэсэгт дарж урагшилна (дээд товчнуудад саад болохгүй)
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _advance,
                     child: Center(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
@@ -137,32 +138,34 @@ class _StoryScreenState extends State<StoryScreen>
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 520),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _Dots(count: _pages.length, current: _page),
-                          const SizedBox(height: 12),
-                          GameButton(
-                            label: _isLast
-                                ? (widget.outro
-                                      ? 'Үргэлжлүүлэх'
-                                      : 'Тулаанд орох')
-                                : 'Цааш',
-                            icon: _isLast && !widget.outro
-                                ? Icons.flash_on_rounded
-                                : Icons.arrow_forward_rounded,
-                            onPressed: _advance,
-                          ),
-                        ],
-                      ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _Dots(count: _pages.length, current: _page),
+                        const SizedBox(height: 12),
+                        GameButton(
+                          label: _isLast
+                              ? (widget.outro
+                                    ? 'Үргэлжлүүлэх'
+                                    : widget.chapter.path.isEmpty
+                                    ? 'Тулаанд орох'
+                                    : 'Замд гарах')
+                              : 'Цааш',
+                          icon: _isLast && !widget.outro
+                              ? Icons.flash_on_rounded
+                              : Icons.arrow_forward_rounded,
+                          onPressed: _advance,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

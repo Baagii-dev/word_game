@@ -75,7 +75,7 @@ void main() {
       final c = make();
       expect(c.status, PathStatus.walking);
       walkToObstacle(async, c);
-      expect(c.heroPos, closeTo(0.4, 0.01));
+      expect(c.heroPos, closeTo(0.3, 0.01));
       expect(c.board.length, GameConfig.pathBoardSize);
       final letters = c.board.map((t) => t.letter).toList();
       for (final ch in 'алх'.split('')) {
@@ -139,6 +139,32 @@ void main() {
       );
       expect(c.status, PathStatus.failed);
       expect(c.hearts, 0);
+      c.dispose();
+    });
+  });
+
+  test('Хугацаа дуусахад самбар хэвээр, сонголт бүрэн арилна', () {
+    fakeAsync((async) {
+      final c = make();
+      walkToObstacle(async, c);
+      final ids = c.board.map((t) => t.id).toList();
+      c.selectTile(c.board.first);
+      async.elapse(Duration(seconds: GameConfig.pathObstacleSeconds + 1));
+      expect(c.board.map((t) => t.id).toList(), ids);
+      expect(c.selected, isEmpty);
+      expect(c.board.any((t) => t.isSelected), isFalse);
+      c.dispose();
+    });
+  });
+
+  test('Буруу үгийн дараа самбарт сонгогдсон үсэг үлдэхгүй', () {
+    fakeAsync((async) {
+      final c = make();
+      walkToObstacle(async, c);
+      c.selectTile(c.board[0]);
+      c.selectTile(c.board[1]);
+      c.submit();
+      expect(c.board.any((t) => t.isSelected), isFalse);
       c.dispose();
     });
   });

@@ -50,7 +50,8 @@ class PathController extends ChangeNotifier {
   }
 
   static const Duration tick = Duration(milliseconds: 40);
-  static const double _approach = 0.1; // саадаас хэр зайнд зогсох
+  static const double _approach =
+      0.2; // саадаас хэр зайнд зогсох (дүрс давхцахгүй)
 
   final Chapter chapter;
   final Random _random;
@@ -154,6 +155,9 @@ class PathController extends ChangeNotifier {
 
   /// Саадын үгийн үсгүүд заавал орсон, бусад нь санамсаргүй самбар.
   void _newBoard() {
+    for (final t in selected) {
+      t.isSelected = false;
+    }
     selected.clear();
     final word = obstacle!.word;
     final tiles = [
@@ -176,7 +180,11 @@ class PathController extends ChangeNotifier {
     timeLeft = GameConfig.pathObstacleSeconds.toDouble();
     message =
         'Хугацаа дууслаа! Нэг зүрх алдлаа. Үлгэрийн текстийг сайн уншаарай.';
-    _newBoard();
+    // Самбар хэвээр (тоглогч будилахгүй), зөвхөн сонголт арилна
+    for (final t in selected) {
+      t.isSelected = false;
+    }
+    selected.clear();
   }
 
   void _endSegment() {

@@ -47,13 +47,17 @@ class _PathScreenState extends State<PathScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
   }
 
-  PathController _create() =>
-      PathController(
-          chapter: widget.chapter,
-          dictionary: DictionaryService.instance,
-        )
-        ..addListener(_onChange)
-        ..start();
+  /// Шинэ controller: эхлээд оноож, дараа нь эхлүүлнэ (сонсогч нь
+  /// [controller]-ийг уншдаг тул эхлэхээс өмнө оноогдсон байх ёстой).
+  PathController _create() {
+    final c = PathController(
+      chapter: widget.chapter,
+      dictionary: DictionaryService.instance,
+    )..addListener(_onChange);
+    controller = c;
+    c.start();
+    return c;
+  }
 
   int _lastClear = 0, _lastHurt = 0, _lastInvalid = 0;
 

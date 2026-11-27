@@ -80,12 +80,30 @@ void main() {
       expect(find.text(chapter.title), findsOneWidget);
 
       for (var i = 0; i < chapter.intro.length; i++) {
-        await t.tap(find.byType(GestureDetector).first); // бүтэн текст
+        await t.tap(find.text(chapter.title)); // бүтэн текст
         await t.pump();
-        await t.tap(find.byType(GestureDetector).first); // дараагийн хуудас
+        await t.tap(find.text(chapter.title)); // дараагийн хуудас
         await t.pump();
         expectNoVerticalOverflow(t, 'хуудас $i');
       }
+      expect(finished, isTrue);
+    });
+
+    testWidgets('«Алгасах» хуудсыг урагшлуулахгүй, шууд дуусгана ($label)', (
+      t,
+    ) async {
+      var finished = false;
+      await pumpAt(
+        t,
+        size,
+        StoryScreen(
+          chapter: chapters.first,
+          outro: false,
+          onFinished: (_) => finished = true,
+        ),
+      );
+      await t.tap(find.text('Алгасах »'));
+      await t.pump();
       expect(finished, isTrue);
     });
 
