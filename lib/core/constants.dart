@@ -20,6 +20,13 @@ class GameConfig {
   // ---- Дайсны тусгай чадвар ----
   static const int curseTiles = 2; // хараал хэдэн үсгийг түгжих
   static const int enemyHealPercent = 25; // дайсан амийнхаа хэдэн хувийг нөхөх
+
+  // ---- Үлгэрийн зам ----
+  static const int pathHearts = 3; // замд алдаж болох удаа
+  static const int pathObstacleSeconds = 15; // нэг саадад өгөх хугацаа
+  static const int pathWrongPenalty = 2; // буруу үгэнд хасагдах секунд
+  static const double pathWalkSpeed = 0.2; // мөрийн хэдэн хувийг секундэд алхах
+  static const int pathBoardSize = 10; // саадын үсгийн самбар
 }
 
 /// Монгол кирилл цагаан толгой (35 үсэг)

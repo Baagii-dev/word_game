@@ -23,9 +23,12 @@ import 'tale_flow.dart';
 
 /// Тулааны дэлгэц. Тоглоомын дүрэм BattleController-т, энд зөвхөн харуулна.
 class BattleScreen extends StatefulWidget {
-  const BattleScreen({super.key, required this.chapter});
+  const BattleScreen({super.key, required this.chapter, this.bonusScore = 0});
 
   final Chapter chapter;
+
+  /// Үлгэрийн замаас авчирсан оноо.
+  final int bonusScore;
 
   @override
   State<BattleScreen> createState() => _BattleScreenState();
@@ -79,7 +82,7 @@ class _BattleScreenState extends State<BattleScreen>
     final outcome = BattleOutcome(
       chapter: widget.chapter,
       won: c.status == BattleStatus.won,
-      score: c.finalScore,
+      score: c.finalScore + widget.bonusScore,
       stars: c.stars,
       wordsCount: c.wordsCount,
       longestWord: c.longestWord,

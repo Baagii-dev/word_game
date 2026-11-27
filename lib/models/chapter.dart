@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import 'enemy.dart';
+import 'tale_path.dart';
 
 /// Бүлгийн дэвсгэр (SceneBackground) — үлгэр бүр өөр орчинд өрнөнө.
 enum Scene {
@@ -16,8 +17,8 @@ enum Scene {
       Scene.values.asNameMap()[name] ?? Scene.steppe;
 }
 
-/// Нэг бүлэг = нэг монгол үлгэр: эхлэлийн хуудсууд → тулаан (хэд хэдэн дайсан)
-/// → төгсгөлийн хуудсууд + сургамж.
+/// Нэг бүлэг = нэг монгол үлгэр: эхлэлийн хуудсууд → үлгэрийн зам (саадуудыг
+/// үгээр давах) → тулаан (хэд хэдэн дайсан) → төгсгөлийн хуудсууд + сургамж.
 class Chapter {
   Chapter({
     required this.id,
@@ -29,6 +30,7 @@ class Chapter {
     required this.outro,
     required this.moral,
     required List<Enemy> enemies,
+    this.path = const [],
   }) : _enemyTemplates = enemies;
 
   factory Chapter.fromJson(Map<String, dynamic> json) => Chapter(
@@ -40,6 +42,10 @@ class Chapter {
     intro: _strings(json['intro']),
     outro: _strings(json['outro']),
     moral: json['moral'] as String? ?? '',
+    path: [
+      for (final p in (json['path'] as List? ?? const []))
+        PathSegment.fromJson(p as Map<String, dynamic>),
+    ],
     enemies: [
       for (final e in json['enemies'] as List)
         Enemy.fromJson(e as Map<String, dynamic>),
@@ -57,6 +63,9 @@ class Chapter {
   final List<String> intro;
   final List<String> outro;
   final String moral;
+
+  /// Тулааны өмнөх үлгэрийн зам (хоосон бол шууд тулаан).
+  final List<PathSegment> path;
   final List<Enemy> _enemyTemplates;
 
   int get waveCount => _enemyTemplates.length;

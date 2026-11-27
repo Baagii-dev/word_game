@@ -34,17 +34,18 @@ class LetterGenerator {
   int _nextId = 0;
 
   /// Самбарыг [GameConfig.boardSize] хүртэл нөхнө. Хоосон жагсаалт өгвөл шинэ самбар.
-  List<LetterTile> fillBoard(List<LetterTile> board) {
+  /// [size] — самбарын хэмжээ (анхдагч нь [GameConfig.boardSize]).
+  List<LetterTile> fillBoard(List<LetterTile> board, {int? size}) {
     final result = List<LetterTile>.from(board);
-    final size = GameConfig.boardSize;
-    final minVowels = (size * GameConfig.minVowelRatio).ceil();
-    final maxVowels = (size * GameConfig.maxVowelRatio).floor();
+    final target = size ?? GameConfig.boardSize;
+    final minVowels = (target * GameConfig.minVowelRatio).ceil();
+    final maxVowels = (target * GameConfig.maxVowelRatio).floor();
 
     var guard = 0; // хязгааргүй давталтаас хамгаална
-    while (result.length < size && guard < 1000) {
+    while (result.length < target && guard < 1000) {
       guard++;
       final vowelCount = result.where((t) => kVowels.contains(t.letter)).length;
-      final remaining = size - result.length;
+      final remaining = target - result.length;
 
       List<String> pool;
       if (vowelCount + remaining <= minVowels) {

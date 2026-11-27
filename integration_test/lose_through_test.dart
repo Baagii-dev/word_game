@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:word_battle/main.dart' as app;
@@ -36,7 +37,7 @@ void main() {
     await t.pump(const Duration(seconds: 2));
     // Бүх үлгэрийг нээж өгнө (өмнөх тоглолтоос үл хамаарна)
     const total = 5;
-    for (var id = 1; id < total; id++) {
+    for (var id = 1; id <= total; id++) {
       await StorageService.instance.saveResult(
         chapterId: id,
         chapterTitle: 'тест',
@@ -75,10 +76,18 @@ void main() {
     await wait(t, 800);
 
     for (var level = 1; level <= total; level++) {
+      // Давсан үлгэрт ⚡ товчоор үлгэр, замыг алгасаж шууд тулаанд орно
       await t.scrollUntilVisible(find.text('$level-р үлгэр'), 200);
-      await t.tap(find.text('$level-р үлгэр'));
-      await wait(t, 900);
-      await t.tap(find.text('Алгасах »'));
+      final card = find.ancestor(
+        of: find.text('$level-р үлгэр'),
+        matching: find.byType(InkWell),
+      );
+      await t.tap(
+        find.descendant(
+          of: card.first,
+          matching: find.byTooltip('Үлгэрийг алгасаад шууд тулалдах'),
+        ),
+      );
       await wait(t, 900);
       await loseBattle('үлгэр $level');
 

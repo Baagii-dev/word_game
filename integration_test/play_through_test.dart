@@ -4,6 +4,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:word_battle/core/constants.dart';
 import 'package:word_battle/logic/damage_calculator.dart';
 import 'package:word_battle/main.dart' as app;
+import 'package:word_battle/models/chapter.dart';
 import 'package:word_battle/services/dictionary_service.dart';
 import 'package:word_battle/widgets/letter_grid.dart';
 import 'package:word_battle/widgets/letter_tile_widget.dart';
@@ -162,6 +163,49 @@ void main() {
       return won;
     }
 
+    /// Үлгэрийн замыг туулна: саадын нэрээр stories.json-оос үгийг олж бүтээнэ.
+    Future<void> playPath(int chapterId) async {
+      final chapter = chapterById(chapterId)!;
+      final words = {
+        for (final seg in chapter.path)
+          for (final o in seg.obstacles) o.name: o.word,
+      };
+      final deadline = DateTime.now().add(const Duration(minutes: 3));
+      while (find.text('Мангастай тулалдах').evaluate().isEmpty &&
+          DateTime.now().isBefore(deadline)) {
+        await t.pump(const Duration(milliseconds: 200));
+        check(t, 'зам $chapterId');
+        final nameFinder = find.descendant(
+          of: find.byKey(const Key('obstacle-name')),
+          matching: find.byType(Text),
+        );
+        if (nameFinder.evaluate().isEmpty) continue;
+        final name = (nameFinder.evaluate().first.widget as Text).data!;
+        final tiles = find
+            .descendant(
+              of: find.byType(LetterGrid),
+              matching: find.byType(LetterTileWidget),
+            )
+            .evaluate()
+            .map((e) => e.widget as LetterTileWidget)
+            .toList();
+        final taken = <int>{};
+        for (final ch in words[name]!.split('')) {
+          final w = tiles.firstWhere(
+            (x) => x.tile.letter == ch && !taken.contains(x.tile.id),
+          );
+          taken.add(w.tile.id);
+          await t.tap(find.byKey(ValueKey(w.tile.id)));
+          await t.pump(const Duration(milliseconds: 120));
+        }
+        await t.tap(find.text('Ашиглах'));
+        await wait(t, 900);
+      }
+      await t.tap(find.text('Мангастай тулалдах'));
+      await wait(t, 900);
+      log.add('зам $chapterId: ДАВСАН');
+    }
+
     // ---- Splash → нүүр ----
     expect(await waitFor(t, find.text('Үлгэрийн ном'), seconds: 10), isTrue);
     check(t, 'нүүр');
@@ -196,6 +240,7 @@ void main() {
     await wait(t, 300);
     await t.tap(find.text('Тулаанд орох'));
     await wait(t, 900);
+    await playPath(1);
     check(t, 'үлгэр 1 эхлэл');
     var won = await playBattle(1);
 
@@ -205,6 +250,7 @@ void main() {
       await wait(t, 1000);
       await t.tap(find.text('Алгасах »'));
       await wait(t, 900);
+      await playPath(level);
       check(t, 'үлгэр $level эхлэл');
       won = await playBattle(level);
     }

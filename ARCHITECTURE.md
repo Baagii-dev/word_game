@@ -19,17 +19,20 @@ lib/
 │   ├── theme.dart       Өнгө (AppColors), хэмжээ (AppSizes), хугацаа, ThemeData
 │   ├── scene_background.dart  Үлгэрийн орчин: тал, говь, өвлийн ой, уул, агуй (кодоор зурсан)
 │   ├── parchment.dart   Илгэн цаасан хуудас (ParchmentCard), үлгэрийн текстийн хэв маяг
+│   ├── weather.dart     Замын хуудсан дээрх бороо, цас, элс, салхи, гал оч
 │   ├── glass.dart       Тунгалаг самбар, товч, бараан градиент
 │   └── characters/      Баатар, дайсны дүрс (кодоор зурсан эсвэл PNG) + анимац
 │
 ├── models/              Өгөгдлийн бүтэц
-│   ├── chapter.dart     Үлгэр (эхлэл, төгсгөл, сургамж, орчин, дайснууд) + stories.json ачаалах
+│   ├── chapter.dart     Үлгэр (эхлэл, зам, төгсгөл, сургамж, орчин, дайснууд) + stories.json ачаалах
+│   ├── tale_path.dart   Замын хуудас (PathSegment) ба саад (PathObstacle), `[үг]` тэмдэглэгээ
 │   ├── enemy.dart       Дайсан, төрөл (EnemyKind), тусгай чадвар (EnemySpecial)
 │   ├── letter_tile.dart Үсгийн хавтан (алтан / эдгээх / хараагдсан)
 │   ├── player.dart  player_progress.dart
 │
 ├── logic/               ★ ТОГЛООМЫН ДҮРЭМ — дэлгэцээс хамаарахгүй
 │   ├── battle_controller.dart  Тулааны давталт, ээлж, таймер, тусгай чадвар, оноо
+│   ├── path_controller.dart    Замын давталт: алхах, саадтай тулах, үг шалгах, зүрх, оноо
 │   ├── letter_generator.dart   Самбар үүсгэх/нөхөх, тусгай үсэг, санамж олох
 │   ├── word_validator.dart     Үг шалгах (урт, давхцал, толь бичиг)
 │   └── damage_calculator.dart  Хохирол = онооны нийлбэр × уртын үржвэр × combo
@@ -39,6 +42,7 @@ lib/
 ├── screens/
 │   ├── tale_flow.dart          ★ Үлгэрийн урсгал: эхлэл → тулаан → төгсгөл → үр дүн
 │   ├── story_screen.dart       Үлгэрийн хуудас (үсэг үсгээр бичигдэнэ)
+│   ├── path_screen.dart        Үлгэрийн зам (баатар текст дээгүүр алхаж саад давна)
 │   ├── chapter_select_screen.dart  Үлгэрийн ном (бүлэг сонгох)
 │   └── splash  home  battle  result  history  settings
 │
@@ -56,7 +60,7 @@ main.dart ─► DictionaryService.load()  words.txt → Set<String> + үсги�
           ─► runApp → Splash → Home → Үлгэрийн ном
                                           │ TaleFlow.start
                                           ▼
-              StoryScreen (эхлэл) ─► BattleScreen ─► TaleFlow.finishBattle
+              StoryScreen (эхлэл) ─► PathScreen (зам) ─► BattleScreen ─► TaleFlow.finishBattle
                                                       │ (ахицыг шууд хадгална)
                                      ялсан: StoryScreen (төгсгөл + сургамж) ─► ResultScreen
                                      ялагдсан: ResultScreen
@@ -88,6 +92,10 @@ main.dart ─► DictionaryService.load()  words.txt → Set<String> + үсги�
   "scene": "steppe | desert | winter | mountain | cave",
   "playerHp": 30,
   "intro": ["хуудас 1", "хуудас 2"], "outro": ["..."], "moral": "...",
+  "path": [
+    { "text": "Хадыг [алх]аар бутлана.",
+      "obstacles": [ { "name": "Өндөр хад", "word": "алх", "at": 0.5, "emoji": "🪨" } ] }
+  ],
   "enemies": [
     { "name": "...", "kind": "mouse", "maxHp": 12, "attack": 2,
       "special": "strike | curse | heal", "specialEvery": 3, "intro": "..." }
@@ -104,6 +112,7 @@ flutter test
 | Файл | Юуг шалгадаг |
 |---|---|
 | `battle_simulation_test.dart` | Bot бүх үлгэрийг бодит толь бичгээр тоглоно; үлгэр бүр давагдах боломжтой эсэх |
+| `path_controller_test.dart` | Зам: алхах, саадтай тулах, зөв/буруу үг, зүрх алдах, дуусах; stories.json-ийн замын үгс толь бичигт байгаа эсэх |
 | `battle_controller_test.dart` | Combo, санамж, тусгай чадвар (хүчтэй цохилт, хараал, эдгэрэлт), алтан/эдгээх үсэг |
 | `word_generation_test.dart` | Самбар: 12 үсэг, эгшиг, давхцал, нөхөлт, санамж |
 | `battle_screen_layout_test.dart`, `screens_layout_test.dart` | Жижиг утсан дээр (320×568 хүртэл) халихгүй; үлгэрийн хуудасны урсгал |

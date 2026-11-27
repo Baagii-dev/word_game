@@ -7,6 +7,7 @@ import 'package:word_battle/design/theme.dart';
 import 'package:word_battle/screens/battle_screen.dart';
 import 'package:word_battle/screens/chapter_select_screen.dart';
 import 'package:word_battle/screens/home_screen.dart';
+import 'package:word_battle/screens/path_screen.dart';
 import 'package:word_battle/screens/story_screen.dart';
 import 'package:word_battle/services/dictionary_service.dart';
 
@@ -105,6 +106,37 @@ void main() {
       expect(find.textContaining(chapter.moral), findsOneWidget);
       expectNoVerticalOverflow(t, 'төгсгөл');
     });
+
+    for (final chapter in chapters) {
+      testWidgets('Үлгэрийн зам ${chapter.id} ($label)', (t) async {
+        await pumpAt(
+          t,
+          size,
+          PathScreen(chapter: chapter, onFinished: (_, _) {}),
+        );
+        expectNoVerticalOverflow(t, 'алхаж байна');
+        expect(find.textContaining('Үлгэрийн зам'), findsOneWidget);
+
+        // Баатар саадтай тулахад үсгийн самбар гарна
+        for (
+          var i = 0;
+          i < 60 && find.text('Ашиглах').evaluate().isEmpty;
+          i++
+        ) {
+          await t.pump(const Duration(milliseconds: 100));
+        }
+        for (var i = 0; i < 80; i++) {
+          await t.pump(const Duration(milliseconds: 100));
+          if (find.byKey(const Key('obstacle-name')).evaluate().isNotEmpty) {
+            break;
+          }
+        }
+        expect(find.byKey(const Key('obstacle-name')), findsOneWidget);
+        expectNoVerticalOverflow(t, 'саадтай тулсан');
+
+        await t.pumpWidget(const SizedBox());
+      });
+    }
 
     testWidgets('Нүүр дэлгэц ($label)', (t) async {
       await pumpAt(t, size, const HomeScreen());
