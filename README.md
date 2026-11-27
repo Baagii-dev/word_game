@@ -22,7 +22,7 @@ samples, guidance on mobile development, and a full API reference.
 ## Толь бичиг
 
 `assets/data/words.txt` нь [bataak/dict-mn](https://github.com/bataak/dict-mn)-ийн
-`mn_MN.dic`-ээс `tools/build_words.py`-аар шүүсэн үндсэн үгс (≈105,000) бөгөөд
+`mn_MN.dic`-ээс `tools/build_words.py`-аар шүүсэн 2–12 үсэгтэй үндсэн үгс (≈270,000) бөгөөд
 **Mozilla Public License 2.0**-ийн дор байна — Copyright 2020-2026, Batmunkh Dorjgotov.
 Лицензийн бүрэн текст: `assets/data/LICENSE-mn_MN-MPL-2.0.txt`.
 Дахин үүсгэх: `python3 tools/build_words.py <mn_MN.dic>`.

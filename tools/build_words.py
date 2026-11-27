@@ -11,7 +11,7 @@ FORBIDDENWORD (!!) болон ONLYINCOMPOUND (oc) тэмдэгтэй биш,
 """
 import sys
 
-MIN_LEN, MAX_LEN = 2, 9
+MIN_LEN, MAX_LEN = 2, 12  # самбар 12 үсэгтэй
 ALPHABET = set('абвгдеёжзийклмноөпрстуүфхцчшъыьэюя')
 
 HEADER = """\
@@ -27,6 +27,7 @@ HEADER = """\
 
 
 def main() -> None:
+    sys.stdout.reconfigure(encoding="utf-8")  # Windows консолд кирилл хэвлэх
     src = sys.argv[1]
     dst = sys.argv[2] if len(sys.argv) > 2 else 'assets/data/words.txt'
     words = set()
