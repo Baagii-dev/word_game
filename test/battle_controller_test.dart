@@ -4,8 +4,9 @@ import 'package:word_battle/core/constants.dart';
 import 'package:word_battle/logic/battle_controller.dart';
 import 'package:word_battle/models/enemy.dart';
 import 'package:word_battle/models/letter_tile.dart';
-import 'package:word_battle/models/level.dart';
 import 'package:word_battle/services/dictionary_service.dart';
+
+import 'helpers.dart';
 
 void main() {
   final dict = DictionaryService()
@@ -21,18 +22,20 @@ void main() {
       'цагаан',
     ]);
 
-  Level makeLevel({int hp = 100}) => Level(
-    id: 99,
-    name: 'тест',
-    description: '',
-    enemies: [
-      Enemy(name: 'Хулгана', kind: EnemyKind.mouse, maxHp: hp, attack: 3),
-    ],
-  );
+  const playerHp = 30;
 
-  BattleController makeController({int hp = 100}) => BattleController(
-    level: makeLevel(hp: hp),
+  BattleController makeController({
+    int hp = 100,
+    List<Enemy>? enemies,
+  }) => BattleController(
+    chapter: testChapter(
+      playerHp: playerHp,
+      enemies:
+          enemies ??
+          [Enemy(name: 'Хулгана', kind: EnemyKind.mouse, maxHp: hp, attack: 3)],
+    ),
     dictionary: dict,
+    bonuses: false, // тусгай үсэг тооцоог санамсаргүй болгохгүй
   )..start();
 
   /// Самбар дээрх үсгээр үг бүтээхийн тулд тухайн үсгүүдийг самбарт хүчээр тавина.
@@ -112,7 +115,7 @@ void main() {
       expect(c.status, BattleStatus.enemyTurn);
 
       async.elapse(const Duration(milliseconds: 1000));
-      expect(c.player.hp, GameConfig.playerMaxHp - 3);
+      expect(c.player.hp, playerHp - 3);
       expect(c.status, BattleStatus.playerTurn);
       c.dispose();
     });
@@ -158,7 +161,7 @@ void main() {
       c.attack(); // дайсны ээлж үед — үл тоомсорлоно
       async.elapse(const Duration(milliseconds: 1000));
 
-      expect(c.player.hp, GameConfig.playerMaxHp - 3);
+      expect(c.player.hp, playerHp - 3);
       c.dispose();
     });
   });
@@ -184,32 +187,119 @@ void main() {
 
   test('Дайсны тусгай цохилт N ээлж тутамд 2× хохирол өгнө', () {
     fakeAsync((async) {
-      final level = Level(
-        id: 98,
-        name: 'тест',
-        description: '',
+      final c = makeController(
         enemies: [
           Enemy(
             name: 'Мангас',
             kind: EnemyKind.demon,
             maxHp: 100,
             attack: 2,
+            special: EnemySpecial.strike,
             specialEvery: 2,
           ),
         ],
       );
-      final c = BattleController(level: level, dictionary: dict)..start();
       expect(c.specialIncoming, isFalse);
       expect(c.turnsUntilSpecial, 2);
 
       async.elapse(Duration(seconds: GameConfig.turnSeconds));
       async.elapse(const Duration(milliseconds: 1000));
-      expect(c.player.hp, GameConfig.playerMaxHp - 2); // энгийн
+      expect(c.player.hp, playerHp - 2); // энгийн
       expect(c.specialIncoming, isTrue);
 
       async.elapse(Duration(seconds: GameConfig.turnSeconds));
       async.elapse(const Duration(milliseconds: 1000));
-      expect(c.player.hp, GameConfig.playerMaxHp - 2 - 4); // 2× тусгай
+      expect(c.player.hp, playerHp - 2 - 4); // 2× тусгай
+      c.dispose();
+    });
+  });
+
+  test('Хараал: 2 үсэг дараагийн ээлжинд түгжигдэж, дараа нь тайлагдана', () {
+    fakeAsync((async) {
+      final c = makeController(
+        enemies: [
+          Enemy(
+            name: 'Шулам',
+            kind: EnemyKind.witch,
+            maxHp: 100,
+            attack: 1,
+            special: EnemySpecial.curse,
+            specialEvery: 1,
+          ),
+        ],
+      );
+      async.elapse(Duration(seconds: GameConfig.turnSeconds));
+      async.elapse(const Duration(milliseconds: 1000));
+      final cursed = c.board.where((t) => t.cursed).toList();
+      expect(cursed.length, GameConfig.curseTiles);
+
+      // Хараагдсан үсэг сонгогдохгүй
+      c.selectTile(cursed.first);
+      expect(c.selected, isEmpty);
+      expect(c.player.hp, playerHp - 1);
+
+      // Дайсны дараагийн ээлж эхлэхэд хуучин хараал арилна
+      async.elapse(Duration(seconds: GameConfig.turnSeconds));
+      expect(cursed.every((t) => !t.cursed), isTrue);
+      c.dispose();
+    });
+  });
+
+  test('Дайсан эдгээх чадвараар амиа нөхнө', () {
+    fakeAsync((async) {
+      final c = makeController(
+        enemies: [
+          Enemy(
+            name: 'Үнэг',
+            kind: EnemyKind.fox,
+            maxHp: 40,
+            attack: 1,
+            special: EnemySpecial.heal,
+            specialEvery: 1,
+          ),
+        ],
+      );
+      spell(c, 'морь');
+      c.attack();
+      final afterHit = c.enemy.hp;
+      expect(afterHit, lessThan(40));
+      async.elapse(const Duration(milliseconds: 1000));
+      expect(c.enemy.hp, greaterThan(afterHit));
+      expect(c.enemy.hp, lessThanOrEqualTo(40));
+      c.dispose();
+    });
+  });
+
+  test('Алтан үсэг 3× оноо, эдгээх үсэг баатрын амийг нөхнө', () {
+    fakeAsync((async) {
+      final c = makeController();
+      // Эхлээд баатрыг шархлуулна
+      async.elapse(Duration(seconds: GameConfig.turnSeconds));
+      async.elapse(const Duration(milliseconds: 1000));
+      expect(c.player.hp, playerHp - 3);
+
+      c.board = [
+        LetterTile(id: 2000, letter: 'у', points: 1, bonus: TileBonus.gold),
+        LetterTile(id: 2001, letter: 'с', points: 1, bonus: TileBonus.heal),
+        ...c.board.skip(2),
+      ];
+      c.selectTile(c.board[0]);
+      c.selectTile(c.board[1]);
+      expect(c.previewDamage, 4); // у(1×3) + с(1)
+      c.attack();
+      expect(c.enemy.hp, 100 - 4);
+      expect(c.player.hp, playerHp); // +4, дээд хэмжээнээс хэтрэхгүй
+      expect(c.healCount, 1);
+      c.dispose();
+    });
+  });
+
+  test('undo() сүүлийн үсгийг л буцаана', () {
+    fakeAsync((async) {
+      final c = makeController();
+      spell(c, 'морь');
+      c.undo();
+      expect(c.currentWord, 'мор');
       c.dispose();
     });
   });

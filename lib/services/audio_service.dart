@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 
 import 'settings_service.dart';
 
-enum Sfx { tap, hit, invalid, enemyAttack, victory, defeat }
+enum Sfx { tap, hit, heal, invalid, enemyAttack, victory, defeat }
 
 /// Дууны үйлчилгээ.
 ///
@@ -21,6 +21,7 @@ class AudioService {
       switch (sfx) {
         case Sfx.tap:
         case Sfx.hit:
+        case Sfx.heal:
         case Sfx.victory:
           SystemSound.play(SystemSoundType.click);
         case Sfx.invalid:
@@ -37,6 +38,7 @@ class AudioService {
         case Sfx.hit:
         case Sfx.victory:
           HapticFeedback.mediumImpact();
+        case Sfx.heal:
         case Sfx.invalid:
           HapticFeedback.lightImpact();
         case Sfx.enemyAttack:

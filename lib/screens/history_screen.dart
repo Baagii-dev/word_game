@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../design/glass.dart';
-import '../design/steppe_background.dart';
+import '../design/scene_background.dart';
 import '../design/theme.dart';
 import '../models/player_progress.dart';
 import '../services/storage_service.dart';
@@ -73,7 +73,7 @@ class HistoryScreen extends StatelessWidget {
           ),
           body: Stack(
             children: [
-              const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
+              const Positioned.fill(child: SceneBackground(horizon: 0.78)),
               const Positioned.fill(
                 child: ScrimOverlay(top: 0.55, bottom: 0.4),
               ),
@@ -242,7 +242,7 @@ class _RecordCard extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                '${record.levelId}. ${record.levelName}',
+                '${record.chapterId}. ${record.chapterTitle}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

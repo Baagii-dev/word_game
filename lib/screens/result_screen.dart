@@ -3,72 +3,23 @@ import 'package:flutter/material.dart';
 import '../design/characters/enemy_art.dart';
 import '../design/characters/hero_art.dart';
 import '../design/glass.dart';
-import '../design/steppe_background.dart';
+import '../design/scene_background.dart';
 import '../design/theme.dart';
-import '../models/level.dart';
-import '../services/storage_service.dart';
+import '../models/chapter.dart';
 import '../widgets/game_button.dart';
-import 'battle_screen.dart';
+import 'tale_flow.dart';
 
-/// Ялалт / ялагдлын дэлгэц. Нээгдэх үедээ үр дүн болон түүхийг хадгална.
-class ResultScreen extends StatefulWidget {
-  const ResultScreen({
-    super.key,
-    required this.level,
-    required this.won,
-    required this.score,
-    required this.stars,
-    required this.wordsCount,
-    required this.longestWord,
-  });
+/// Ялалт / ялагдлын дэлгэц. (Ахиц TaleFlow.finishBattle-д аль хэдийн хадгалагдсан.)
+class ResultScreen extends StatelessWidget {
+  const ResultScreen({super.key, required this.outcome});
 
-  final Level level;
-  final bool won;
-  final int score;
-  final int stars;
-  final int wordsCount;
-  final String longestWord;
+  final BattleOutcome outcome;
 
-  @override
-  State<ResultScreen> createState() => _ResultScreenState();
-}
-
-class _ResultScreenState extends State<ResultScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Дэлгэц зурагдаж дууссаны дараа хадгална
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      StorageService.instance.saveResult(
-        levelId: widget.level.id,
-        levelName: widget.level.name,
-        won: widget.won,
-        score: widget.score,
-        stars: widget.stars,
-        wordsCount: widget.wordsCount,
-        longestWord: widget.longestWord,
-      );
-    });
-  }
-
-  Level? get _nextLevel {
-    for (final l in kLevels) {
-      if (l.id == widget.level.id + 1) return l;
-    }
-    return null;
-  }
-
-  void _play(Level level) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => BattleScreen(level: level)),
-    );
-  }
+  Chapter? get _next => chapterById(outcome.chapter.id + 1);
 
   Widget _statRow(String label, String value) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
     child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: Text(
@@ -95,20 +46,18 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final next = _nextLevel;
-    final boss = widget.level.enemies.isNotEmpty
-        ? widget.level.enemies.last
-        : null;
+    final chapter = outcome.chapter;
+    final won = outcome.won;
+    final next = _next;
+    final boss = chapter.boss;
 
     return Scaffold(
-      backgroundColor: widget.won ? AppColors.grass : AppColors.navyDark,
       body: Stack(
         children: [
           Positioned.fill(
-            child: SteppeBackground(
+            child: SceneBackground(
+              scene: won ? chapter.scene : Scene.cave,
               horizon: 0.75,
-              levelId: widget.won ? widget.level.id : 3,
-              showGer: widget.won && widget.level.id == 1,
             ),
           ),
           const Positioned.fill(child: ScrimOverlay(top: 0.3, bottom: 0.6)),
@@ -129,7 +78,7 @@ class _ResultScreenState extends State<ResultScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              widget.won || boss == null
+                              won
                                   ? const HeroArt(size: 76)
                                   : EnemyArt(
                                       kind: boss.kind,
@@ -138,22 +87,32 @@ class _ResultScreenState extends State<ResultScreen> {
                                     ),
                               const SizedBox(height: 6),
                               Text(
-                                widget.won ? 'Ялалт!' : 'Ялагдал',
+                                won ? 'Үлгэр сэргэлээ!' : 'Ялагдал',
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  fontSize: 34,
+                                  fontSize: 30,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
                                   letterSpacing: -0.6,
                                 ),
                               ),
-                              if (widget.won)
+                              const SizedBox(height: 2),
+                              Text(
+                                chapter.title,
+                                style: const TextStyle(
+                                  color: AppColors.accentLight,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              if (won)
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
                                     3,
                                     (i) => Icon(
                                       Icons.star_rounded,
-                                      color: i < widget.stars
+                                      color: i < outcome.stars
                                           ? AppColors.accent
                                           : Colors.white.withValues(
                                               alpha: 0.18,
@@ -161,30 +120,71 @@ class _ResultScreenState extends State<ResultScreen> {
                                       size: i == 1 ? 52 : 42,
                                     ),
                                   ),
+                                )
+                              else
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    'Мангас энэ удаад давлаа. Үгээ дайчлаад дахин оролдоорой!',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: AppColors.textMuted,
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ),
                               const SizedBox(height: 16),
-                              _statRow('Оноо', '${widget.score}'),
-                              _statRow('Бүтээсэн үг', '${widget.wordsCount}'),
+                              _statRow('Оноо', '${outcome.score}'),
+                              _statRow('Бүтээсэн үг', '${outcome.wordsCount}'),
                               _statRow(
                                 'Хамгийн урт үг',
-                                widget.longestWord.isEmpty
+                                outcome.longestWord.isEmpty
                                     ? '-'
-                                    : widget.longestWord.toUpperCase(),
+                                    : outcome.longestWord.toUpperCase(),
                               ),
+                              if (won && chapter.moral.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                Text(
+                                  '“${chapter.moral}”',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                              if (won && next == null) ...[
+                                const SizedBox(height: 12),
+                                const Text(
+                                  '🎉 Та бүх үлгэрийг мангасаас авралаа!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: AppColors.accentLight,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 24),
-                              if (widget.won && next != null) ...[
+                              if (won && next != null) ...[
                                 GameButton(
-                                  label: 'Дараагийн түвшин',
-                                  icon: Icons.arrow_forward_rounded,
-                                  onPressed: () => _play(next),
+                                  label: 'Дараагийн үлгэр',
+                                  icon: Icons.auto_stories_rounded,
+                                  onPressed: () => TaleFlow.start(
+                                    context,
+                                    next,
+                                    replace: true,
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
                               ],
                               GameButton(
                                 label: 'Дахин тоглох',
                                 icon: Icons.replay_rounded,
-                                glass: widget.won && next != null,
-                                colors: widget.won
+                                glass: won && next != null,
+                                colors: won
                                     ? const [
                                         AppColors.primary,
                                         AppColors.primaryEnd,
@@ -193,7 +193,11 @@ class _ResultScreenState extends State<ResultScreen> {
                                         AppColors.bronze,
                                         AppColors.bronzeDeep,
                                       ],
-                                onPressed: () => _play(widget.level),
+                                onPressed: () => TaleFlow.battle(
+                                  context,
+                                  chapter,
+                                  replace: true,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               TextButton(
@@ -201,7 +205,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.white70,
                                 ),
-                                child: const Text('Түвшин сонгох'),
+                                child: const Text('Үлгэрийн ном руу'),
                               ),
                             ],
                           ),

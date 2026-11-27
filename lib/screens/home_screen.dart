@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../core/constants.dart';
 import '../core/routes.dart';
 import '../design/characters/enemy_art.dart';
 import '../design/characters/hero_art.dart';
 import '../design/glass.dart';
-import '../design/steppe_background.dart';
+import '../design/scene_background.dart';
 import '../design/theme.dart';
 import '../models/enemy.dart';
 import '../services/audio_service.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const Positioned.fill(child: SteppeBackground(horizon: 0.78)),
+          const Positioned.fill(child: SceneBackground(horizon: 0.78)),
           const Positioned.fill(child: ScrimOverlay(top: 0.25, bottom: 0.65)),
           SafeArea(
             child: Column(
@@ -59,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                             const _Emblem(),
                             const SizedBox(height: 18),
                             const Text(
-                              'Үгийн Тулаан',
+                              kAppTitle,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 40,
@@ -85,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                               radius: 20,
                               opacity: 0.3,
                               child: const Text(
-                                'Монгол үгээр мангасыг ял!',
+                                'Монгол үгээр үлгэрийг мангасаас авар!',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 14,
@@ -96,11 +97,11 @@ class HomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 32),
                             GameButton(
-                              label: 'Тоглох',
-                              icon: Icons.play_arrow_rounded,
+                              label: 'Үлгэрийн ном',
+                              icon: Icons.auto_stories_rounded,
                               height: 62,
                               onPressed: () =>
-                                  Navigator.pushNamed(context, Routes.levels),
+                                  Navigator.pushNamed(context, Routes.chapters),
                             ),
                             const SizedBox(height: 12),
                             Row(
@@ -151,7 +152,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Баатар ба Луу — гэрэлтсэн glass дугуйн дээр.
+/// Баатар ба Лобсоголдой мангас — гэрэлтсэн дугуйн дээр.
 class _Emblem extends StatelessWidget {
   const _Emblem();
 
@@ -186,7 +187,7 @@ class _Emblem extends StatelessWidget {
           const Positioned(
             right: 22,
             bottom: 6,
-            child: EnemyArt(kind: EnemyKind.dragon, size: 86),
+            child: EnemyArt(kind: EnemyKind.demon, size: 86),
           ),
         ],
       ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../design/glass.dart';
-import '../design/steppe_background.dart';
+import '../design/scene_background.dart';
 import '../design/theme.dart';
 import '../services/settings_service.dart';
+import '../services/storage_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -17,7 +18,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Тохиргоо')),
       body: Stack(
         children: [
-          const Positioned.fill(child: SteppeBackground(horizon: 0.8)),
+          const Positioned.fill(child: SceneBackground(horizon: 0.8)),
           const Positioned.fill(child: ScrimOverlay(top: 0.55, bottom: 0.4)),
           SafeArea(
             child: ListenableBuilder(
@@ -67,6 +68,28 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  GlassPanel(
+                    padding: EdgeInsets.zero,
+                    opacity: 0.55,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.restart_alt_rounded,
+                          color: AppColors.danger,
+                        ),
+                        title: const Text(
+                          'Ахицыг эхнээс нь эхлүүлэх',
+                          style: TextStyle(
+                            color: AppColors.danger,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onTap: () => _confirmReset(context),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -74,6 +97,29 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmReset(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Ахицыг арилгах уу?'),
+        content: const Text(
+          'Нээсэн үлгэр, од, оноо, түүх бүгд устана. Буцаах боломжгүй.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Үгүй'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Арилгах'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await StorageService.instance.resetAll();
   }
 
   Widget _tile({

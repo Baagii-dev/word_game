@@ -1,8 +1,8 @@
 /// Нэг тулааны түүхийн бичлэг.
 class BattleRecord {
   BattleRecord({
-    required this.levelId,
-    required this.levelName,
+    required this.chapterId,
+    required this.chapterTitle,
     required this.won,
     required this.score,
     required this.stars,
@@ -11,8 +11,8 @@ class BattleRecord {
     DateTime? playedAt,
   }) : playedAt = playedAt ?? DateTime.now();
 
-  final int levelId;
-  final String levelName;
+  final int chapterId;
+  final String chapterTitle;
   final bool won;
   final int score;
   final int stars;
@@ -21,8 +21,8 @@ class BattleRecord {
   final DateTime playedAt;
 
   Map<String, dynamic> toMap() => {
-    'levelId': levelId,
-    'levelName': levelName,
+    'chapterId': chapterId,
+    'chapterTitle': chapterTitle,
     'won': won,
     'score': score,
     'stars': stars,
@@ -32,8 +32,8 @@ class BattleRecord {
   };
 
   factory BattleRecord.fromMap(Map<String, dynamic> map) => BattleRecord(
-    levelId: (map['levelId'] as num?)?.toInt() ?? 1,
-    levelName: map['levelName'] as String? ?? 'Түвшин',
+    chapterId: (map['chapterId'] as num?)?.toInt() ?? 1,
+    chapterTitle: map['chapterTitle'] as String? ?? 'Үлгэр',
     won: map['won'] as bool? ?? false,
     score: (map['score'] as num?)?.toInt() ?? 0,
     stars: (map['stars'] as num?)?.toInt() ?? 0,
@@ -44,27 +44,28 @@ class BattleRecord {
   );
 }
 
-/// Хадгалагдах ахиц: аль түвшин нээгдсэн, түвшин бүрийн шилдэг оноо, од, түүх.
+/// Хадгалагдах ахиц: аль бүлэг нээгдсэн, бүлэг бүрийн шилдэг оноо, од, түүх.
 class PlayerProgress {
   PlayerProgress({
-    int? unlockedLevel,
+    int? unlockedChapter,
     Map<int, int>? bestScores,
     Map<int, int>? stars,
     List<BattleRecord>? history,
-  }) : unlockedLevel = unlockedLevel ?? 1,
+  }) : unlockedChapter = unlockedChapter ?? 1,
        bestScores = bestScores ?? {},
        stars = stars ?? {},
        history = history ?? [];
 
-  int unlockedLevel;
-  final Map<int, int> bestScores; // түвшний id → оноо
-  final Map<int, int> stars; // түвшний id → 0..3 од
+  int unlockedChapter;
+  final Map<int, int> bestScores; // бүлгийн id → оноо
+  final Map<int, int> stars; // бүлгийн id → 0..3 од
   final List<BattleRecord>
-  history; // сүүлд тоглосон тулаанууд (эхэндээ шинэ нь)
+  history; // сүүлд тоглосон тулаанууд (шинэ нь эхэндээ)
 
-  /// NoSQL (Hive / Firestore) руу хадгалахад бэлэн Map хэлбэр.
+  int get totalStars => stars.values.fold(0, (s, v) => s + v);
+
   Map<String, dynamic> toMap() => {
-    'unlockedLevel': unlockedLevel,
+    'unlockedChapter': unlockedChapter,
     'bestScores': bestScores.map((k, v) => MapEntry('$k', v)),
     'stars': stars.map((k, v) => MapEntry('$k', v)),
     'history': history.map((h) => h.toMap()).toList(),
@@ -77,15 +78,13 @@ class PlayerProgress {
       for (final entry in raw.entries) {
         final k = int.tryParse('${entry.key}');
         final v = entry.value;
-        if (k != null && v is num) {
-          result[k] = v.toInt();
-        }
+        if (k != null && v is num) result[k] = v.toInt();
       }
       return result;
     }
 
-    final rawHistory = map['history'];
     final historyList = <BattleRecord>[];
+    final rawHistory = map['history'];
     if (rawHistory is List) {
       for (final item in rawHistory) {
         if (item is Map) {
@@ -97,7 +96,7 @@ class PlayerProgress {
     }
 
     return PlayerProgress(
-      unlockedLevel: (map['unlockedLevel'] as num?)?.toInt() ?? 1,
+      unlockedChapter: (map['unlockedChapter'] as num?)?.toInt() ?? 1,
       bestScores: toIntMap(map['bestScores']),
       stars: toIntMap(map['stars']),
       history: historyList,

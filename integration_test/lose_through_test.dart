@@ -3,9 +3,9 @@ import 'package:integration_test/integration_test.dart';
 import 'package:word_battle/main.dart' as app;
 import 'package:word_battle/services/storage_service.dart';
 
-/// Бүх түвшинд ЯЛАГДАХ замыг төхөөрөмж дээр шалгана: тоглогч юу ч хийлгүй
+/// Бүх үлгэрт ЯЛАГДАХ замыг төхөөрөмж дээр шалгана: тоглогч юу ч хийлгүй
 /// "Холих" дарж ээлж алдсаар HP нь дуусна → ялагдлын дэлгэц → дахин тоглох /
-/// түвшин сонгох.
+/// үлгэрийн ном.
 /// Ажиллуулах: `flutter test integration_test/lose_through_test.dart -d DEVICE`
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -31,12 +31,20 @@ void main() {
     if (e != null) fail('АЛДАА ($where): $e');
   }
 
-  testWidgets('Бүх түвшинд ялагдах', (t) async {
+  testWidgets('Бүх үлгэрт ялагдах', (t) async {
     app.main();
     await t.pump(const Duration(seconds: 2));
-    // Бүх түвшнийг нээж өгнө (өмнөх тоглолтоос үл хамаарна)
-    await StorageService.instance.saveResult(levelId: 1, score: 1, stars: 1);
-    await StorageService.instance.saveResult(levelId: 2, score: 1, stars: 1);
+    // Бүх үлгэрийг нээж өгнө (өмнөх тоглолтоос үл хамаарна)
+    const total = 5;
+    for (var id = 1; id < total; id++) {
+      await StorageService.instance.saveResult(
+        chapterId: id,
+        chapterTitle: 'тест',
+        won: true,
+        score: 1,
+        stars: 1,
+      );
+    }
     final log = <String>[];
 
     Future<void> loseBattle(String label) async {
@@ -57,35 +65,38 @@ void main() {
         findsOneWidget,
         reason: '$label ялагдал биш',
       );
-      expect(find.text('Дараагийн түвшин'), findsNothing);
+      expect(find.text('Дараагийн үлгэр'), findsNothing);
       check(t, 'ялагдлын дэлгэц ($label)');
       log.add('$label: ЯЛАГДСАН (холих $shuffles)');
     }
 
-    expect(await waitFor(t, find.text('Тоглох'), seconds: 10), isTrue);
-    await t.tap(find.text('Тоглох'));
+    expect(await waitFor(t, find.text('Үлгэрийн ном'), seconds: 10), isTrue);
+    await t.tap(find.text('Үлгэрийн ном'));
     await wait(t, 800);
 
-    for (var level = 1; level <= 3; level++) {
-      await t.tap(find.textContaining('$level. '));
+    for (var level = 1; level <= total; level++) {
+      await t.scrollUntilVisible(find.text('$level-р үлгэр'), 200);
+      await t.tap(find.text('$level-р үлгэр'));
       await wait(t, 900);
-      await loseBattle('түвшин $level');
+      await t.tap(find.text('Алгасах »'));
+      await wait(t, 900);
+      await loseBattle('үлгэр $level');
 
       if (level == 1) {
         // "Дахин тоглох" → шинэ тулаан эхэлж, дахин ялагдана
         await t.tap(find.text('Дахин тоглох'));
         await wait(t, 900);
-        await loseBattle('түвшин 1 (дахин)');
+        await loseBattle('үлгэр 1 (дахин)');
       }
-      await t.tap(find.text('Түвшин сонгох'));
+      await t.tap(find.text('Үлгэрийн ном руу'));
       await wait(t, 800);
       check(t, 'жагсаалт руу буцсан ($level)');
-      expect(find.textContaining('$level. '), findsOneWidget);
+      expect(find.text('$level-р үлгэр'), findsOneWidget);
     }
 
-    // Ялагдсан ч өмнөх ахиц (од, түвшин) алдагдаагүй
+    // Ялагдсан ч өмнөх ахиц (од, нээсэн үлгэр) алдагдаагүй
     final p = StorageService.instance.progress;
-    expect(p.unlockedLevel, greaterThanOrEqualTo(3));
+    expect(p.unlockedChapter, greaterThanOrEqualTo(total));
     // ignore: avoid_print
     print('LOSE-THROUGH: ${log.join(' | ')}');
   });

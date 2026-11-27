@@ -85,7 +85,9 @@ class _GameButtonState extends State<GameButton> {
               duration: AppDurations.fast,
               width: double.infinity,
               height: widget.height,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(
+                horizontal: widget.height < 50 ? 10 : 20,
+              ),
               decoration: decoration,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -95,15 +97,18 @@ class _GameButtonState extends State<GameButton> {
                     const SizedBox(width: 10),
                   ],
                   Flexible(
-                    child: Text(
-                      widget.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: widget.foreground,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.2,
+                    // Нарийн товчинд бичиг таслагдахгүй, жижгэрнэ
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.label,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: widget.foreground,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                        ),
                       ),
                     ),
                   ),

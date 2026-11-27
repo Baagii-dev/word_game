@@ -3,17 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_battle/core/routes.dart';
 import 'package:word_battle/design/theme.dart';
-import 'package:word_battle/models/level.dart';
 import 'package:word_battle/screens/history_screen.dart';
 import 'package:word_battle/screens/result_screen.dart';
+import 'package:word_battle/screens/tale_flow.dart';
 import 'package:word_battle/screens/settings_screen.dart';
 import 'package:word_battle/services/settings_service.dart';
 import 'package:word_battle/widgets/rules_dialog.dart';
+
+import 'helpers.dart';
 
 /// Жижиг дэлгэц дээр overflow (хэт халих) алдаа гарахгүй эсэхийг шалгана.
 void main() {
   const sizes = [Size(320, 568), Size(375, 667), Size(412, 915)];
 
+  final chapters = loadRealChapters();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   Future<void> pumpAt(
@@ -25,9 +28,7 @@ void main() {
     t.view.physicalSize = size * 2;
     t.view.devicePixelRatio = 2;
     addTearDown(t.view.reset);
-    await t.pumpWidget(
-      MaterialApp(theme: theme ?? AppTheme.light, home: home),
-    );
+    await t.pumpWidget(MaterialApp(theme: theme ?? AppTheme.light, home: home));
     await t.pump(const Duration(milliseconds: 100));
   }
 
@@ -39,12 +40,14 @@ void main() {
         t,
         size,
         ResultScreen(
-          level: kLevels.first,
-          won: true,
-          score: 120,
-          stars: 3,
-          wordsCount: 5,
-          longestWord: 'цагаан',
+          outcome: BattleOutcome(
+            chapter: chapters.first,
+            won: true,
+            score: 120,
+            stars: 3,
+            wordsCount: 5,
+            longestWord: 'цагаан',
+          ),
         ),
       );
       expect(t.takeException(), isNull);
@@ -55,12 +58,14 @@ void main() {
         t,
         size,
         ResultScreen(
-          level: kLevels.last,
-          won: false,
-          score: 10,
-          stars: 0,
-          wordsCount: 0,
-          longestWord: '',
+          outcome: BattleOutcome(
+            chapter: chapters.last,
+            won: false,
+            score: 10,
+            stars: 0,
+            wordsCount: 0,
+            longestWord: '',
+          ),
         ),
       );
       expect(t.takeException(), isNull);
@@ -110,7 +115,7 @@ void main() {
     for (final name in [
       Routes.splash,
       Routes.home,
-      Routes.levels,
+      Routes.chapters,
       Routes.settings,
       Routes.history,
     ]) {

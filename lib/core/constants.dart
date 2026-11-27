@@ -1,15 +1,25 @@
+/// Апп-ын нэр нэг дор.
+const String kAppTitle = 'Үлгэрийн Баатар';
+
 /// Тоглоомын бүх тоон тохиргоо нэг дор.
 /// Тоглоомыг хүндрүүлэх/хөнгөвчлөх бол зөвхөн энд өөрчилнө.
 class GameConfig {
-  static const int boardSize = 12; // самбар дээрх үсгийн тоо
-  static const int minWordLength =
-      2; // хамгийн богино зөвшөөрөгдөх үг (2 үсэгтэй үг орно)
+  static const int boardSize = 12; // самбар дээрх үсгийн тоо (6 × 2)
+  static const int minWordLength = 2; // хамгийн богино зөвшөөрөгдөх үг
   static const int turnSeconds = 40; // нэг ээлжийн хугацаа
   static const int maxSameLetter = 3; // нэг үсэг самбарт хамгийн ихдээ хэд байх
   static const double minVowelRatio = 0.35; // эгшиг багадаа 35%
   static const double maxVowelRatio = 0.50; // эгшиг ихдээ 50%
-  static const int playerMaxHp = 30;
   static const int hintsPerBattle = 3; // тулаан бүрт санамжийн тоо
+
+  // ---- Тусгай үсэг ----
+  static const double goldTileChance = 0.07; // шинэ үсэг алтан байх магадлал
+  static const double healTileChance = 0.05; // шинэ үсэг эдгээх байх магадлал
+  static const int healTileAmount = 4; // эдгээх үсэг нэг бүр хэдэн амь нөхөх
+
+  // ---- Дайсны тусгай чадвар ----
+  static const int curseTiles = 2; // хараал хэдэн үсгийг түгжих
+  static const int enemyHealPercent = 25; // дайсан амийнхаа хэдэн хувийг нөхөх
 }
 
 /// Монгол кирилл цагаан толгой (35 үсэг)

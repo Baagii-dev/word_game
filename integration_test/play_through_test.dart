@@ -9,7 +9,7 @@ import 'package:word_battle/widgets/letter_grid.dart';
 import 'package:word_battle/widgets/letter_tile_widget.dart';
 
 /// Бодит төхөөрөмж/simulator дээр апп-ыг эхнээс нь дуустал тоглоно
-/// (splash, нүүр, түвшин, тулаан, үр дүн, дараагийн түвшин ...).
+/// (splash, нүүр, үлгэрийн ном, үлгэр, тулаан, төгсгөл, үр дүн, дараагийн үлгэр ...).
 /// Ажиллуулах: `flutter test integration_test/play_through_test.dart -d DEVICE`
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -35,14 +35,14 @@ void main() {
     if (e != null) fail('АЛДАА ($where): $e');
   }
 
-  testWidgets('Бүх түвшинг эхнээс нь дуустал тоглох', (t) async {
+  testWidgets('Бүх үлгэрийг эхнээс нь дуустал тоглох', (t) async {
     app.main();
     await t.pump(const Duration(seconds: 2));
     final dict = DictionaryService.instance;
     final calc = DamageCalculator(dict.letterPoints);
     final log = <String>[];
 
-    /// Нэг түвшний тулааныг үр дүнгийн дэлгэц гартал тоглож, ялсан эсэхийг буцаана.
+    /// Нэг үлгэрийн тулааныг үр дүнгийн дэлгэц гартал тоглож, ялсан эсэхийг буцаана.
     Future<bool> playBattle(int level) async {
       var attacks = 0;
       var shuffles = 0;
@@ -55,6 +55,14 @@ void main() {
           DateTime.now().isBefore(deadline)) {
         await t.pump(const Duration(milliseconds: 200));
         check(t, 'тулаан $level');
+
+        // Ялсны дараа үлгэрийн төгсгөл гарвал алгасна
+        final skip = find.text('Алгасах »');
+        if (skip.evaluate().isNotEmpty) {
+          await t.tap(skip);
+          await wait(t, 900);
+          continue;
+        }
 
         final grid = find.descendant(
           of: find.byType(LetterGrid),
@@ -83,6 +91,7 @@ void main() {
         // Хамгийн их хохирол өгөх үгийг сонгоно
         final have = <String, int>{};
         for (final w in tiles) {
+          if (w.tile.cursed) continue;
           have[w.tile.letter] = (have[w.tile.letter] ?? 0) + 1;
         }
         String? best;
@@ -116,7 +125,10 @@ void main() {
         final taken = <int>{};
         for (final ch in best.split('')) {
           final w = tiles.firstWhere(
-            (x) => x.tile.letter == ch && !taken.contains(x.tile.id),
+            (x) =>
+                x.tile.letter == ch &&
+                !x.tile.cursed &&
+                !taken.contains(x.tile.id),
           );
           taken.add(w.tile.id);
           // Widget дахин үүсдэг тул id-ний түлхүүрээр дахин хайна
@@ -138,20 +150,20 @@ void main() {
       expect(
         resultFinder.evaluate().isNotEmpty,
         isTrue,
-        reason: 'түвшин $level 8 минутад дуусаагүй',
+        reason: 'үлгэр $level 8 минутад дуусаагүй',
       );
-      final won = find.text('Ялалт!').evaluate().isNotEmpty;
+      final won = find.text('Үлгэр сэргэлээ!').evaluate().isNotEmpty;
       log.add(
-        'түвшин $level: ${won ? "ЯЛСАН" : "ЯЛАГДСАН"} '
+        'үлгэр $level: ${won ? "ЯЛСАН" : "ЯЛАГДСАН"} '
         '(довтолгоо $attacks, холих $shuffles)',
       );
-      await binding.takeScreenshot('result_level_$level');
+      await binding.takeScreenshot('result_chapter_$level');
       check(t, 'үр дүнгийн дэлгэц $level');
       return won;
     }
 
     // ---- Splash → нүүр ----
-    expect(await waitFor(t, find.text('Тоглох'), seconds: 10), isTrue);
+    expect(await waitFor(t, find.text('Үлгэрийн ном'), seconds: 10), isTrue);
     check(t, 'нүүр');
 
     // ---- Заавар, тохиргоо ----
@@ -169,24 +181,37 @@ void main() {
     await t.pageBack();
     await wait(t, 600);
 
-    // ---- Тоглох → 1-р түвшин ----
-    await t.tap(find.text('Тоглох'));
+    // ---- Үлгэрийн ном → 1-р үлгэр (эхлэлийн хуудсыг уншина) ----
+    await t.tap(find.text('Үлгэрийн ном'));
     await wait(t, 800);
-    await t.tap(find.textContaining('1. '));
+    await t.tap(find.text('1-р үлгэр'));
     await wait(t, 900);
-    check(t, 'түвшин 1 эхлэл');
+    check(t, 'үлгэрийн хуудас');
+    // Хуудас бүрийг дарж уншина
+    while (find.text('Тулаанд орох').evaluate().isEmpty) {
+      await t.tap(find.text('Цааш'));
+      await wait(t, 300);
+    }
+    await t.tap(find.text('Тулаанд орох')); // бичигдэж байвал бүтэн гаргана
+    await wait(t, 300);
+    await t.tap(find.text('Тулаанд орох'));
+    await wait(t, 900);
+    check(t, 'үлгэр 1 эхлэл');
     var won = await playBattle(1);
 
-    for (var level = 2; level <= 3 && won; level++) {
-      await t.tap(find.text('Дараагийн түвшин'));
+    const total = 5;
+    for (var level = 2; level <= total && won; level++) {
+      await t.tap(find.text('Дараагийн үлгэр'));
       await wait(t, 1000);
-      check(t, 'түвшин $level эхлэл');
+      await t.tap(find.text('Алгасах »'));
+      await wait(t, 900);
+      check(t, 'үлгэр $level эхлэл');
       won = await playBattle(level);
     }
 
-    await t.tap(find.text('Түвшин сонгох'));
+    await t.tap(find.text('Үлгэрийн ном руу'));
     await wait(t, 800);
-    check(t, 'түвшин сонгох руу буцсан');
+    check(t, 'үлгэрийн ном руу буцсан');
 
     // ignore: avoid_print
     print('PLAYTHROUGH: ${log.join(' | ')}');

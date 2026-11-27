@@ -3,15 +3,18 @@ import 'dart:math';
 import '../core/constants.dart';
 import '../models/letter_tile.dart';
 
-/// Алгоритмын 6-р хэсэг: үсгийн самбар үүсгэх, нөхөх.
+/// Үсгийн самбар үүсгэх, нөхөх.
 ///
 /// - Түгээмэл үсэг илүү олон гарна (давтамжаар жинлэсэн санамсаргүй сонголт)
 /// - Эгшгийн хувь 35–50% хооронд байна
 /// - Нэг үсэг 3-аас олон удаа гарахгүй
+/// - [bonuses] бол шинэ үсэг заримдаа алтан эсвэл эдгээх болно
+///   (самбарт тус бүр хамгийн ихдээ нэг)
 class LetterGenerator {
   LetterGenerator({
     required this.frequency,
     required this.points,
+    this.bonuses = true,
     Random? random,
   }) : _random = random ?? Random() {
     final allowed = frequency.keys.where((l) => !kExcludedLetters.contains(l));
@@ -22,6 +25,7 @@ class LetterGenerator {
 
   final Map<String, double> frequency;
   final Map<String, int> points;
+  final bool bonuses;
   final Random _random;
 
   late final List<String> _vowels;
@@ -58,10 +62,30 @@ class LetterGenerator {
       if (sameCount >= GameConfig.maxSameLetter) continue;
 
       result.add(
-        LetterTile(id: _nextId++, letter: letter, points: points[letter] ?? 1),
+        LetterTile(
+          id: _nextId++,
+          letter: letter,
+          points: points[letter] ?? 1,
+          bonus: _rollBonus(result),
+        ),
       );
     }
     return result;
+  }
+
+  /// Шинэ үсгийн тусгай шинж. Самбарт ижил шинжтэй үсэг байвал давхардуулахгүй.
+  TileBonus _rollBonus(List<LetterTile> board) {
+    if (!bonuses) return TileBonus.none;
+    final r = _random.nextDouble();
+    TileBonus pick;
+    if (r < GameConfig.goldTileChance) {
+      pick = TileBonus.gold;
+    } else if (r < GameConfig.goldTileChance + GameConfig.healTileChance) {
+      pick = TileBonus.heal;
+    } else {
+      return TileBonus.none;
+    }
+    return board.any((t) => t.bonus == pick) ? TileBonus.none : pick;
   }
 
   /// Давтамжаар жинлэсэн санамсаргүй сонголт.
@@ -83,10 +107,7 @@ class LetterGenerator {
     Set<String> dictionary, {
     int minLength = GameConfig.minWordLength,
   }) {
-    final available = <String, int>{};
-    for (final t in board) {
-      available[t.letter] = (available[t.letter] ?? 0) + 1;
-    }
+    final available = _counts(board);
     for (final word in dictionary) {
       if (word.length < minLength || word.length > board.length) continue;
       if (_canBuild(word, available)) return true;
@@ -110,7 +131,7 @@ class LetterGenerator {
   /// Богино-дунд урттай (2..[maxLength]) үгийг сонгоно.
   ///
   /// Толь бичгийг санамсаргүй цэгээс эхлэн шалгаад [sample] үг олдмогц зогсоно
-  /// (105k үгийг бүтнээр нь гүйлгэхгүй тул утсан дээр удаан биш).
+  /// (бүх толь бичгийг бүтнээр нь гүйлгэхгүй тул утсан дээр удаан биш).
   String? findWord(
     List<LetterTile> board,
     Set<String> dictionary, {
@@ -119,10 +140,7 @@ class LetterGenerator {
     int maxLength = 6,
     int sample = 25,
   }) {
-    final available = <String, int>{};
-    for (final t in board) {
-      available[t.letter] = (available[t.letter] ?? 0) + 1;
-    }
+    final available = _counts(board);
     final list = _listOf(dictionary);
     if (list.isEmpty) return null;
     final start = _random.nextInt(list.length);
@@ -135,6 +153,16 @@ class LetterGenerator {
     }
     if (candidates.isEmpty) return null;
     return candidates[_random.nextInt(candidates.length)];
+  }
+
+  /// Ашиглах боломжтой (хараагдаагүй) үсгүүдийн тоо.
+  Map<String, int> _counts(List<LetterTile> board) {
+    final available = <String, int>{};
+    for (final t in board) {
+      if (t.cursed) continue;
+      available[t.letter] = (available[t.letter] ?? 0) + 1;
+    }
+    return available;
   }
 
   bool _canBuild(String word, Map<String, int> available) {

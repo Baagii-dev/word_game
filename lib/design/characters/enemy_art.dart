@@ -54,6 +54,12 @@ class _EnemyPainter extends CustomPainter {
     switch (kind) {
       case EnemyKind.mouse:
         _mouse(d);
+      case EnemyKind.camel:
+        _camel(d);
+      case EnemyKind.swallow:
+        _swallow(d);
+      case EnemyKind.sun:
+        _sun(d);
       case EnemyKind.snake:
         _snake(d);
       case EnemyKind.wolf:
@@ -92,6 +98,77 @@ class _EnemyPainter extends CustomPainter {
       both: true,
     );
     d.fill('M 0.475 0.72 L 0.525 0.72 L 0.525 0.76 L 0.475 0.76 Z', _white);
+  }
+
+  void _camel(_Draw d) {
+    const tan = Color(0xFFC9975B);
+    const dark = Color(0xFF8E6234);
+    const light = Color(0xFFE6C392);
+    // Хоёр бөх (ар талд)
+    d.oval(0.3, 0.86, 0.3, 0.28, dark);
+    d.oval(0.7, 0.86, 0.3, 0.28, dark);
+    // Чих
+    d.oval(0.3, 0.27, 0.1, 0.16, dark, both: true);
+    // Урт толгой, хошуу
+    d.oval(0.5, 0.45, 0.46, 0.44, tan);
+    d.oval(0.5, 0.68, 0.36, 0.3, light);
+    // Хүзүүний дэл
+    d.fill('M 0.36 0.22 Q 0.5 0.12 0.64 0.22 Q 0.5 0.28 0.36 0.22 Z', dark);
+    // Нойрмог бардам нүд (дээд зовхитой)
+    d.eye(0.4, 0.44, 0.045, const Color(0xFF5A3418));
+    d.line('M 0.34 0.41 L 0.46 0.40', dark, 0.03, both: true);
+    // Хамрын нүх, уруул
+    d.oval(0.44, 0.66, 0.035, 0.02, dark, both: true);
+    d.line('M 0.40 0.76 Q 0.5 0.80 0.60 0.76', dark, 0.016);
+  }
+
+  void _swallow(_Draw d) {
+    const navy = Color(0xFF1F2E5A);
+    const red = Color(0xFFC8402E);
+    // Сэрээ сүүл (ар талд)
+    d.fill('M 0.5 0.66 L 0.28 0.98 L 0.42 0.74 Z', navy, both: true);
+    // Далавч
+    d.fill(
+      'M 0.36 0.5 Q 0.12 0.48 0.04 0.70 Q 0.22 0.62 0.40 0.66 Z',
+      navy,
+      both: true,
+    );
+    // Бие
+    d.oval(0.5, 0.52, 0.44, 0.5, navy);
+    d.oval(0.5, 0.64, 0.28, 0.28, const Color(0xFFF7F1E6));
+    // Улаан хоолой
+    d.oval(0.5, 0.5, 0.18, 0.1, red);
+    d.eye(
+      0.41,
+      0.39,
+      0.045,
+      const Color(0xFF3A2A1A),
+      brow: const Color(0xFF0E1226),
+    );
+    // Хушуу
+    d.fill('M 0.46 0.44 L 0.54 0.44 L 0.5 0.49 Z', const Color(0xFF2A2A2A));
+  }
+
+  void _sun(_Draw d) {
+    const core = Color(0xFFFFC23D);
+    const ray = Color(0xFFFF8F1F);
+    const dark = Color(0xFFB2470E);
+    // Цацраг
+    for (final spec in const [
+      'M 0.5 0.04 L 0.45 0.2 L 0.55 0.2 Z',
+      'M 0.18 0.16 L 0.26 0.3 L 0.32 0.24 Z',
+      'M 0.04 0.5 L 0.2 0.45 L 0.2 0.55 Z',
+      'M 0.18 0.84 L 0.32 0.76 L 0.26 0.70 Z',
+      'M 0.5 0.96 L 0.45 0.8 L 0.55 0.8 Z',
+    ]) {
+      d.fill(spec, ray, both: true);
+    }
+    d.circle(0.5, 0.5, 0.31, core);
+    d.circle(0.5, 0.5, 0.31, const Color(0x33FFFFFF));
+    // Ууртай нүд, халуун хацар
+    d.eye(0.4, 0.46, 0.05, const Color(0xFFE53935), brow: dark);
+    d.circle(0.33, 0.58, 0.04, const Color(0x66E53935), both: true);
+    d.fill('M 0.40 0.62 Q 0.5 0.70 0.60 0.62 Q 0.5 0.66 0.40 0.62 Z', dark);
   }
 
   void _snake(_Draw d) {

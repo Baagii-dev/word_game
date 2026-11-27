@@ -13,4 +13,11 @@ class Player {
   void takeDamage(int amount) {
     hp = max(0, hp - amount);
   }
+
+  /// Амь нөхнө. Бодитоор нэмэгдсэн хэмжээг буцаана.
+  int heal(int amount) {
+    final before = hp;
+    hp = min(maxHp, hp + amount);
+    return hp - before;
+  }
 }

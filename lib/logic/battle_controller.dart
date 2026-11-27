@@ -4,43 +4,50 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../core/constants.dart';
+import '../models/chapter.dart';
 import '../models/enemy.dart';
 import '../models/letter_tile.dart';
-import '../models/level.dart';
 import '../models/player.dart';
 import '../services/dictionary_service.dart';
 import 'damage_calculator.dart';
 import 'letter_generator.dart';
 import 'word_validator.dart';
 
-enum BattleEvent { hit, invalid, enemyAttack, victory, defeat }
+enum BattleEvent { hit, heal, invalid, enemyAttack, curse, victory, defeat }
 
 enum BattleStatus { playerTurn, enemyTurn, enemyDefeated, won, lost }
 
-/// Алгоритмын 2-р хэсэг: ТУЛААНЫ ДАВТАЛТ.
+/// ТУЛААНЫ ДАВТАЛТ — бүх тоглоомын дүрэм энд.
 ///
-/// Бүх тоглоомын дүрэм энд байна. Дэлгэц (BattleScreen) зөвхөн
-/// энэ классын төлөвийг харуулж, товч дарахад методыг нь дуудна.
+/// Дэлгэц (BattleScreen) зөвхөн энэ классын төлөвийг харуулж, товч дарахад
+/// методыг нь дуудна. Анимац/дууг тоолуур ([hitCount] г.м) болон [onEvent]-ээр
+/// мэднэ.
 class BattleController extends ChangeNotifier {
-  /// [random] — тест дээр ижил үр дүн авахад зориулсан (үгүй бол санамсаргүй).
+  /// [random] — тест дээр ижил үр дүн авахад (үгүй бол санамсаргүй).
+  /// [bonuses] — алтан/эдгээх үсэг гаргах эсэх.
   BattleController({
-    required this.level,
+    required this.chapter,
     required DictionaryService dictionary,
     Random? random,
-  }) : _dictionaryWords = dictionary.words,
+    bool bonuses = true,
+  }) : _random = random ?? Random(),
+       _dictionaryWords = dictionary.words,
        _validator = WordValidator(dictionary.words),
-       _damage = DamageCalculator(dictionary.letterPoints),
-       _generator = LetterGenerator(
-         frequency: dictionary.letterFrequency,
-         points: dictionary.letterPoints,
-         random: random,
-       );
+       _damage = DamageCalculator(dictionary.letterPoints) {
+    _generator = LetterGenerator(
+      frequency: dictionary.letterFrequency,
+      points: dictionary.letterPoints,
+      bonuses: bonuses,
+      random: _random,
+    );
+  }
 
-  final Level level;
+  final Chapter chapter;
+  final Random _random;
   final Set<String> _dictionaryWords;
   final WordValidator _validator;
   final DamageCalculator _damage;
-  final LetterGenerator _generator;
+  late final LetterGenerator _generator;
 
   // ---------- Төлөв (дэлгэц эдгээрийг уншина) ----------
   late final List<Enemy> enemies;
@@ -51,9 +58,13 @@ class BattleController extends ChangeNotifier {
   BattleStatus status = BattleStatus.playerTurn;
   int timeLeft = GameConfig.turnSeconds;
   String? message;
-  int? lastDamage;
 
-  // ---------- Статистик (оноо тооцоход) ----------
+  /// Дайсны хэлсэн үг (гарч ирэх үед). Дэлгэц ярианы бөмбөлөгт харуулна.
+  String? enemyQuote;
+  int? lastDamage;
+  int? lastHeal;
+
+  // ---------- Статистик ----------
   int hintsLeft = GameConfig.hintsPerBattle;
   int enemyTurns = 0; // одоогийн дайсны хийсэн ээлж
   int combo = 0; // дараалан бүтээсэн зөв үгийн тоо
@@ -63,39 +74,46 @@ class BattleController extends ChangeNotifier {
 
   /// Дуу/анимацийн дэлгэц сонсоно.
   void Function(BattleEvent event)? onEvent;
-  int hitCount = 0; // цохилт бүрт нэмэгдэнэ (popup анимац)
-  int invalidCount = 0; // буруу үг бүрт нэмэгдэнэ (сэгсрэх анимац)
-  int enemyAttackCount = 0; // дайсан довтлох бүрт нэмэгдэнэ (анимац)
+  int hitCount = 0; // баатар цохих бүрт (popup, дайсан сэгсрэх)
+  int healCount = 0; // баатар эдгэрэх бүрт
+  int invalidCount = 0; // буруу үг бүрт (үгийн мөр сэгсрэх)
+  int enemyAttackCount = 0; // дайсан довтлох бүрт
 
   Timer? _timer;
   bool _disposed = false;
-  bool _paused = false; // апп далд орсон / цонх нээгдсэн үед true
+  bool _paused = false;
 
   Enemy get enemy => enemies[waveIndex];
   String get currentWord => selected.map((t) => t.letter).join();
   int get previewDamage =>
-      currentWord.isEmpty ? 0 : _damage.calculate(currentWord, combo: combo);
+      selected.isEmpty ? 0 : _damage.calculateTiles(selected, combo: combo);
   bool get canAct => status == BattleStatus.playerTurn;
+  bool get isOver => status == BattleStatus.won || status == BattleStatus.lost;
 
-  /// Дараагийн ээлжинд дайсан тусгай (2×) цохилт хийх эсэх.
+  /// Дараагийн ээлжинд дайсан тусгай чадвараа хэрэглэх эсэх.
   bool get specialIncoming =>
-      enemy.specialEvery > 0 && (enemyTurns + 1) % enemy.specialEvery == 0;
+      enemy.hasSpecial && (enemyTurns + 1) % enemy.specialEvery == 0;
 
-  /// Тусгай цохилт хүртэл үлдсэн ээлж (байхгүй бол null).
-  int? get turnsUntilSpecial => enemy.specialEvery == 0
-      ? null
-      : enemy.specialEvery - (enemyTurns % enemy.specialEvery);
+  /// Тусгай чадвар хүртэл үлдсэн ээлж (байхгүй бол null).
+  int? get turnsUntilSpecial => enemy.hasSpecial
+      ? enemy.specialEvery - (enemyTurns % enemy.specialEvery)
+      : null;
 
   // =====================================================
   // ЭХЛЭХ
   // =====================================================
   void start() {
-    enemies = level.createEnemies();
-    player = Player(maxHp: GameConfig.playerMaxHp);
+    enemies = chapter.createEnemies();
+    player = Player(maxHp: chapter.playerHp);
     waveIndex = 0;
-    message = '${enemy.name} гарч ирлээ!';
+    _announceEnemy();
     _newBoard();
     _startPlayerTurn();
+  }
+
+  void _announceEnemy() {
+    message = '${enemy.name} гарч ирлээ!';
+    enemyQuote = enemy.intro.isEmpty ? null : enemy.intro;
   }
 
   // =====================================================
@@ -103,6 +121,12 @@ class BattleController extends ChangeNotifier {
   // =====================================================
   void selectTile(LetterTile tile) {
     if (!canAct || tile.isSelected) return;
+    if (tile.cursed) {
+      message =
+          '"${tile.letter.toUpperCase()}" үсэг хараагдсан — энэ ээлжинд ашиглах боломжгүй';
+      _notify();
+      return;
+    }
     tile.isSelected = true;
     selected.add(tile);
     _notify();
@@ -113,6 +137,12 @@ class BattleController extends ChangeNotifier {
     tile.isSelected = false;
     selected.remove(tile);
     _notify();
+  }
+
+  /// Сүүлд сонгосон үсгийг буцаана.
+  void undo() {
+    if (!canAct || selected.isEmpty) return;
+    deselectTile(selected.last);
   }
 
   void clearSelection({bool notify = true}) {
@@ -127,6 +157,7 @@ class BattleController extends ChangeNotifier {
   void attack() {
     if (!canAct || selected.isEmpty) return;
     final word = currentWord;
+    enemyQuote = null;
 
     // 1. Үг шалгах
     final result = _validator.check(word);
@@ -146,8 +177,8 @@ class BattleController extends ChangeNotifier {
       return;
     }
 
-    // 2. Хохирол
-    final dmg = _damage.calculate(word, combo: combo);
+    // 2. Хохирол (алтан үсэг тооцно)
+    final dmg = _damage.calculateTiles(selected, combo: combo);
     combo++;
     _validator.markUsed(word);
     enemy.takeDamage(dmg);
@@ -157,17 +188,32 @@ class BattleController extends ChangeNotifier {
     damageTotal += dmg;
     wordsCount++;
     if (word.length > longestWord.length) longestWord = word;
-    message = combo > 1
-        ? '${word.toUpperCase()} → $dmg хохирол! (combo ×$combo)'
-        : '${word.toUpperCase()} → $dmg хохирол!';
+    final parts = <String>[
+      combo > 1
+          ? '${word.toUpperCase()} → $dmg хохирол! (combo ×$combo)'
+          : '${word.toUpperCase()} → $dmg хохирол!',
+    ];
 
-    // 3. Ашигласан үсгийг хасаад самбар нөхөх
+    // 3. Эдгээх үсэг
+    final healTiles = selected.where((t) => t.bonus == TileBonus.heal).length;
+    if (healTiles > 0) {
+      final healed = player.heal(healTiles * GameConfig.healTileAmount);
+      if (healed > 0) {
+        lastHeal = healed;
+        healCount++;
+        onEvent?.call(BattleEvent.heal);
+        parts.add('+$healed амь');
+      }
+    }
+    message = parts.join('  ');
+
+    // 4. Ашигласан үсгийг хасаад самбар нөхөх
     board.removeWhere((t) => t.isSelected);
     selected.clear();
     board = _generator.fillBoard(board);
     if (!_generator.hasPlayableWord(board, _dictionaryWords)) _newBoard();
 
-    // 4. Дайсан үхсэн үү?
+    // 5. Дайсан үхсэн үү?
     if (enemy.isDead) {
       _onEnemyDefeated();
     } else {
@@ -200,6 +246,7 @@ class BattleController extends ChangeNotifier {
     if (!canAct) return;
     clearSelection(notify: false);
     combo = 0;
+    enemyQuote = null;
     _newBoard();
     message = 'Үсэг солигдлоо — ээлж алдлаа';
     _enemyTurn();
@@ -231,9 +278,7 @@ class BattleController extends ChangeNotifier {
     });
   }
 
-  /// Апп далд ороход ээлжийн цаг зогсоно.
-  /// Дайсны ээлж, дайсан үхэх анимац үед ч дуудагдаж болно — дараагийн
-  /// ээлж эхлэхэд цаг зогссон хэвээр байна.
+  /// Апп далд орох / цонх нээгдэхэд ээлжийн цаг зогсоно.
   void pause() {
     _paused = true;
     _timer?.cancel();
@@ -247,9 +292,12 @@ class BattleController extends ChangeNotifier {
 
   void _enemyTurn() {
     _timer?.cancel();
-    // давхар ээлж гарахаас сэргийлнэ
-    if (status != BattleStatus.playerTurn) return;
+    if (status != BattleStatus.playerTurn) return; // давхар ээлжээс сэргийлнэ
     status = BattleStatus.enemyTurn;
+    // Хараал зөвхөн нэг ээлж үйлчилнэ
+    for (final t in board) {
+      t.cursed = false;
+    }
     _notify();
 
     Future.delayed(const Duration(milliseconds: 900), () {
@@ -257,10 +305,33 @@ class BattleController extends ChangeNotifier {
       final special = specialIncoming;
       enemyTurns++;
       enemyAttackCount++;
-      player.takeDamage(special ? enemy.attack * 2 : enemy.attack);
-      if (special) message = '${enemy.name} хүчтэй цохилт хийлээ!';
-      onEvent?.call(BattleEvent.enemyAttack);
       lastDamage = null;
+      lastHeal = null;
+
+      var damage = enemy.attack;
+      if (special) {
+        switch (enemy.special) {
+          case EnemySpecial.strike:
+            damage *= 2;
+            message = '${enemy.name} хүчтэй цохилт хийлээ!';
+          case EnemySpecial.curse:
+            _curseTiles();
+            message = '${enemy.name} үсгүүдийг хараалав!';
+            onEvent?.call(BattleEvent.curse);
+          case EnemySpecial.heal:
+            final amount = max(
+              1,
+              enemy.maxHp * GameConfig.enemyHealPercent ~/ 100,
+            );
+            enemy.heal(amount);
+            message = '${enemy.name} шархаа эдгээв! (+$amount)';
+          case EnemySpecial.none:
+            break;
+        }
+      }
+      player.takeDamage(damage);
+      onEvent?.call(BattleEvent.enemyAttack);
+
       if (player.isDead) {
         status = BattleStatus.lost;
         message = 'Та ялагдлаа...';
@@ -272,9 +343,18 @@ class BattleController extends ChangeNotifier {
     });
   }
 
+  /// Самбарын санамсаргүй [GameConfig.curseTiles] үсгийг хараална.
+  void _curseTiles() {
+    final pool = board.toList()..shuffle(_random);
+    for (final t in pool.take(GameConfig.curseTiles)) {
+      t.cursed = true;
+    }
+  }
+
   void _onEnemyDefeated() {
     _timer?.cancel();
     status = BattleStatus.enemyDefeated;
+    enemyQuote = null;
     _notify();
 
     Future.delayed(const Duration(milliseconds: 1200), () {
@@ -284,7 +364,8 @@ class BattleController extends ChangeNotifier {
         enemyTurns = 0;
         _validator.reset();
         lastDamage = null;
-        message = '${enemy.name} гарч ирлээ!';
+        lastHeal = null;
+        _announceEnemy();
         _newBoard();
         _startPlayerTurn();
       } else {
@@ -305,7 +386,7 @@ class BattleController extends ChangeNotifier {
   }
 
   // =====================================================
-  // ОНОО (алгоритмын 7-р хэсэг)
+  // ОНОО
   // =====================================================
   int get finalScore {
     if (status != BattleStatus.won) return damageTotal;

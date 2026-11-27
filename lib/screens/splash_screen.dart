@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../core/constants.dart';
 import '../core/routes.dart';
 import '../design/characters/hero_art.dart';
 import '../design/glass.dart';
-import '../design/steppe_background.dart';
+import '../design/scene_background.dart';
 import '../design/theme.dart';
 
 /// Нээлтийн дэлгэц: лого томорч харагдаад нүүр хуудас руу шилжинэ.
@@ -38,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          const Positioned.fill(child: SteppeBackground(horizon: 0.76)),
+          const Positioned.fill(child: SceneBackground(horizon: 0.76)),
           const Positioned.fill(child: ScrimOverlay(top: 0.3, bottom: 0.6)),
           Center(
             child: TweenAnimationBuilder<double>(
@@ -55,9 +56,10 @@ class _SplashScreenState extends State<SplashScreen> {
                   HeroArt(size: 110),
                   SizedBox(height: 12),
                   Text(
-                    'Үгийн Тулаан',
+                    kAppTitle,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 38,
+                      fontSize: 36,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                       letterSpacing: -0.8,
@@ -70,6 +72,12 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    'Монгол ардын үлгэрийн үгийн тулаан',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),

@@ -57,8 +57,8 @@ class _RulesDialog extends StatelessWidget {
                     icon: '🎯',
                     title: 'Зорилго',
                     lines: [
-                      'Монгол үг бүтээж дайсны амийг (HP) тэглэ.',
-                      'Түвшний бүх дайсныг ялбал түвшин давна.',
+                      'Мангас үлгэрийн номын хуудсыг хулгайлжээ. Үлгэр бүрт орж, монгол үгийн хүчээр дайснуудыг ялан үлгэрийг сэргээ.',
+                      'Бүлгийн бүх дайсныг ялбал үлгэрийн төгсгөл, сургамж нээгдэж, дараагийн үлгэр нээгдэнэ.',
                     ],
                   ),
                   _Section(
@@ -66,12 +66,13 @@ class _RulesDialog extends StatelessWidget {
                     title: 'Үг бүтээх',
                     lines: [
                       '1. Доорх самбараас үсэг дарж сонгоно — сонгосон үсэг дээд мөрөнд гарна.',
-                      '2. Буруу дарсан үсгээ дахин дарвал буцна, ⌫ товч бүгдийг арилгана.',
+                      '2. Буруу дарсан үсгээ дахин дарвал буцна, ⌫ товч сүүлийн үсгийг арилгана.',
                       '3. Үгээ бүтээчихээд "Довтлох" дарна.',
                       '4. Үг зөв бол дайсанд хохирол учирч, ашигласан үсэг шинэчлэгдэнэ.',
                     ],
                   ),
                   _DamageExample(),
+                  _BonusTiles(),
                   _Section(
                     icon: '🔥',
                     title: 'Combo',
@@ -86,7 +87,10 @@ class _RulesDialog extends StatelessWidget {
                     lines: [
                       'Ээлж бүр ${GameConfig.turnSeconds} секунд. Хугацаа дуусвал үг бүтээгээгүй ч дайсан довтолно.',
                       'Таны довтолгооны дараа дайсан амьд байвал тэр довтолж, таны HP-ийг хасна.',
-                      '⚡ Зарим дайсан хэдэн ээлж тутамд 2× хүчтэй цохино. Дэлгэц дээр хэдэн ээлжийн дараа болохыг харуулна.',
+                      'Зарим дайсан хэдэн ээлж тутамд тусгай чадвар хэрэглэнэ. Дэлгэц дээр хэдэн ээлжийн дараа болохыг харуулна:',
+                      '⚡ Хүчтэй цохилт — 2 дахин их хохирол.',
+                      '🔒 Үсэг хараалах — ${GameConfig.curseTiles} үсэг дараагийн ээлжинд дарагдахгүй.',
+                      '💚 Шарх эдгээх — дайсан амийнхаа ${GameConfig.enemyHealPercent}%-ийг нөхнө.',
                     ],
                   ),
                   _Section(
@@ -101,7 +105,7 @@ class _RulesDialog extends StatelessWidget {
                     icon: '⭐',
                     title: 'Од',
                     lines: [
-                      'Түвшин давахад үлдсэн HP-ээр од авна: 70%-аас дээш — 3 од, 30%-аас дээш — 2 од, бусад — 1 од.',
+                      'Үлгэрийг давахад үлдсэн амиар од авна: 70%-аас дээш — 3 од, 30%-аас дээш — 2 од, бусад — 1 од.',
                     ],
                   ),
                   _Section(
@@ -172,6 +176,62 @@ class _Section extends StatelessWidget {
                 style: TextStyle(fontSize: 14, height: 1.35, color: bodyColor),
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Алтан ба эдгээх үсгийн тайлбар.
+class _BonusTiles extends StatelessWidget {
+  const _BonusTiles();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bodyColor = isDark
+        ? const Color(0xFFE3D3C0)
+        : const Color(0xFF5C4636);
+    Widget row(LetterTile tile, String text) => Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          LetterTileWidget(tile: tile, size: 40),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 14, height: 1.35, color: bodyColor),
+            ),
+          ),
+        ],
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '✨  Тусгай үсэг',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : AppColors.ink,
+            ),
+          ),
+          row(
+            LetterTile(id: 0, letter: 'а', points: 1, bonus: TileBonus.gold),
+            'Алтан үсэг — оноо нь 3 дахин тооцогдоно.',
+          ),
+          row(
+            LetterTile(id: 1, letter: 'н', points: 1, bonus: TileBonus.heal),
+            'Эдгээх үсэг — зөв үгэнд орвол +${GameConfig.healTileAmount} амь.',
+          ),
+          row(
+            LetterTile(id: 2, letter: 'р', points: 1, cursed: true),
+            'Хараагдсан үсэг — энэ ээлжинд ашиглах боломжгүй.',
+          ),
         ],
       ),
     );

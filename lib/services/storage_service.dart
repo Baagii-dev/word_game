@@ -5,12 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/player_progress.dart';
 
-/// Тоглогчийн ахиц болон тоглолтын түүхийг төхөөрөмж дээр хадгалах (shared_preferences, JSON).
+/// Тоглогчийн ахиц болон тоглолтын түүхийг төхөөрөмж дээр хадгална
+/// (shared_preferences, JSON).
 class StorageService extends ChangeNotifier {
   StorageService._();
 
   static final StorageService instance = StorageService._();
-  static const String _key = 'progress';
+
+  /// "Үгийн Тулаан"-ы хуучин ахиц ('progress') шинэ бүлгүүдтэй таарахгүй тул
+  /// шинэ түлхүүр ашиглана.
+  static const String _key = 'progress_v2';
   static const int maxHistoryCount = 50;
 
   PlayerProgress progress = PlayerProgress();
@@ -19,11 +23,9 @@ class StorageService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_key);
-      if (raw != null) {
-        progress = PlayerProgress.fromMap(
-          jsonDecode(raw) as Map<String, dynamic>,
-        );
-      }
+      progress = raw == null
+          ? PlayerProgress()
+          : PlayerProgress.fromMap(jsonDecode(raw) as Map<String, dynamic>);
     } catch (_) {
       progress = PlayerProgress(); // эвдэрсэн өгөгдөл → шинээр эхэлнэ
     }
@@ -31,34 +33,31 @@ class StorageService extends ChangeNotifier {
   }
 
   Future<void> saveResult({
-    required int levelId,
+    required int chapterId,
+    required String chapterTitle,
+    required bool won,
     required int score,
     required int stars,
-    String? levelName,
-    bool? won,
     int wordsCount = 0,
     String longestWord = '',
   }) async {
-    final isWin = won ?? (stars > 0);
-
-    if (score > (progress.bestScores[levelId] ?? 0)) {
-      progress.bestScores[levelId] = score;
+    if (score > (progress.bestScores[chapterId] ?? 0)) {
+      progress.bestScores[chapterId] = score;
     }
-    if (stars > (progress.stars[levelId] ?? 0)) {
-      progress.stars[levelId] = stars;
+    if (stars > (progress.stars[chapterId] ?? 0)) {
+      progress.stars[chapterId] = stars;
     }
-    // Ялсан бол дараагийн түвшнийг нээнэ
-    if (isWin && levelId >= progress.unlockedLevel) {
-      progress.unlockedLevel = levelId + 1;
+    // Ялсан бол дараагийн бүлгийг нээнэ
+    if (won && chapterId >= progress.unlockedChapter) {
+      progress.unlockedChapter = chapterId + 1;
     }
 
-    // Түүхэнд нэмэх (хамгийн шинэ нь эхэндээ)
     progress.history.insert(
       0,
       BattleRecord(
-        levelId: levelId,
-        levelName: levelName ?? 'Түвшин $levelId',
-        won: isWin,
+        chapterId: chapterId,
+        chapterTitle: chapterTitle,
+        won: won,
         score: score,
         stars: stars,
         wordsCount: wordsCount,
@@ -75,6 +74,13 @@ class StorageService extends ChangeNotifier {
 
   Future<void> clearHistory() async {
     progress.history.clear();
+    notifyListeners();
+    await _persist();
+  }
+
+  /// Бүх ахицыг арилгаж эхнээс нь эхэлнэ (тохиргооноос).
+  Future<void> resetAll() async {
+    progress = PlayerProgress();
     notifyListeners();
     await _persist();
   }

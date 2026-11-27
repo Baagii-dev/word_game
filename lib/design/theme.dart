@@ -30,19 +30,20 @@ class AppColors {
   static const Color nightSurface = Color(0xFF152642);
   static const Color moon = Color(0xFFFFF3C4);
 
-  // ---- Ойн зах (Түвшин 2) ----
-  static const Color forestSkyTop = Color(0xFF1B3B48);
-  static const Color forestSkyBottom = Color(0xFFD98A5C);
-  static const Color forestTreeFar = Color(0xFF2D5A4C);
-  static const Color forestTreeNear = Color(0xFF1B3F33);
-  static const Color forestGround = Color(0xFF32562A);
+  // ---- Үлгэрийн ном (илгэн цаас) ----
+  static const Color parchment = Color(0xFFF4E4C1);
+  static const Color parchmentDeep = Color(0xFFE2C995);
+  static const Color parchmentEdge = Color(0xFFB98A4A);
+  static const Color parchmentInk = Color(0xFF3B2614); // үлгэрийн текст
+  static const Color parchmentInkSoft = Color(0xFF7A5634);
+  static const Color seal = Color(0xFFA3271F); // улаан тамга
 
-  // ---- Мангасын агуй (Түвшин 3) ----
-  static const Color caveSkyTop = Color(0xFF160B24);
-  static const Color caveSkyBottom = Color(0xFF4A182F);
-  static const Color caveRockFar = Color(0xFF2B1738);
-  static const Color caveRockNear = Color(0xFF1A0E24);
-  static const Color caveLava = Color(0xFFFF5722);
+  // ---- Тусгай үсэг ----
+  static const Color goldTile = Color(0xFFFFD54F);
+  static const Color goldTileDeep = Color(0xFFE0A100);
+  static const Color healTile = Color(0xFFB9F6CA);
+  static const Color healTileDeep = Color(0xFF2E9D57);
+  static const Color cursedTile = Color(0xFF4A3557);
 
   // ---- Хөх самбар (товч, дээд/доод хэсэг) ----
   static const Color navy = Color(0xFF1F5FA8);

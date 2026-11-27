@@ -1,23 +1,38 @@
-# Үгийн Тулаан (word_battle)
+# Үлгэрийн Баатар (word_battle)
 
-Монгол үг бүтээж дайсныг ялдаг Flutter тоглоом.
+Монгол ардын үлгэрээр аялж, монгол үг бүтээн мангас, дайснуудыг ялдаг Flutter
+тоглоом. Хар шидтэй мангас эмээгийн үлгэрийн номын хуудсыг хулгайлсан тул
+баатар үлгэр бүрт орж, үгийн хүчээр үлгэрийг сэргээнэ.
 
 📐 **Кодын бүтэц, юуг хаанаас засах:** [ARCHITECTURE.md](ARCHITECTURE.md)
 
-## Getting Started
+## Үлгэрүүд
 
-This project is a starting point for a Flutter application.
+| # | Үлгэр | Дайснууд | Сургамж |
+|---|---|---|---|
+| 1 | Хулгана тэмээ хоёр | Сэргэлэн хулгана, Бардам тэмээ, Мангасын чоно | Хүч биш, ухаан ялдаг |
+| 2 | Эрхий мэргэн | Хараацай, Цөлийн могой, Долоо дахь нар | Хэлсэн үгэндээ эзэн бай |
+| 3 | Үнэг чоно хоёр | Зальт үнэг, Сүүлгүй чоно, Хүрэн баавгай | Худал үг хөлгүй |
+| 4 | Хан Харангуй | Шар могой, Догшин бар, Атгаа хар мангас | Эх орноо хамгаалагч жинхэнэ баатар |
+| 5 | Гэсэр хаан | Хар шулам, Галт луу, Лобсоголдой | Үг бол хамгийн хүчтэй зэвсэг |
 
-A few resources to get you started if this is your first Flutter project:
+Шинэ үлгэр нэмэхэд зөвхөн `assets/data/stories.json`-д бичнэ — код засах шаардлагагүй.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Тоглоомын дүрэм (товч)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# word_game
+- Үлгэрийн эхлэлийн хуудсыг уншаад тулаанд орно.
+- 12 үсгээс үг бүтээж **Довтлох** дарна. Урт, ховор үсэгтэй үг илүү хүчтэй.
+- ⭐ **Алтан үсэг** — оноо 3×, 💚 **эдгээх үсэг** — баатрын амь нэмнэ.
+- Дайснуудын тусгай чадвар: ⚡ хүчтэй цохилт, 🔒 үсэг хараалах, 💚 өөрийгөө эдгээх.
+- Бүх дайсныг ялбал үлгэрийн төгсгөл, сургамж гарч, дараагийн үлгэр нээгдэнэ.
+
+## Ажиллуулах
+
+```bash
+flutter pub get
+flutter run            # утас / эмулятор
+flutter test           # бүх тест
+```
 
 ## Толь бичиг
 

@@ -6,8 +6,8 @@ void main() {
   testWidgets('Нүүр дэлгэц гарчиг, товчнуудыг харуулна', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
-    expect(find.text('Үгийн Тулаан'), findsOneWidget);
-    expect(find.text('Тоглох'), findsOneWidget);
+    expect(find.text('Үлгэрийн Баатар'), findsOneWidget);
+    expect(find.text('Үлгэрийн ном'), findsOneWidget);
     expect(find.text('Заавар'), findsOneWidget);
   });
 
