@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/assets.dart';
 import '../theme.dart';
+import 'character_frame.dart';
 
 /// Баатрын дүрс: `AppAssets.heroImage` тохируулбал PNG зураг,
 /// үгүй бол кодоор зурсан баатар (монгол малгайтай, амьд нүдтэй, анивчдаг).
@@ -13,20 +14,11 @@ class HeroArt extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) {
-    final drawn = _DrawnHero(size: size);
-
-    final image = AppAssets.heroImage;
-    if (image == null || image.isEmpty) return drawn;
-
-    return Image.asset(
-      image,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stack) => drawn,
-    );
-  }
+  Widget build(BuildContext context) => imageOrDrawn(
+    image: AppAssets.heroImage,
+    size: size,
+    drawn: _DrawnHero(size: size),
+  );
 }
 
 class _DrawnHero extends StatefulWidget {
@@ -72,24 +64,8 @@ class _DrawnHeroState extends State<_DrawnHero>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: widget.size,
-      height: widget.size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.accent, width: 2.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black38, blurRadius: 8, offset: Offset(0, 3)),
-        ],
-      ),
-      child: ClipOval(
-        child: RepaintBoundary(
-          child: CustomPaint(painter: _HeroPainter(_blink)),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      CharacterFrame(size: widget.size, painter: _HeroPainter(_blink));
 }
 
 class _HeroPainter extends CustomPainter {

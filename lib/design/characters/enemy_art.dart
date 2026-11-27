@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/enemy.dart';
 import '../theme.dart';
+import 'character_frame.dart';
 
 /// Дайсны дүрс: зураг (`image`) байвал PNG зургийг,
 /// үгүй бол [kind]-д тохирох кодоор зурсан толгойг дугуй хүрээнд харуулна.
@@ -20,35 +21,11 @@ class EnemyArt extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) {
-    final drawn = Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.accent, width: 2.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 3)),
-        ],
-      ),
-      child: ClipOval(
-        child: RepaintBoundary(
-          child: CustomPaint(painter: _EnemyPainter(kind)),
-        ),
-      ),
-    );
-
-    final path = image;
-    if (path == null || path.isEmpty) return drawn;
-
-    return Image.asset(
-      path,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stack) => drawn,
-    );
-  }
+  Widget build(BuildContext context) => imageOrDrawn(
+    image: image,
+    size: size,
+    drawn: CharacterFrame(size: size, painter: _EnemyPainter(kind)),
+  );
 }
 
 class _EnemyPainter extends CustomPainter {
@@ -331,14 +308,17 @@ class _Draw {
     Float64List.fromList([-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, u, 0, 0, 1]),
   );
 
+  static final _space = RegExp(r'\s+');
+  static final _command = RegExp(r'^[A-Z]$');
+
   Path _path(String spec) {
-    final t = spec.trim().split(RegExp(r'\s+'));
+    final t = spec.trim().split(_space);
     final path = Path();
     var i = 0;
     double n() => double.parse(t[i++]) * u;
     var cmd = 'M';
     while (i < t.length) {
-      if (RegExp(r'^[A-Z]$').hasMatch(t[i])) cmd = t[i++];
+      if (_command.hasMatch(t[i])) cmd = t[i++];
       switch (cmd) {
         case 'M':
           path.moveTo(n(), n());
